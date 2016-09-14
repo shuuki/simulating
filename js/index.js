@@ -9,6 +9,7 @@ var Sim = {
   {
   	// start the clock
   	this.time = 0;
+    this.running = null;
 
   	// set up canvas
   	var canvas = document.createElement('canvas');
@@ -29,10 +30,22 @@ var Sim = {
   	// declare entities to simulate
 
   },
+  start: function()
+  {
+    if (!this.running)
+    {
+      this.update();
+    }
+  },
+  stop: function()
+  {
+    window.cancelAnimationFrame(this.running);
+    this.running = null;
+  },
   update: function()
   {
   	// start the next frame
-  	requestAnimationFrame(this.update.bind(this));
+  	this.running = requestAnimationFrame(this.update.bind(this));
 
   	// update clock
   	var now = new Date().getTime();
