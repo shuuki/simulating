@@ -209,7 +209,6 @@ window.addEventListener('load', function()
 {
   Sim.test();
 	Sim.init('display', 320, 200);
-	Sim.update();
 }, false);
 
 // keyboard events
