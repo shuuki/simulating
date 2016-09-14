@@ -159,7 +159,15 @@ var Sim = {
 		},
 		keyUp: function(event) {
 			delete this.active[event.keyCode];
-		}
+		},
+
+    // track mouse states
+    mouseDown: function(event) {
+      this.active['mousedown'] = {x: event.x, y: event.y};
+    },
+    mouseUp: function(event) {
+      delete this.active['mousedown']
+    }
 	},
 	scene: {
 		entities: {},
@@ -208,24 +216,18 @@ window.addEventListener('keydown', function(event) {
 window.addEventListener('click', function() {
 	var x = event.pageX,
 		y = event.pageY;
-	console.log("click", x, y)
+	//console.log("click", x, y)
 }, false);
 
 window.addEventListener('mouseup', function() {
-	var x = event.pageX,
-		y = event.pageY;
-	console.log("mouseup", x, y)
+  Sim.input.mouseUp(event)
+  //console.log(event.x, event.y)
 }, false);
 
 window.addEventListener('mousedown', function() {
-	var x = event.pageX,
-		y = event.pageY;
-	Sim.input.keyDown({
-		x: x,
-		y: y
-	})
-	console.log("mousedown", x, y)
-	console.log(Sim.input.active)
+	Sim.input.mouseDown(event)
+	//console.log(event.x, event.y)
+	//console.log(Sim.input.active)
 }, false);
 
 // experiment for later: do stuff with clicks	
