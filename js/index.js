@@ -124,15 +124,13 @@ var Sim = {
     // ----cameras
     // ----actors
   },
-  cache:
-  {
-    // add sim state stuff here for save/load
-    // probably just copy this.scene
-  },
   save: function()
   {
-    this.cache.time = this.time;
-    //this.cache.scene = this.scene;
+    this.cache = {
+      // add sim state values here for save/load
+      //scene: this.scene,
+      time: this.time
+    };
     localStorage.setItem('SimSave', JSON.stringify(this.cache));
   },
   load: function()
@@ -144,7 +142,12 @@ var Sim = {
   },
   reset: function()
   {
-    // remove local save data if present
+    // clear cache
+    if (this.cache)
+    {
+      this.cache = null;
+    }
+    // remove locally stored data if present
     if (localStorage.getItem('SimSave'))
     {
       localStorage.removeItem('SimSave');
