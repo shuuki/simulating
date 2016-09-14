@@ -79,51 +79,6 @@ var Sim = {
   	this.context.stroke();
   	this.context.closePath();
   },
-  input:
-  {
-    // cache of keys currently active
-    active: {},
-
-    // index of tracked inputs
-    BACKSPACE: 8,
-    LEFT: 37,
-    UP: 38,
-    RIGHT: 39,
-    DOWN: 40,
-    Q: 81,
-    W: 87,
-    E: 69,
-    A: 65,
-    S: 83,
-    D: 68,
-    SPACE: 32,
-    ENTER: 13,
-    SHIFT: 16,
-
-    // track key states
-    isDown: function(keyCode)
-    {
-      return this.active[keyCode];
-    },
-    keyDown: function(event)
-    {
-      this.active[event.keyCode] = true;
-    },
-    keyUp: function(event)
-    {
-      delete this.active[event.keyCode];
-    }
-  },
-  scene:
-  {
-    entities : {},
-    stage: {}
-    // scene
-    // --stage
-    // --entities
-    // ----cameras
-    // ----actors
-  },
   save: function()
   {
     this.cache = {
@@ -158,29 +113,24 @@ var Sim = {
     // cache pi for speed
     pi: Math.PI,
     // convert degrees to radians
-  	degToRad: function(degrees)
-  	{
-  		return degrees * (this.pi/180);
-  	},
-    // convert radians to degrees
-  	radToDeg: function(radians)
-  	{
-  		return radians * (180/this.pi);
-  	},
-    // pick a random element from an array
-    pick: function(list)
+    degToRad: function(degrees)
     {
-    	return list[Math.floor(Math.random() * list.length)];
+      return degrees * (this.pi/180);
+    },
+    // convert radians to degrees
+    radToDeg: function(radians)
+    {
+      return radians * (180/this.pi);
     },
     // roll a random whole number between 0 and a maximum
     roll: function(max)
     {
-    	return Math.floor(Math.random() * max);
+      return Math.floor(Math.random() * max);
     },
-    // roll a random x/y coordinate between 0,0 and a maximum
-    rollCoord: function(maxX, maxY)
+    // pick a random element from an array
+    pick: function(list)
     {
-    	return { x: this.roll(maxX), y: this.roll(maxY)};
+      return list[Math.floor(Math.random() * list.length)];
     },
     // shuffle
     // from mike bostock via frankmitchell.org/2015/01/fisher-yates
@@ -198,6 +148,64 @@ var Sim = {
       }
       return list;
     }
+  },
+  input:
+  {
+    // cache of keys currently active
+    active: {},
+
+    // index of tracked inputs
+    BACKSPACE: 8,
+    LEFT: 37,
+    UP: 38,
+    RIGHT: 39,
+    DOWN: 40,
+    Q: 81,
+    W: 87,
+    E: 69,
+    A: 65,
+    S: 83,
+    D: 68,
+    SPACE: 32,
+    ENTER: 13,
+    SHIFT: 16,
+    
+
+    // track key states
+    isDown: function(keyCode)
+    {
+      return this.active[keyCode];
+    },
+    keyDown: function(event)
+    {
+      this.active[event.keyCode] = true;
+    },
+    keyUp: function(event)
+    {
+      delete this.active[event.keyCode];
+    }
+  },
+  scene:
+  {
+    entities : {},
+    stage: {}
+
+    // scene
+    // --stage
+    // --entities
+    // ----cameras
+    // ----actors
+
+    // camera entity needs what values?
+    /*
+    var Camera = {
+      width: 320,
+      height: 200,
+      x: 120,
+      y: 100,
+      aspect: 1.6 || (this.width / this.height)
+    }
+    */
   }
 }
 
@@ -209,6 +217,8 @@ window.addEventListener('load', function()
 {
   Sim.test();
 	Sim.init('display', 320, 200);
+  Sim.start();
+	//Sim.update();
 }, false);
 
 // keyboard events
@@ -220,7 +230,7 @@ window.addEventListener('keydown', function(event)
 {
 	Sim.input.keyDown(event);
 	//console.log(event.keyCode)
-  //console.log(Sim.input.active)
+  console.log(Sim.input.active)
 }, false);
 
 // mouse events
@@ -228,18 +238,25 @@ window.addEventListener('click', function()
 {
 	var x = event.pageX,
     y = event.pageY;
-	//console.log(x,y)
+	console.log("click",x,y)
 }, false);
+
+window.addEventListener('mouseup', function()
+{
+	var x = event.pageX,
+    y = event.pageY;
+	console.log("mouseup",x,y)
+}, false);
+
+window.addEventListener('mousedown', function()
+{
+	var x = event.pageX,
+    y = event.pageY;
+  Sim.input.keyDown({x: x, y: y})
+	console.log("mousedown",x,y)
+  console.log(Sim.input.active)
+}, false);
+
 
 // experiment for later: do stuff with clicks	
 // add mouseDown/mouseUp and some touch events
-
-
-// camera entity needs what values?
-var Camera = {
-  width: 320,
-  height: 200,
-  x: 120,
-  y: 100,
-  aspect: 1.6 || (this.width / this.height)
-}
