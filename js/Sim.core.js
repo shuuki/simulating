@@ -1,5 +1,11 @@
 /** the simulation */
 
+// core code required to run a basic sim
+// canvas rendering 
+// start / stop running updates
+// save / load with localstorage
+// track scene elements and entities
+
 var Sim = {
 	// proof of life
 	test: function()
@@ -8,6 +14,7 @@ var Sim = {
 	},
 	// first steps
 	// initialize canvas
+	// takes an object with starting values
 	init: function(settings)
 	{
 		// start the clock
@@ -16,9 +23,12 @@ var Sim = {
 	
 		// set up canvas
 		var canvas = document.createElement('canvas');
-		canvas.id = settings.id || 'display';
+		canvas.id = settings.id || 'viewport';
 		canvas.width = settings.width || 480;
 		canvas.height = settings.height || 300;
+
+		// declare entities to simulate
+		this.seed = settings.seed || {};
 
 		// only add canvas to body if one is not already present
 		if (!document.getElementById(canvas.id))
@@ -26,9 +36,6 @@ var Sim = {
 			document.getElementsByTagName('body')[0].appendChild(canvas);
 		}
 		// for later: make this delete any existing canvas and replace
-
-		// declare entities to simulate
-		this.seed = settings.seed || {};
 
 		// attach canvas to Sim
 		this.canvas = document.getElementById(canvas.id);
@@ -64,8 +71,9 @@ var Sim = {
 		// render scene
 		this.render();
 	},
-
-	render: function() {
+	// render
+	render: function()
+	{
 		// clear frame
 		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 		this.context.moveTo(0, 0);
@@ -85,8 +93,6 @@ var Sim = {
 		this.context.stroke();
 		this.context.closePath();
 	},
-	/***
-	*/
 	save: function()
 	{
 		this.cache =
@@ -104,23 +110,25 @@ var Sim = {
 			this.cache = JSON.parse(localStorage.getItem('SimSave'));
 		}
 	},
-	reset: function() {
+	reset: function()
+	{
 		// clear cache
-		if (this.cache) {
+		if (this.cache)
+		{
 			this.cache = null;
 		}
 		// remove locally stored data if present
-		if (localStorage.getItem('SimSave')) {
+		if (localStorage.getItem('SimSave'))
+		{
 			localStorage.removeItem('SimSave');
 		}
 	},
-  /** scene */
   entities: {
     
     // entities being simulated
     active: {},
 
-		create: function(id, values)
+		assign: function(id, values)
 		{
 			this.active[id] = values;
 		},
@@ -141,7 +149,8 @@ var Sim = {
 		{
 			this.active[id].draw(args)
 		},
-		drawAll: function(context) {
+		drawAll: function(context)
+		{
 			//foreach active id 
 			//this.active[id].draw(context);
 		},
