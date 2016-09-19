@@ -145,16 +145,17 @@ var Sim = {
 		queue: [],
 
 		// queue
-
 		// add event
 		// go through queue
 		// while (queue.length < 0) {	}
+		active: {},
+		inactive: {},
+
 
 		add: function(data)
 		{
 			this.queue.push(data);
 		},
-
 		step: function()
 		{
 			if (this.queue.length > 0)
@@ -166,11 +167,7 @@ var Sim = {
 				return null;
 			}
 		},
-
-		active: {},
-		inactive: {},
-			
-		assign: function(id, data)
+				assign: function(id, data)
 		{
 			this.active[id] = data;
 		},
@@ -183,6 +180,11 @@ var Sim = {
 			this.inactive[id] = this.active[id];
 			delete this.active[id];
 		},
+		reactivate: function(id)
+		{
+			this.active[id] = this.inactive[id];
+			delete this.inactive[id];
+		},
 
 		updateAll: function(time, args)
 		{
@@ -192,16 +194,22 @@ var Sim = {
 			// go through it all from top to bottom
 			while (this.queue.length > 0)
 			{
-				this.step()
-				//this.active[this.step()].update(args);
-				//console.log();
-				//this.active[id].update(args)
+				this.active[this.queue[0]].update(time);
+				this.queue.shift();
 			}
 		},
+
 		drawAll: function(context)
 		{
-			//foreach entity id 
-			//this.active[id].draw(context);
+			// build a queue
+			this.queue = (Object.keys(this.active));
+
+			// go through it all from top to bottom
+			while (this.queue.length > 0)
+			{
+				this.active[this.queue[0]].draw(context);
+				this.queue.shift();
+			}
 		}
 
 	}

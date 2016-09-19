@@ -65,17 +65,15 @@ Camera.prototype.update = function()
 	// change x/y probably
 	// maybe the aspect sometimes too
 }
-Camera.prototype.draw = function()
-{
-	
-}
+Camera.prototype.draw = function() {}
 
 
 function Stage()
 {
 	this.area = [];
 }
-
+Stage.prototype.update = function() {}
+Stage.prototype.draw = function() {}
 
 
 /**  ship actor */
