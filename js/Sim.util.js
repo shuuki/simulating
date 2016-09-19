@@ -7,7 +7,7 @@
 
 Sim.util = {
 	// cache pi for speed
-	pi: Math.PI,
+	pi: 3.141592653589793,
 	// convert degrees to radians
 	degToRad: function(degrees)
 	{
