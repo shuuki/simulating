@@ -41,11 +41,11 @@ function Ticker()
 }
 Ticker.prototype.update = function(time)
 {
-	this.time += (time.delta / 1000);
+	this.time += (time.delta / 1000);	
 }
 Ticker.prototype.draw = function(context)
 {
-	context.fillText(this.time, 12, (context.canvas.height / 2));
+	context.fillText(this.time.toFixed(0), 12, (context.canvas.height - 12));
 }
 
 
