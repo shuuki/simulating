@@ -7,14 +7,25 @@
     <link rel="stylesheet" href="css/style.css">
   </head>
   <body>
-    <div id="controls">
-      <button onClick="Sim.start()">start</button>
-      <button onClick="Sim.stop()">stop</button>
-    </div>
+
     <script src="js/Sim.core.js"></script>
     <script src="js/Sim.input.js"></script>
     <script src="js/Sim.util.js"></script>
     <script src="js/Sim.geom.js"></script>
     <script src="js/index.js"></script>
+
+    <div id="controls">
+      <button onClick="Sim.start()">start</button>
+      <button onClick="Sim.stop()">stop</button>
+      <!--
+      <button onClick="Sim.save()">save</button>
+      <button onClick="Sim.load()">load</button>
+      <button onClick="Sim.reset()">reset</button>
+      <hr>
+      <button onClick="Sim.export()">export</button>
+      <button onClick="Sim.import()">import</button>
+      -->
+    </div>
+
   </body>
 </html>

@@ -2,13 +2,36 @@ body {
 	background: #eee;
 	color: #111;
 	margin: 0;
+	font-family: monospace;
 }
 
 canvas {
 	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAAAAACo4kLRAAAAF0lEQVR4AWN4DQcP4WBoCyKYCOkhLQgA355ncNg2H2MAAAAASUVORK5CYII=');
 }
 
+button {
+	background: #fff;
+	border: none;
+	font-family: inherit;
+	font-size: 1em;
+	padding: 1em;
+	margin: 0;
+	user-select: none;
+	outline: none;
+}
+button:hover {
+	background: #ddd;
+}
+button:active {
+	background: #999;
+}
+
+hr {
+	border: 2px solid #fff;
+}
+
 #controls {
 	position: absolute;
 	bottom: 0;
+	padding: 1em;
 }
