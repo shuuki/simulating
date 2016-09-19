@@ -18,13 +18,7 @@ var flatland = {
 	test: 'seed loaded',
 	entities: {
 		ticker: new Ticker(),
-		camera: new Camera({
-			width: 320,
-			height: 200,
-			x: 120,
-			y: 100,
-			z: 0
-		}),
+		//camera: new Camera(),
 		//stage: new Stage(),
 		ship: new Ship()
 	}	
@@ -84,7 +78,7 @@ function Ship()
 	this.xSpeed = 0;
 	this.ySpeed = 0;
 	this.TurnSpeed = 0;
-	this.Direction = Sim.util.pi * 1.5;
+	this.Direction = 0;
 }
 Ship.prototype.update = function(origin)
 {
@@ -98,25 +92,25 @@ Ship.prototype.update = function(origin)
 		maxTurn = 0.08;
 
 	// movement controls
-	if (Sim.input.isDown(Sim.input.UP) || Sim.input.isDown(Sim.input.W))
+	if (origin.input.isDown(origin.input.UP) || origin.input.isDown(origin.input.W))
 	{
 			this.xSpeed += Math.cos(this.Direction) * (thrustMain * delta);
-			this.ySpeed += Math.sin(this.Direction) * (thrustMain * delta);	
+			this.ySpeed += Math.sin(this.Direction) * (thrustMain * delta);
 	}
-	if (Sim.input.isDown(Sim.input.DOWN) || Sim.input.isDown(Sim.input.S))
+	if (origin.input.isDown(origin.input.DOWN) || origin.input.isDown(origin.input.S))
 	{
 			this.xSpeed -= Math.cos(this.Direction) * (thrustLateral * delta);
 			this.ySpeed -= Math.sin(this.Direction) * (thrustLateral * delta);
 	}
-	if (Sim.input.isDown(Sim.input.A))
+	if (origin.input.isDown(origin.input.A))
 	{
-		this.xSpeed += Math.cos(this.Direction - (Sim.util.pi / 2)) * (thrustLateral * delta);
-		this.ySpeed += Math.sin(this.Direction - (Sim.util.pi / 2)) * (thrustLateral * delta);	
+		this.xSpeed += Math.cos(this.Direction - (origin.util.pi / 2)) * (thrustLateral * delta);
+		this.ySpeed += Math.sin(this.Direction - (origin.util.pi / 2)) * (thrustLateral * delta);	
 	}
-	if (Sim.input.isDown(Sim.input.D))
+	if (origin.input.isDown(origin.input.D))
 	{
-		this.xSpeed -= Math.cos(this.Direction - (Sim.util.pi / 2)) * (thrustLateral * delta);
-		this.ySpeed -= Math.sin(this.Direction - (Sim.util.pi / 2)) * (thrustLateral * delta);	
+		this.xSpeed -= Math.cos(this.Direction - (origin.util.pi / 2)) * (thrustLateral * delta);
+		this.ySpeed -= Math.sin(this.Direction - (origin.util.pi / 2)) * (thrustLateral * delta);	
 	}
 
 	// calculate length of the speed vector using pythagoras
@@ -142,11 +136,11 @@ Ship.prototype.update = function(origin)
 	// Rotation Movement (Keys Left, Right)
 
 	// controls
-	if (Sim.input.isDown(Sim.input.LEFT)) {
+	if (origin.input.isDown(origin.input.LEFT)) {
 		let thrust = maxTurn + this.TurnSpeed;
 		this.TurnSpeed -= thrust * delta;
 	}
-	if (Sim.input.isDown(Sim.input.RIGHT)) {
+	if (origin.input.isDown(origin.input.RIGHT)) {
 		let thrust = maxTurn - this.TurnSpeed;
 		this.TurnSpeed += thrust * delta;
 	}
@@ -159,8 +153,8 @@ Ship.prototype.update = function(origin)
 	this.Direction += this.TurnSpeed;
 
 	// bound maximum direction to one rotation
-	if (this.Direction > Sim.util.pi * 2) { this.Direction -= Sim.util.pi * 2; }
-	if (this.Direction < 0) { this.Direction += Sim.util.pi * 2; }
+	if (this.Direction > origin.util.pi * 2) { this.Direction -= origin.util.pi * 2; }
+	if (this.Direction < 0) { this.Direction += origin.util.pi * 2; }
 
 	// apply friction to rotation
 	if (this.TurnSpeed > turnFriction) this.TurnSpeed -= turnFriction;
@@ -177,14 +171,21 @@ Ship.prototype.draw = function(origin)
 
 	context.strokeStyle = 'magenta';
 	context.lineWidth = 2;
-	context.arc(this.x, this.y, shipSize, (this.Direction - Sim.util.pi - shipAngle), (this.Direction - Sim.util.pi + shipAngle), false);
+	context.arc(this.x, this.y, shipSize, (this.Direction - origin.util.pi - shipAngle), (this.Direction - origin.util.pi + shipAngle), false);
 	context.arc(this.x, this.y, shipSize, this.Direction, this.Direction, false);
-	context.arc(this.x, this.y, shipSize, (this.Direction - Sim.util.pi - shipAngle), (this.Direction - Sim.util.pi + shipAngle), false);
+	context.arc(this.x, this.y, shipSize, (this.Direction - origin.util.pi - shipAngle), (this.Direction - origin.util.pi + shipAngle), false);
+
+	context.moveTo(this.x, this.y)
+	context.lineTo(this.x - 11 * Math.cos(this.Direction), this.y - 11 * Math.sin(this.Direction));
+	context.moveTo(this.x, this.y)
+	context.lineTo(this.x + 8 * Math.cos(this.Direction), this.y + 8 * Math.sin(this.Direction));
+
+	context.stroke();
 	
 	//context.fillRect(this.x - 2, this.y - 2, 4, 4);
-	//context.arc(this.x, this.y, 4, 0, 2 * Sim.util.pi, false);
+	//context.arc(this.x, this.y, 4, 0, 2 * origin.util.pi, false);
 	//context.fillText("X"+this.x.toFixed(0) + ", Y" + this.y.toFixed(0), this.x + 16, this.y + 4);
-	//context.fillText(Sim.util.radToDeg(this.Direction).toFixed(0), this.x - 10, this.y + 20);
-	//context.fillText(Sim.util.radToDeg(this.Direction).toFixed(0), 10, 40);
+	//context.fillText(origin.util.radToDeg(this.Direction).toFixed(0), this.x - 10, this.y + 20);
+	//context.fillText(origin.util.radToDeg(this.Direction).toFixed(0), 10, 40);
 
 }
