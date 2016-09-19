@@ -1,6 +1,5 @@
 
 // load events
-
 window.addEventListener('load', function()
 {
 	Sim.test();
@@ -14,9 +13,7 @@ window.addEventListener('load', function()
 }, false);
 
 
-
 // seed
-
 var flatland = {
 	test: 'seed loaded',
 	entities: {
@@ -28,9 +25,9 @@ var flatland = {
 			y: 100,
 			z: 0
 		}),
-		stage: new Stage()
-	}
-	
+		//stage: new Stage(),
+		ship: new Ship()
+	}	
 }
 
 
@@ -39,17 +36,18 @@ function Ticker()
 {
 	this.time = 0;
 }
-Ticker.prototype.update = function(time)
+Ticker.prototype.update = function(origin)
 {
-	this.time += (time.delta / 1000);	
+	var delta = origin.time.delta;
+	this.time += (delta / 1000);
 }
-Ticker.prototype.draw = function(context)
+Ticker.prototype.draw = function(origin)
 {
+	var context = origin.context;
 	context.fillText(this.time.toFixed(0), 12, (context.canvas.height - 12));
 }
 
 
-// 
 function Camera(settings)
 {
 	this.width =  settings.width;
@@ -65,58 +63,60 @@ Camera.prototype.update = function()
 	// change x/y probably
 	// maybe the aspect sometimes too
 }
-Camera.prototype.draw = function() {}
+Camera.prototype.draw = function()
+{}
 
 
 function Stage()
 {
 	this.area = [];
 }
-Stage.prototype.update = function() {}
-Stage.prototype.draw = function() {}
+Stage.prototype.update = function()
+{}
+Stage.prototype.draw = function()
+{}
 
 
-/**  ship actor */
-function Ship(domain)
+function Ship()
 {
-	this.domain = domain;
-	this.x = domain.width / 2;
-	this.y = domain.height / 2;
+	this.x = 40;
+	this.y = 40;
 	this.xSpeed = 0;
 	this.ySpeed = 0;
 	this.TurnSpeed = 0;
-	this.Direction = pi * 1.5;
+	this.Direction = Sim.util.pi * 1.5;
 }
-Ship.prototype.update = function(increment)
+Ship.prototype.update = function(origin)
 {
 	// physics variables
-	var delta = increment / 1000,
+	var delta = origin.time.delta / 1000,
 		friction = 0.000001,
+		turnFriction = 0.0001,
 		thrustMain = 1.1,
 		thrustLateral = 0.7,
 		maxSpeed = 4,
 		maxTurn = 0.08;
 
 	// movement controls
-	if (Key.isDown(Key.UP) || Key.isDown(Key.W))
+	if (Sim.input.isDown(Sim.input.UP) || Sim.input.isDown(Sim.input.W))
 	{
 			this.xSpeed += Math.cos(this.Direction) * (thrustMain * delta);
 			this.ySpeed += Math.sin(this.Direction) * (thrustMain * delta);	
 	}
-	if (Key.isDown(Key.DOWN) || Key.isDown(Key.S))
+	if (Sim.input.isDown(Sim.input.DOWN) || Sim.input.isDown(Sim.input.S))
 	{
 			this.xSpeed -= Math.cos(this.Direction) * (thrustLateral * delta);
 			this.ySpeed -= Math.sin(this.Direction) * (thrustLateral * delta);
 	}
-	if (Key.isDown(Key.A))
+	if (Sim.input.isDown(Sim.input.A))
 	{
-		this.xSpeed += Math.cos(this.Direction - (pi / 2)) * (thrustLateral * delta);
-		this.ySpeed += Math.sin(this.Direction - (pi / 2)) * (thrustLateral * delta);	
+		this.xSpeed += Math.cos(this.Direction - (Sim.util.pi / 2)) * (thrustLateral * delta);
+		this.ySpeed += Math.sin(this.Direction - (Sim.util.pi / 2)) * (thrustLateral * delta);	
 	}
-	if (Key.isDown(Key.D))
+	if (Sim.input.isDown(Sim.input.D))
 	{
-		this.xSpeed -= Math.cos(this.Direction - (pi / 2)) * (thrustLateral * delta);
-		this.ySpeed -= Math.sin(this.Direction - (pi / 2)) * (thrustLateral * delta);	
+		this.xSpeed -= Math.cos(this.Direction - (Sim.util.pi / 2)) * (thrustLateral * delta);
+		this.ySpeed -= Math.sin(this.Direction - (Sim.util.pi / 2)) * (thrustLateral * delta);	
 	}
 
 	// calculate length of the speed vector using pythagoras
@@ -142,11 +142,11 @@ Ship.prototype.update = function(increment)
 	// Rotation Movement (Keys Left, Right)
 
 	// controls
-	if (Key.isDown(Key.LEFT)) {
+	if (Sim.input.isDown(Sim.input.LEFT)) {
 		let thrust = maxTurn + this.TurnSpeed;
 		this.TurnSpeed -= thrust * delta;
 	}
-	if (Key.isDown(Key.RIGHT)) {
+	if (Sim.input.isDown(Sim.input.RIGHT)) {
 		let thrust = maxTurn - this.TurnSpeed;
 		this.TurnSpeed += thrust * delta;
 	}
@@ -159,50 +159,32 @@ Ship.prototype.update = function(increment)
 	this.Direction += this.TurnSpeed;
 
 	// bound maximum direction to one rotation
-	if (this.Direction > pi * 2) { this.Direction -= pi * 2; }
-	if (this.Direction < 0) { this.Direction += pi * 2; }
+	if (this.Direction > Sim.util.pi * 2) { this.Direction -= Sim.util.pi * 2; }
+	if (this.Direction < 0) { this.Direction += Sim.util.pi * 2; }
 
 	// apply friction to rotation
-	if (this.TurnSpeed > friction) this.TurnSpeed -= friction;
-	if (this.TurnSpeed < -friction) this.TurnSpeed += friction;
+	if (this.TurnSpeed > turnFriction) this.TurnSpeed -= turnFriction;
+	if (this.TurnSpeed < -turnFriction) this.TurnSpeed += turnFriction;
 	// if friction is greater than speed, stop
-	if (this.TurnSpeed < friction && this.TurnSpeed > -friction) this.TurnSpeed = 0;
-
-	// reset ship to other side of canvas if it leaves domain, asteroids style
-	if (this.x > this.domain.width) this.x = 0;
-	if (this.x < 0) this.x = this.domain.width;
-	if (this.y > this.domain.height) this.y = 0; 
-	if (this.y < 0) this.y = this.domain.height;
-
-	/*
-	if (this.x > this.domain.width) this.x = this.domain.width;
-	if (this.x < 0) this.x = 0;
-	if (this.y > this.domain.height) this.y = this.domain.height; 
-	if (this.y < 0) this.y = 0;
-	*/
-	
+	if (this.TurnSpeed < turnFriction && this.TurnSpeed > -turnFriction) this.TurnSpeed = 0;
 
 }
-Ship.prototype.draw = function(context)
+Ship.prototype.draw = function(origin)
 {
-	let shipAngle = 0.8,
+	let context = origin.context,
+		shipAngle = 0.8,
 		shipSize = 8;
 
+	context.strokeStyle = 'magenta';
 	context.lineWidth = 2;
-	context.arc(this.x, this.y, shipSize, (this.Direction-pi-shipAngle), (this.Direction-pi+shipAngle), false);
+	context.arc(this.x, this.y, shipSize, (this.Direction - Sim.util.pi - shipAngle), (this.Direction - Sim.util.pi + shipAngle), false);
 	context.arc(this.x, this.y, shipSize, this.Direction, this.Direction, false);
-	context.arc(this.x, this.y, shipSize, (this.Direction-pi-shipAngle), (this.Direction-pi+shipAngle), false);
+	context.arc(this.x, this.y, shipSize, (this.Direction - Sim.util.pi - shipAngle), (this.Direction - Sim.util.pi + shipAngle), false);
 	
-
 	//context.fillRect(this.x - 2, this.y - 2, 4, 4);
-	//context.arc(this.x, this.y, 4, 0, 2 * pi, false);
-
-	context.fillText("X"+this.x.toFixed(0) +", Y"+ this.y.toFixed(0), this.x+16, this.y+4);
-	context.fillText(Util.radToDeg(this.Direction).toFixed(0), this.x-10, this.y+20);
-
-	//context.fillText(Util.radToDeg(this.Direction).toFixed(0), 10, 40);
-	context.fill();
-	context.stroke();
-	context.closePath();
+	//context.arc(this.x, this.y, 4, 0, 2 * Sim.util.pi, false);
+	//context.fillText("X"+this.x.toFixed(0) + ", Y" + this.y.toFixed(0), this.x + 16, this.y + 4);
+	//context.fillText(Sim.util.radToDeg(this.Direction).toFixed(0), this.x - 10, this.y + 20);
+	//context.fillText(Sim.util.radToDeg(this.Direction).toFixed(0), 10, 40);
 
 }
