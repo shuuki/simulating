@@ -5,7 +5,7 @@ window.addEventListener('load', function()
 {
 	Sim.test();
 	Sim.init({
-		//id: 'display',
+		id: 'view',
 		//width: 320,
 		//height: 200,
 		seed: flatland
@@ -18,8 +18,65 @@ window.addEventListener('load', function()
 // seed
 
 var flatland = {
-	test: 'seed loaded'
+	test: 'seed loaded',
+	entities: {
+		ticker: new Ticker(),
+		camera: new Camera({
+			width: 320,
+			height: 200,
+			x: 120,
+			y: 100,
+			z: 0
+		}),
+		stage: new Stage()
+	}
+	
 }
+
+
+// little test that ticker in one second increments
+function Ticker()
+{
+	this.time = 0;
+}
+Ticker.prototype.update = function(time)
+{
+	this.time += (time.delta / 1000);
+}
+Ticker.prototype.draw = function(context)
+{
+	context.fillText(this.time, 12, (context.canvas.height / 2));
+}
+
+
+// 
+function Camera(settings)
+{
+	this.width =  settings.width;
+	this.height = settings.height;
+	this.x = settings.x;
+	this.y = settings.y;
+	this.z = settings.z;
+	this.aspect = this.width / this.height;
+}
+Camera.prototype.update = function()
+{
+	// take any transforms to the camera object
+	// change x/y probably
+	// maybe the aspect sometimes too
+}
+Camera.prototype.draw = function()
+{
+	
+}
+
+
+function Stage()
+{
+	this.area = [];
+}
+
+
 
 /**  ship actor */
 function Ship(domain)
@@ -32,7 +89,6 @@ function Ship(domain)
 	this.TurnSpeed = 0;
 	this.Direction = pi * 1.5;
 }
-
 Ship.prototype.update = function(increment)
 {
 	// physics variables
