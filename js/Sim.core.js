@@ -104,8 +104,8 @@ var Sim = {
 
 		// close out drawing
 		//this.context.fill();
-		this.context.stroke();
-		this.context.closePath();
+		//this.context.stroke();
+		//this.context.closePath();
 	},
 
 	save: function()
