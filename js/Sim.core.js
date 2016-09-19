@@ -12,6 +12,7 @@ var Sim = {
 	{
 		console.log('Sim ready');
 	},
+
 	// first steps
 	// takes an object with starting values
 	init: function(settings)
@@ -39,9 +40,8 @@ var Sim = {
 		canvas.height = settings.height || fallback.height;
 
 		// declare entities to simulate
-		this._seed = settings.seed || fallback.seed;
-		this.entity.active = this._seed.entities
-
+		this.seed = settings.seed || fallback.seed;
+		this.entity.active = this.seed.entities;
 
 		// only add canvas to body if one is not already present
 		if (!document.getElementById(canvas.id))
@@ -81,7 +81,7 @@ var Sim = {
 		this.time.up += this.time.delta;
 
 		// run updates for current time
-		this.entity.updateAll(this.time);
+		this.entity.updateAll(this);
 
 		// render scene
 		this.render();
@@ -100,10 +100,10 @@ var Sim = {
 		this.context.fillText(debug, 12, 12);
 
 		// draw all entities in event queue
-		this.entity.drawAll(this.context);
+		this.entity.drawAll(this);
 
 		// close out drawing
-		this.context.fill();
+		//this.context.fill();
 		this.context.stroke();
 		this.context.closePath();
 	},
@@ -113,7 +113,8 @@ var Sim = {
 		this.cache = {
 			// add sim state values here for save/load
 			//scene: this.scene,
-			time: this.time
+			time: this.time,
+			entities: this.entity.active
 		};
 		localStorage.setItem('SimSave', JSON.stringify(this.cache));
 	},
@@ -122,6 +123,8 @@ var Sim = {
 		if (localStorage.getItem('SimSave'))
 		{
 			this.cache = JSON.parse(localStorage.getItem('SimSave'));
+			this.entity.active = this.cache.entities;
+			this.time = this.cache.time;
 		}
 	},
 	reset: function()
@@ -136,38 +139,19 @@ var Sim = {
 		{
 			localStorage.removeItem('SimSave');
 		}
-		this.init();
+		//this.init(this.seed);
 	},
 
 	entity:
 	{
-
-		queue: [],
-
-		// queue
-		// add event
-		// go through queue
-		// while (queue.length < 0) {	}
+		// current entities being simulated
 		active: {},
 		inactive: {},
 
+		// queue of entities being processed
+		queue: [],
 
-		add: function(data)
-		{
-			this.queue.push(data);
-		},
-		step: function()
-		{
-			if (this.queue.length > 0)
-			{
-				return this.queue.shift();
-			}
-			else
-			{
-				return null;
-			}
-		},
-				assign: function(id, data)
+		assign: function(id, data)
 		{
 			this.active[id] = data;
 		},
@@ -185,65 +169,29 @@ var Sim = {
 			this.active[id] = this.inactive[id];
 			delete this.inactive[id];
 		},
-
-		updateAll: function(time, args)
+		updateAll: function(origin)
 		{
-			// build a queue
+			// build the queue
 			this.queue = (Object.keys(this.active));
 
-			// go through it all from top to bottom
+			// go through queue from top to bottom
 			while (this.queue.length > 0)
 			{
-				this.active[this.queue[0]].update(time);
+				this.active[this.queue[0]].update(origin);
 				this.queue.shift();
 			}
 		},
-
-		drawAll: function(context)
+		drawAll: function(origin)
 		{
-			// build a queue
+			// build the queue
 			this.queue = (Object.keys(this.active));
 
-			// go through it all from top to bottom
+			// go through queue from top to bottom
 			while (this.queue.length > 0)
 			{
-				this.active[this.queue[0]].draw(context);
+				this.active[this.queue[0]].draw(origin);
 				this.queue.shift();
 			}
 		}
-
 	}
-	
 }
-
-// entities being simulated
-//stage: {},
-//entities: {},
-//views: {},
-//active: {},
-
-/*
-	Entity: function()
-	{
-		this.update = function()
-		{
-			// things to do when this entity updates
-		}
-		this.draw = function()
-		{
-			// things to do when this entity renders 
-		}
-	}
-
-
-	update: function(id, args)
-	{
-		this.entity[id].update(args)
-	},
-	draw: function(id, args)
-	{
-		this.entity[id].draw(args)
-	},
-
-
-*/
