@@ -1,5 +1,5 @@
 body {
-	background: #eee;
+	background: #f9f9fc;
 	color: #111;
 	margin: 0;
 	font-family: monospace;
@@ -20,10 +20,10 @@ button {
 	outline: none;
 }
 button:hover {
-	background: #ddd;
+	background: #e8e8ef;
 }
 button:active {
-	background: #999;
+	background: #a9a9af;
 }
 
 hr {
