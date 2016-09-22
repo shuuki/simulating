@@ -10,11 +10,11 @@ canvas {
 }
 
 button {
-	background: #fff;
+	background: rgba(255,255,255,0.5);
 	border: none;
 	font-family: inherit;
 	font-size: 1em;
-	padding: 1em;
+	padding: 1em 0.5em;
 	margin: 0;
 	user-select: none;
 	outline: none;
@@ -31,7 +31,8 @@ hr {
 }
 
 #controls {
-	position: absolute;
+	position: fixed;
 	bottom: 0;
+	left: 0;
 	padding: 1em;
 }
