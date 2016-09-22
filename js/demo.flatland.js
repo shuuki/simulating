@@ -1,46 +1,30 @@
 
-// load events
+// load
+
 window.addEventListener('load', function()
 {
 	Sim.test();
 	Sim.init({
 		id: 'view',
-		//width: 320,
-		//height: 200,
+		width: 320,
+		height: 200,
 		seed: flatland
 	});
 	Sim.start();
 }, false);
 
-
 // seed
+
 var flatland = {
-	test: 'seed loaded',
+	test: 'flatland seed ready',
 	entities: {
-		ticker: new Ticker(),
 		//camera: new Camera(),
 		//stage: new Stage(),
 		ship: new Ship()
-	}	
+	}
 }
 
-
-// little test that ticker in one second increments
-function Ticker()
-{
-	this.time = 0;
-}
-Ticker.prototype.update = function(origin)
-{
-	var delta = origin.time.delta;
-	this.time += (delta / 1000);
-}
-Ticker.prototype.draw = function(origin)
-{
-	var context = origin.context;
-	context.fillText(this.time.toFixed(0), 12, (context.canvas.height - 12));
-}
-
+// entities
 
 function Camera(settings)
 {
@@ -179,7 +163,8 @@ Ship.prototype.draw = function(origin)
 	context.lineTo(this.x - 11 * Math.cos(this.Direction), this.y - 11 * Math.sin(this.Direction));
 	context.moveTo(this.x, this.y)
 	context.lineTo(this.x + 8 * Math.cos(this.Direction), this.y + 8 * Math.sin(this.Direction));
-
+	context.fillStyle = 'magenta';
+	context.fill();
 	context.stroke();
 	
 	//context.fillRect(this.x - 2, this.y - 2, 4, 4);
