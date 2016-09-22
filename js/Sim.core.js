@@ -7,67 +7,82 @@
 // track scene elements and entities
 
 var Sim = {
+
 	// proof of life
 	test: function()
 	{
 		console.log('Sim ready');
 	},
-
+	
 	// first steps
-	// takes an object with starting values
-	init: function(settings)
+	init: function(config)
 	{
-		// reset the clock
-		this.time = {
-			delta: 0,
-			now: 0,
-			up: 0,
-			running: false
+		// takes an object with starting values
+		// set empty config if none is passed
+		if (!config)
+		{
+			var config = {};
 		}
 
-		// default settings
-		var fallback = {
-			id: 'display',
-			width: 480,
-			height: 300,
-			seed: {}
+		// set the clock
+		if (config.time)
+		{
+			this.time = config.time;
+		}
+		else
+		{
+			this.time = {
+				running: 0,
+				up: 0,
+				now: 0,
+				delta: 0
+			};
+		}
+
+		// declare entities to simulate
+		if (config.seed)
+		{
+			this.entity.active = config.seed;
+		}
+		else
+		{
+			this.entity.active = {};
+		}
+
+		// set up display values
+		if (config.display && config.display.width && config.display.height)
+		{
+			this.display = config.display;
+		}
+		else
+		{
+			this.display = {
+				width: 480,
+				height: 300
+			};
 		}
 
 		// initialize canvas
 		var canvas = document.createElement('canvas');
-		canvas.id = settings.id || fallback.id;
-		canvas.width = settings.width || fallback.width;
-		canvas.height = settings.height || fallback.height;
+		canvas.id = 'display';
+		canvas.width = this.display.width;
+		canvas.height = this.display.height;
 
-		// declare entities to simulate
-		this.seed = settings.seed || fallback.seed;
-		this.entity.active = this.seed.entities;
-
-		// only add canvas to body if one is not already present
-		if (!document.getElementById(canvas.id))
+		// delete canvas if one is present
+		var existing = document.getElementById(canvas.id);
+		if (existing && existing.parentNode)
 		{
-			document.getElementsByTagName('body')[0].appendChild(canvas);
+			existing.parentNode.removeChild(existing);
 		}
-		// for later: make this delete any existing canvas and replace
+
+		// add canvas to body
+		document.getElementsByTagName('body')[0].appendChild(canvas);
 
 		// attach canvas to Sim
 		this.canvas = document.getElementById(canvas.id);
 		this.context = this.canvas.getContext('2d');
 	},
-	// start running updates
-	start: function()
-	{
-		if (!this.time.running)
-		{
-			this.update();
-		}
-	},
-	// stop running updates
-	stop: function()
-	{
-		window.cancelAnimationFrame(this.time.running);
-		this.time.running = false;
-	},
+
 	// main loop heartbeat
 	update: function()
 	{
@@ -108,23 +123,42 @@ var Sim = {
 		//this.context.closePath();
 	},
 
+	start: function()
+	{
+		if (!this.time.running)
+		{
+			this.update();
+		}
+	},
+	stop: function()
+	{
+		window.cancelAnimationFrame(this.time.running);
+		this.time.running = false;
+	},
+
 	save: function()
 	{
+		// cache current sim state
 		this.cache = {
-			// add sim state values here for save/load
-			//scene: this.scene,
+			display: this.display,
 			time: this.time,
-			entities: this.entity.active
+			seed: this.entity.active
 		};
+
+		// save to localStorage
 		localStorage.setItem('SimSave', JSON.stringify(this.cache));
 	},
 	load: function()
-	{
+	{		
 		if (localStorage.getItem('SimSave'))
 		{
 			this.cache = JSON.parse(localStorage.getItem('SimSave'));
-			this.entity.active = this.cache.entities;
-			this.time = this.cache.time;
+			// loading is currently broken
+			this.init(this.cache);
+		}
+		else
+		{
+			console.log('No SimSave present')
 		}
 	},
 	reset: function()
@@ -132,14 +166,17 @@ var Sim = {
 		// clear cache
 		if (this.cache)
 		{
-			this.cache = null;
+			this.cache = {};
 		}
-		// remove locally stored data if present
+
+		// start an empty sim
+		this.init();
+
+		// if present, remove locally stored data 
 		if (localStorage.getItem('SimSave'))
 		{
 			localStorage.removeItem('SimSave');
 		}
-		//this.init(this.seed);
 	},
 
 	entity:

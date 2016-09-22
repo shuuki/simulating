@@ -4,25 +4,26 @@
 window.addEventListener('load', function()
 {
 	Sim.test();
-	Sim.init({
-		id: 'view',
-		width: 320,
-		height: 200,
-		seed: flatland
-	});
+	Sim.init(flatland);
 	Sim.start();
 }, false);
+
 
 // seed
 
 var flatland = {
 	test: 'flatland seed ready',
-	entities: {
+	display: {
+		width: 320,
+		height: 200
+	},
+	seed: {
 		//camera: new Camera(),
 		//stage: new Stage(),
 		ship: new Ship()
 	}
 }
+
 
 // entities
 

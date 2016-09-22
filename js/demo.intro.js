@@ -4,11 +4,7 @@
 window.addEventListener('load', function()
 {
 	Sim.test();
-	Sim.init({
-		width: 320,
-		height: 200,
-		seed: intro
-	});
+	Sim.init(intro);
 	Sim.start();
 }, false);
 
@@ -16,10 +12,15 @@ window.addEventListener('load', function()
 // seed
 
 var intro = {
-	entities: {
+	display: {
+		width: 320,
+		height: 200
+	},
+	seed: {
 		ticker: new Ticker(),
-	}	
+	}
 }
+
 
 // little thing that ticks in one second increments
 
