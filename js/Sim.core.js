@@ -7,7 +7,6 @@
 // track scene elements and entities
 
 var Sim = {
-
 	// proof of life
 	test: function()
 	{
@@ -123,6 +122,7 @@ var Sim = {
 		//this.context.closePath();
 	},
 
+	// start / stop updates
 	start: function()
 	{
 		if (!this.time.running)
@@ -136,6 +136,7 @@ var Sim = {
 		this.time.running = false;
 	},
 
+	// manage state
 	save: function()
 	{
 		// cache current sim state
@@ -179,6 +180,7 @@ var Sim = {
 		}
 	},
 
+	// entities
 	entity:
 	{
 		// current entities being simulated
@@ -188,6 +190,7 @@ var Sim = {
 		// queue of entities being processed
 		queue: [],
 
+		// manage entities
 		assign: function(id, data)
 		{
 			this.active[id] = data;
@@ -206,6 +209,8 @@ var Sim = {
 			this.active[id] = this.inactive[id];
 			delete this.inactive[id];
 		},
+
+		// batch controls
 		updateAll: function(origin)
 		{
 			// build the queue
