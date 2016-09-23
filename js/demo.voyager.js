@@ -75,9 +75,8 @@ Body.prototype.draw = function(origin)
 	context.arc(this.x, this.y, this.r, 0, 2*Math.PI);
 	context.fillStyle = this.c;
 	context.fill();
-	// years elapsed
+	// years elapsed on each planet
 	context.fillText((this.p/(2*Math.PI)).toFixed(2), this.x+4, this.y+12);
-
 	context.closePath();
 
 }
