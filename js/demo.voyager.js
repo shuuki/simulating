@@ -4,49 +4,70 @@
 window.addEventListener('load', function()
 {
 	Sim.test();
-	Sim.init(intro);
+	Sim.init(voyager);
 	Sim.start();
 }, false);
 
 
 // seed
 
-var intro = {
+var voyager = {
 	display: {
-		width: 800,
-		height: 800
+		width: 480,
+		height: 640
 	},
 	seed: {
 		ticker: new Ticker(),
 		//camera: new Camera(),
 		//stage: new Stage(),
-		spzz: new Body( 9999999,       0, 0,      0,   'black'),
-		sonn: new Body( 69.5700,       0, 0,      0,   'white'),
-		mirk: new Body(   .4879,   579/7, 0, .00474, '#787878'),
-		wans: new Body(  1.2104,  1082/7, 0, .00350, '#ae885d'),
-		urth: new Body(  1.2756,  1496/7, 0, .00241, '#888ba0'),
-		marz: new Body(   .6792,  2279/7, 0, .00298, '#86674c'),
 
+		// magling data from NASA
+		// Planetary Fact Sheet - Metric
+		// http://nssdc.gsfc.nasa.gov/planetary/factsheet/
+		//             10^24 kg,       km,   10^6 km,  km/s,       hex    //   10^6 km,  10^6 km,
+	 	//                 mass, diameter,  distance, speed,     color    // periapsis, apoapsis,
+	 	slvr: new Body(       0,9999999999,        0,     0, '#282828' ), //         0,        0,
+		sonn: new Body( 1988435,   695700,         0,     0, '#f8f8f2' ), //         0,        0,
+		mirk: new Body(   0.330,     4879,      57.9,  47.4, '#787878' ), //      46.0,     69.8,
+		vans: new Body(    4.87,    12104,     108.2,  35.0, '#ae885d' ), //     107.5,    108.9,
+		erth: new Body(    5.97,    12756,     149.6,  29.8, '#888ba0' ), //     147.1,    152.1,
+		marz: new Body(   0.642,     6792,     227.9,  24.1, '#86674c' ), //     206.6,    249.2,
+		jupt: new Body(    1898,   142984,     778.6,  13.1, '#b87e1b' ), //     740.5,    816.6,
+		sats: new Body(     568,   120536,    1433.5,   9.7, '#debc7f' ), //    1352.6,   1514.5,
+		urns: new Body(    86.8,    51118,    2872.5,   6.8, '#a8ccd1' ), //    2741.3,   3003.6,
+		nepz: new Body(     102,    49528,    4495.1,   5.4, '#3d5ad8' ), //    4444.5,   4545.7,
 	}
 }
 
-// magling data from NASA
-// Planetary Fact Sheet - Metric
-// http://nssdc.gsfc.nasa.gov/planetary/factsheet/
 
-function Body(r, od, p, s, c)
+// celestial bodies
+
+function Body(mass, diameter, distance, speed, color) // periapsis, apoapsis
 {
-	this.r = r; // radius
-	this.od = od; // orbit, distance from origin
-	this.p = p; // period, how far along
 
-	this.s = s;
-	this.c = c;
+	var scale = {
+		distance: 1,
+		diameter: .0001,
+		time: 0.0005
+	}
+
+	this.m = mass;
+	this.d = diameter * scale.diameter; // radius
+	this.od = distance * scale.distance; // orbit, distance from origin
+	this.s = speed * scale.time; // speed
+
+	this.color = color; 
+
+	this.p = 0; // period, how far along
+
+	//this.l = l; // length of 
+
 
 // origin x/y, only for rendering
-	this.ox = 400; 
-	this.oy = 400;	
+	this.ox = 240;
+	this.oy = 320;
 }
+
 Body.prototype.update = function()
 {
 	
@@ -59,32 +80,66 @@ Body.prototype.update = function()
 	
 	//https://lord.io/blog/2014/kepler/
 
-	function blah(radius, angle)
+
+	
+
+
+	// two coords in [x,y] format
+	function distance(a, b)
 	{
-		x = radius * Math.cos(angle);
-		y = radius * Math.sin(angle);
+		var distance = Math.sqrt(Math.pow(b[1] - a[1], 2) + Math.pow(b[0] - a[0], 2));
+	  return distance;
+	}
+
+
+	function blah(length, angle)
+	{
+		var x = length * Math.cos(angle),
+				y = length * Math.sin(angle);
 		return [x,y];
 	}	
+
+	function attenuate(intensity, distance)
+	{
+	  return (intensity / Math.pow(distance, 2));
+	}
+
+
+
+	function Vector (x, y, z)
+	{
+	  this.x = x;
+	  this.y = y;
+	  this.z = z;
+	}
 
 
 }
 Body.prototype.draw = function(origin)
 {
 	var context = origin.context;
+
+	// fill circle with body color
 	context.beginPath();
-	context.arc(this.x, this.y, this.r, 0, 2*Math.PI);
-	context.fillStyle = this.c;
+	context.fillStyle = this.color;
+	context.arc(this.x, this.y, this.d/2, 0, 2 * Math.PI);
+	context.globalAlpha = 1;
 	context.fill();
-	// years elapsed on each planet
-	context.fillText((this.p/(2*Math.PI)).toFixed(2), this.x+4, this.y+12);
 	context.closePath();
 
+	// stroke outline for small bodies
+	context.beginPath();
+	context.strokeStyle = this.color;
+	context.lineWidth = 4;
+	context.arc(this.x, this.y, 8, 0, 2 * Math.PI);
+	context.globalAlpha = 0.2;
+	context.stroke();
+	context.closePath();
+
+	// cycles elapsed on each planet
+	//context.globalAlpha = 1;
+	//context.fillText((this.d/(2*Math.PI)).toFixed(1), this.x+8, this.y+4);
 }
-
-
-
-
-
 
 
 
@@ -114,49 +169,3 @@ Ticker.prototype.draw = function(origin)
 	var context = origin.context;
 	context.fillText(this.time.toFixed(0), 12, (context.canvas.height - 12));
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// entities
-
-function Camera(settings)
-{
-	this.width =  settings.width;
-	this.height = settings.height;
-	this.x = settings.x;
-	this.y = settings.y;
-	this.z = settings.z;
-	this.aspect = this.width / this.height;
-}
-Camera.prototype.update = function()
-{
-	// take any transforms to the camera object
-	// change x/y probably
-	// maybe the aspect sometimes too
-}
-Camera.prototype.draw = function()
-{}
-
-
-
-
-
-function Stage()
-{
-	this.area = [];
-}
-Stage.prototype.update = function()
-{}
-Stage.prototype.draw = function()
-{}
