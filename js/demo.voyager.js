@@ -27,8 +27,8 @@ var voyager = {
 		// http://nssdc.gsfc.nasa.gov/planetary/factsheet/
 		//             10^24 kg,       km,   10^6 km,  km/s,       hex    //   10^6 km,  10^6 km,
 	 	//                 mass, diameter,  distance, speed,     color    // periapsis, apoapsis,
-	 	//slvr: new Body(       0,100000000,         0,     0, '#282828' ), //         0,        0,
-		sonn: new Body( 1988435,   69570.0,         0,     0, '#f8f8f2' ), //         0,        0,
+	 	slvr: new Body(       0,100000000,         0,     0, '#080808' ), //         0,        0,
+		//sonn: new Body( 1988435,   69570.0,         0,     0, '#f8f8f2' ), //         0,        0,
 		mirk: new Body(   0.330,     4879,      57.9,  47.4, '#787878' ), //      46.0,     69.8,
 		vans: new Body(    4.87,    12104,     108.2,  35.0, '#ae885d' ), //     107.5,    108.9,
 		erth: new Body(    5.97,    12756,     149.6,  29.8, '#888ba0' ), //     147.1,    152.1,
@@ -66,7 +66,7 @@ function Body(mass, diameter, distance, speed, color) // periapsis, apoapsis
 	var scale = {
 		distance: 1,
 		diameter: 0.0005,
-		time: 0.00001
+		time: 0.0001
 	}
 
 	this.m = mass;
@@ -156,13 +156,24 @@ Craft.prototype.update = function(origin)
 	// build a list of all bodies x/y with their masses
 	this.bodies = [];
 	this.bodiesTotalMass = 0;
+	this.bodiesTotalWeight = 0;
+
 	for (var body in origin.entity.active)
 	{
 		var isType = origin.entity.active[body].constructor.name;
 		if (isType === 'Body')
 		{
+			// bind shortcut to currently selected body
 			var selected = origin.entity.active[body];
+			
+			// calculate effect of gravity using body mass and distance		
+			var mass = selected.m,
+				distance = length([this.x, this.y], [selected.x, selected.y]),
+				weight = attenuate(mass, distance);
+
 			this.bodiesTotalMass += selected.m;
+			this.bodiesTotalWeight += weight;
+
 			this.bodies.push({
 				x: selected.x,
 				y: selected.y,
@@ -171,7 +182,7 @@ Craft.prototype.update = function(origin)
 		}
 	}
 	
-	// truncate history after 10000 steps
+	// truncate history older than 10000 steps
 	if (this.history.length > 10000) {
 		this.history.shift()
 	}
@@ -206,35 +217,38 @@ Craft.prototype.draw = function(origin)
 	//context.arc(this.x, this.y, shipSize, this.Direction, this.Direction, false);
 	//context.arc(this.x, this.y, shipSize, (this.Direction - origin.util.pi - shipAngle), (this.Direction - origin.util.pi + shipAngle), false);
 
+
+
 	// average out a gravity vector
-	var vectorWeight = 0,
-		vectorAngle = 0;
+	var vectorAngle = 0;
 	var avX = 0, avY = 0;
 
 	for (var k = 0; k < this.bodies.length; k++)
 	{	
+		var selected = this.bodies[k];
+		
 		// calculate effect of gravity using body mass and distance		
-		var mass = this.bodies[k].m,
-			distance = length([this.x, this.y], [this.bodies[k].x, this.bodies[k].y]),
+		var mass = selected.m,
+			distance = length([this.x, this.y], [selected.x, selected.y]),
 			weight = attenuate(mass, distance),
-			multiplier = mass / this.bodiesTotalMass;
+			multiplier = weight / this.bodiesTotalWeight;
 			//console.log(weight)
-
-		vectorWeight += weight;
 
 
 		// multiplier should be based on total current weight, not overall system mass
 		// so near low mass bodies can be more influential than distant high mass bodies
+		//var multiplier = this.bodies[k].m / this.bodiesTotalWeight;
+
 	
 		// calculate weighted vector averaging all bodies
-		avX += this.bodies[k].x * multiplier;
-		avY += this.bodies[k].y * multiplier;
+		avX += selected.x * multiplier;
+		avY += selected.y * multiplier;
 
 		// draw a line to every body
 		context.beginPath();
 		context.moveTo(this.x, this.y)
-		context.lineTo(this.bodies[k].x, this.bodies[k].y);
-		context.strokeStyle = 'rgba(255,0,0,' + weight * 1000 + ')';
+		context.lineTo(selected.x, selected.y);
+		context.strokeStyle = 'rgba(255,0,0,' + weight * 100 + ')';
 		//context.lineWidth = weight;
 		context.stroke();
 		context.closePath();
@@ -249,10 +263,10 @@ Craft.prototype.draw = function(origin)
 
 	
 	// draw current gravity vector
-	var oo = blah(59, vectorAngle)
+	var oo = blah(this.bodiesTotalWeight*10000, vectorAngle)
 	context.beginPath();
 	context.moveTo(this.x, this.y)
-	context.strokeStyle = 'rgba(255,255,255,0.5)';
+	context.strokeStyle = 'rgba(0,255,255,0.5)';
 	context.lineWidth = 2;
 	context.lineTo(this.x + oo[0], this.y + oo[1]);
 	context.stroke();
