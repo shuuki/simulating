@@ -17,7 +17,7 @@ var voyager = {
 		height: 640
 	},
 	seed: {
-		ship: new Craft(40,20),
+		ship: new Craft(240,600),
 		ticker: new Ticker(),
 		//camera: new Camera(),
 		//stage: new Stage(),
@@ -28,7 +28,7 @@ var voyager = {
 		//             10^24 kg,       km,   10^6 km,  km/s,       hex    //   10^6 km,  10^6 km,
 	 	//                 mass, diameter,  distance, speed,     color    // periapsis, apoapsis,
 	 	//slvr: new Body(       0,100000000,         0,     0, '#282828' ), //         0,        0,
-		sonn: new Body( 1988435,   69570.0,         0,     0, '#f8f8f2' ), //         0,        0,
+		//sonn: new Body( 1988435,   69570.0,         0,     0, '#f8f8f2' ), //         0,        0,
 		mirk: new Body(   0.330,     4879,      57.9,  47.4, '#787878' ), //      46.0,     69.8,
 		vans: new Body(    4.87,    12104,     108.2,  35.0, '#ae885d' ), //     107.5,    108.9,
 		erth: new Body(    5.97,    12756,     149.6,  29.8, '#888ba0' ), //     147.1,    152.1,
@@ -150,8 +150,8 @@ Craft.prototype.update = function(origin)
 	this.t += (origin.time.delta/1000);
 	
 	// do x/y transforms
-	this.x +=  2 * origin.time.delta / 200
-	this.y +=  2 * origin.time.delta / 200
+	this.x +=  1 * origin.time.delta / 200
+	this.y -=  2 * origin.time.delta / 200
 	
 	// build a list of all bodies x/y with their masses
 	this.bodies = [];
@@ -216,27 +216,27 @@ Craft.prototype.draw = function(origin)
 		// calculate effect of gravity using body mass and distance		
 		var mass = this.bodies[k].m,
 			distance = length([this.x, this.y], [this.bodies[k].x, this.bodies[k].y]),
-			weight = attenuate(mass, distance);
+			weight = attenuate(mass, distance),
+			multiplier = mass / this.bodiesTotalMass;
 
 		vectorWeight += weight;
 
 		// calculate weighted vector averaging all bodies
-		avX += this.bodies[k].x// * weight;
-		avY += this.bodies[k].y// * weight;
-		
+		avX += this.bodies[k].x * multiplier;
+		avY += this.bodies[k].y * multiplier;
 
 		// draw a line to every body
 		context.beginPath();
 		context.moveTo(this.x, this.y)
 		context.lineTo(this.bodies[k].x, this.bodies[k].y);
-		context.strokeStyle = 'rgba(255,0,0,' + weight * 100 + ')';
+		context.strokeStyle = 'rgba(255,0,0,' + weight * 1000 + ')';
 		//context.lineWidth = weight;
 		context.stroke();
 		context.closePath();
 	}
 
-	avX = avX/this.bodies.length;
-	avY = avY/this.bodies.length;
+	//avX = avX/this.bodies.length;
+	//avY = avY/this.bodies.length;
 	//console.log(avX,avY)
 
 	vectorAngle = angle([this.x, this.y], [avX, avY])
@@ -244,7 +244,7 @@ Craft.prototype.draw = function(origin)
 
 	
 	// draw current gravity vector
-	var oo = blah(vectorWeight, vectorAngle)
+	var oo = blah(200, vectorAngle)
 	context.beginPath();
 	context.moveTo(this.x, this.y)
 	context.strokeStyle = 'rgba(255,255,255,0.5)';
