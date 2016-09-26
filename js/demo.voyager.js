@@ -134,15 +134,19 @@ Body.prototype.draw = function(origin)
 
 function Craft(x, y)
 {
+	this.t = 0;
 	this.x = x || 0;
 	this.y = y || 0;
-	this.t = 0;
+	this.velX = 0;
+	this.velY = 0;
+	this.velTurn = 0;
+	this.direction = 0;
 	this.history = [];
 	this.history.push({
 		x: this.x,
 		y: this.y,
 		t: this.t
-	});	
+	});
 }
 Craft.prototype.update = function(origin)
 {
@@ -198,18 +202,25 @@ Craft.prototype.update = function(origin)
 	this.barycenter = polarToCoord(this.bodiesTotalWeight, this.vectorAngle);
 
 	// update internal time
-	this.t += (origin.time.delta);
+	var delta = origin.time.delta * 10
+	this.t += delta;
 	
 	// do x/y transforms
-	this.x += 1 * origin.time.delta / 200
-	this.y -= 2 * origin.time.delta / 200
-
+	
+	// debug thrust
+	//this.x += 1 * origin.time.delta / 200
+	//this.y -= 2 * origin.time.delta / 200
+	
 	if (this.barycenter[0] && this.barycenter[1])
 	{
-		//this.x = this.x + this.barycenter[0] * origin.time.delta
-		//this.y = this.y + this.barycenter[1] * origin.time.delta
-		//console.log(this.barycenter)
+		this.velX += this.barycenter[0] * 1;
+		this.velY += this.barycenter[1] * 1;
+		//console.log(this.barycenter[0] * delta, this.x)
 	}
+
+	this.x += this.velX
+	this.y += this.velY
+	//console.log(this.x, this.y)
 
 	// truncate history older than 10000 steps
 	if (this.history.length > 10000) {
@@ -262,12 +273,11 @@ Craft.prototype.draw = function(origin)
 	}
 	
 	// draw current gravity vector
-	var barycenter = polarToCoord(this.bodiesTotalWeight * 10000, this.vectorAngle);
 	context.beginPath();
 	context.moveTo(this.x, this.y)
 	context.strokeStyle = 'rgba(0,255,255,0.5)';
 	context.lineWidth = 2;
-	context.lineTo(this.x + barycenter[0], this.y + barycenter[1]);
+	context.lineTo(this.x + this.barycenter[0], this.y + this.barycenter[1]);
 	context.stroke();
 	context.closePath();
 
@@ -276,9 +286,9 @@ Craft.prototype.draw = function(origin)
 	context.fillStyle = '#444';
 	for (var key = 0; key < this.history.length; key++)
 	{
-		context.arc(this.history[key].x, this.history[key].y, key / this.history.length, 0, 2 * Math.PI);
+		context.lineTo(this.history[key].x, this.history[key].y);
 	}
-	context.fill();
+	context.stroke();
 	context.closePath();
 
 }
