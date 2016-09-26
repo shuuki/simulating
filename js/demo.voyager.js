@@ -33,10 +33,10 @@ var voyager = {
 		vans: new Body(    4.87,    12104,     108.2,  35.0, '#ae885d' ), //     107.5,    108.9,
 		erth: new Body(    5.97,    12756,     149.6,  29.8, '#888ba0' ), //     147.1,    152.1,
 		marz: new Body(   0.642,     6792,     227.9,  24.1, '#86674c' ), //     206.6,    249.2,
-		jupt: new Body(    1898,   142984,     778.6,  13.1, '#b87e1b' ), //     740.5,    816.6,
-		sats: new Body(     568,   120536,    1433.5,   9.7, '#debc7f' ), //    1352.6,   1514.5,
-		urns: new Body(    86.8,    51118,    2872.5,   6.8, '#a8ccd1' ), //    2741.3,   3003.6,
-		nepz: new Body(     102,    49528,    4495.1,   5.4, '#3d5ad8' ), //    4444.5,   4545.7,
+		//jupt: new Body(    1898,   142984,     778.6,  13.1, '#b87e1b' ), //     740.5,    816.6,
+		//sats: new Body(     568,   120536,    1433.5,   9.7, '#debc7f' ), //    1352.6,   1514.5,
+		//urns: new Body(    86.8,    51118,    2872.5,   6.8, '#a8ccd1' ), //    2741.3,   3003.6,
+		//nepz: new Body(     102,    49528,    4495.1,   5.4, '#3d5ad8' ), //    4444.5,   4545.7,
 	}
 }
 
@@ -86,7 +86,7 @@ Body.prototype.update = function(origin)
 	
 	this.p += this.speed;
 
-	var whatsit = blah(this.od, this.p);
+	var whatsit = polarToCoord(this.od, this.p);
 	
 	this.x = whatsit[0]+this.ox
 	this.y = whatsit[1]+this.oy
@@ -146,16 +146,9 @@ function Craft(x, y)
 }
 Craft.prototype.update = function(origin)
 {
-	// update internal time
-	this.t += (origin.time.delta/1000);
-	
-	// do x/y transforms
-	this.x +=  1 * origin.time.delta / 200
-	this.y -=  2 * origin.time.delta / 200
-	
+
 	// build a list of all bodies x/y with their masses
 	this.bodies = [];
-	this.bodiesTotalMass = 0;
 	this.bodiesTotalWeight = 0;
 
 	for (var body in origin.entity.active)
@@ -171,17 +164,53 @@ Craft.prototype.update = function(origin)
 				distance = length([this.x, this.y], [selected.x, selected.y]),
 				weight = attenuate(mass, distance);
 
-			this.bodiesTotalMass += selected.m;
 			this.bodiesTotalWeight += weight;
 
 			this.bodies.push({
 				x: selected.x,
 				y: selected.y,
-				m: selected.m
+				m: selected.m,
+				w: weight
 			});
 		}
 	}
+
+	// average out a gravity vector
+	this.vectorAngle = 0;
+	var avX = 0,
+		avY = 0;
+
+	for (var k = 0; k < this.bodies.length; k++)
+	{	
+		// bind shortcut to currently selected body
+		var selected = this.bodies[k];
+
+		// multiplier should be based on total current weight, not overall system mass
+		// so near low mass bodies can be more influential than distant high mass bodies
+		var multiplier = selected.w / this.bodiesTotalWeight;
+
+		// calculate a weighted vector averaging all bodies
+		avX += selected.x * multiplier;
+		avY += selected.y * multiplier;
+	}
+
+	this.vectorAngle = angle([this.x, this.y], [avX, avY])
+	this.barycenter = polarToCoord(this.bodiesTotalWeight, this.vectorAngle);
+
+	// update internal time
+	this.t += (origin.time.delta);
 	
+	// do x/y transforms
+	this.x += 1 * origin.time.delta / 200
+	this.y -= 2 * origin.time.delta / 200
+
+	if (this.barycenter[0] && this.barycenter[1])
+	{
+		//this.x = this.x + this.barycenter[0] * origin.time.delta
+		//this.y = this.y + this.barycenter[1] * origin.time.delta
+		//console.log(this.barycenter)
+	}
+
 	// truncate history older than 10000 steps
 	if (this.history.length > 10000) {
 		this.history.shift()
@@ -217,68 +246,37 @@ Craft.prototype.draw = function(origin)
 	//context.arc(this.x, this.y, shipSize, this.Direction, this.Direction, false);
 	//context.arc(this.x, this.y, shipSize, (this.Direction - origin.util.pi - shipAngle), (this.Direction - origin.util.pi + shipAngle), false);
 
-
-
-	// average out a gravity vector
-	var vectorAngle = 0;
-	var avX = 0, avY = 0;
-
 	for (var k = 0; k < this.bodies.length; k++)
 	{	
+		// bind shortcut to currently selected body
 		var selected = this.bodies[k];
-		
-		// calculate effect of gravity using body mass and distance		
-		var mass = selected.m,
-			distance = length([this.x, this.y], [selected.x, selected.y]),
-			weight = attenuate(mass, distance),
-			multiplier = weight / this.bodiesTotalWeight;
-			//console.log(weight)
-
-
-		// multiplier should be based on total current weight, not overall system mass
-		// so near low mass bodies can be more influential than distant high mass bodies
-		//var multiplier = this.bodies[k].m / this.bodiesTotalWeight;
-
-	
-		// calculate weighted vector averaging all bodies
-		avX += selected.x * multiplier;
-		avY += selected.y * multiplier;
 
 		// draw a line to every body
 		context.beginPath();
 		context.moveTo(this.x, this.y)
 		context.lineTo(selected.x, selected.y);
-		context.strokeStyle = 'rgba(255,0,0,' + weight * 100 + ')';
-		//context.lineWidth = weight;
+		context.strokeStyle = 'rgba(255,0,0,' + selected.w * 1000 + ')';
+		context.lineWidth = 4;
 		context.stroke();
 		context.closePath();
 	}
-
-	//avX = avX/this.bodies.length;
-	//avY = avY/this.bodies.length;
-	//console.log(avX,avY)
-
-	vectorAngle = angle([this.x, this.y], [avX, avY])
-	
-
 	
 	// draw current gravity vector
-	var oo = blah(this.bodiesTotalWeight*10000, vectorAngle)
+	var barycenter = polarToCoord(this.bodiesTotalWeight * 10000, this.vectorAngle);
 	context.beginPath();
 	context.moveTo(this.x, this.y)
 	context.strokeStyle = 'rgba(0,255,255,0.5)';
 	context.lineWidth = 2;
-	context.lineTo(this.x + oo[0], this.y + oo[1]);
+	context.lineTo(this.x + barycenter[0], this.y + barycenter[1]);
 	context.stroke();
 	context.closePath();
 
 	// draw a trail behind craft using points in history
 	context.beginPath();
 	context.fillStyle = '#444';
-	for (var i = 0; i < this.history.length; i++)
+	for (var key = 0; key < this.history.length; key++)
 	{
-		context.arc(this.history[i].x, this.history[i].y, i / this.history.length, 0, 2 * Math.PI);
-		//context.rect(this.history[i].x-1, this.history[i].y-1, 2, 2);
+		context.arc(this.history[key].x, this.history[key].y, key / this.history.length, 0, 2 * Math.PI);
 	}
 	context.fill();
 	context.closePath();
@@ -309,7 +307,7 @@ function angle(a, b) {
 }
 
 //
-function blah(length, angle) {
+function polarToCoord(length, angle) {
 	var x = length * Math.cos(angle),
 		y = length * Math.sin(angle);
 	return [x, y];
