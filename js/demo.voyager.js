@@ -1,4 +1,20 @@
 
+// Not fare well,
+// But fare forward, Voyagers.
+// -- T. S. Eliot, The Dry Salvages
+
+// Planetary Fact Sheet - Metric
+// http://nssdc.gsfc.nasa.gov/planetary/factsheet/
+// NSSDCA: Voyager Project Information
+// http://nssdc.gsfc.nasa.gov/planetary/voyager.html
+
+
+
+
+
+
+
+
 // load
 
 window.addEventListener('load', function()
@@ -9,36 +25,49 @@ window.addEventListener('load', function()
 }, false);
 
 
+
+
+
+
+
+
 // seed
 
 var voyager = {
 	display: {
-		width: 480,
-		height: 640
+		width: 1000,
+		height: 720
 	},
 	seed: {
-		ship: new Craft(240,600),
-		ticker: new Ticker(),
-		//camera: new Camera(),
 		//stage: new Stage(),
+		//camera: new Camera(),
+		ticker: new Ticker(),
+
+		//                       kg
+		//                x,y    mass
+		ship: new Craft(420,600, 721.9),
 
 		// magling data from NASA
-		// Planetary Fact Sheet - Metric
-		// http://nssdc.gsfc.nasa.gov/planetary/factsheet/
 		//             10^24 kg,       km,   10^6 km,  km/s,       hex    //   10^6 km,  10^6 km,
 	 	//                 mass, diameter,  distance, speed,     color    // periapsis, apoapsis,
 	 	slvr: new Body(       0,100000000,         0,     0, '#080808' ), //         0,        0,
-		//sonn: new Body( 1988435,   69570.0,         0,     0, '#f8f8f2' ), //         0,        0,
+		sonn: new Body( 1988.435,   69570.0,         0,     0, '#f8f8f2' ), //         0,        0,
 		mirk: new Body(   0.330,     4879,      57.9,  47.4, '#787878' ), //      46.0,     69.8,
 		vans: new Body(    4.87,    12104,     108.2,  35.0, '#ae885d' ), //     107.5,    108.9,
 		erth: new Body(    5.97,    12756,     149.6,  29.8, '#888ba0' ), //     147.1,    152.1,
 		marz: new Body(   0.642,     6792,     227.9,  24.1, '#86674c' ), //     206.6,    249.2,
-		//jupt: new Body(    1898,   142984,     778.6,  13.1, '#b87e1b' ), //     740.5,    816.6,
-		//sats: new Body(     568,   120536,    1433.5,   9.7, '#debc7f' ), //    1352.6,   1514.5,
-		//urns: new Body(    86.8,    51118,    2872.5,   6.8, '#a8ccd1' ), //    2741.3,   3003.6,
-		//nepz: new Body(     102,    49528,    4495.1,   5.4, '#3d5ad8' ), //    4444.5,   4545.7,
+		jupt: new Body(    1898,   142984,     778.6,  13.1, '#b87e1b' ), //     740.5,    816.6,
+		sats: new Body(     568,   120536,    1433.5,   9.7, '#debc7f' ), //    1352.6,   1514.5,
+		urns: new Body(    86.8,    51118,    2872.5,   6.8, '#a8ccd1' ), //    2741.3,   3003.6,
+		nepz: new Body(     102,    49528,    4495.1,   5.4, '#3d5ad8' ), //    4444.5,   4545.7,
 	}
 }
+
+
+
+
+
+
 
 
 // little thing that ticks in one second increments
@@ -59,13 +88,19 @@ Ticker.prototype.draw = function(origin)
 }
 
 
+
+
+
+
+
+
 // celestial bodies
 
 function Body(mass, diameter, distance, speed, color) // periapsis, apoapsis
 {
 	var scale = {
 		distance: 1,
-		diameter: 0.0005,
+		diameter: 0.0001,
 		time: 0.0001
 	}
 
@@ -130,13 +165,20 @@ Body.prototype.draw = function(origin)
 }
 
 
+
+
+
+
+
+
 // space craft
 
-function Craft(x, y)
+function Craft(x, y, m)
 {
 	this.t = 0;
 	this.x = x || 0;
 	this.y = y || 0;
+	this.m = m || 0;
 	this.velX = 0;
 	this.velY = 0;
 	this.velTurn = 0;
@@ -150,6 +192,9 @@ function Craft(x, y)
 }
 Craft.prototype.update = function(origin)
 {
+
+	//f = m * a
+	//a = f 
 
 	// build a list of all bodies x/y with their masses
 	this.bodies = [];
@@ -202,7 +247,14 @@ Craft.prototype.update = function(origin)
 	this.barycenter = polarToCoord(this.bodiesTotalWeight, this.vectorAngle);
 
 	// update internal time
-	var delta = origin.time.delta * 10
+	var delta = origin.time.delta
+	
+	
+	if (delta > 1000)
+	{
+		delta = 1000
+	}
+	
 	this.t += delta;
 	
 	// do x/y transforms
@@ -213,8 +265,20 @@ Craft.prototype.update = function(origin)
 	
 	if (this.barycenter[0] && this.barycenter[1])
 	{
-		this.velX += this.barycenter[0] * 1;
-		this.velY += this.barycenter[1] * 1;
+		var mdX = this.barycenter[0] / this.velX,
+		mdY = this.barycenter[1] / this.velY;
+		
+		//console.log(mdX, mdY)
+		if (!mdX || !mdY)
+		{
+			console.log('too hot')
+		}
+		else 
+		{
+			this.velX += this.barycenter[0] / delta;
+			this.velY += this.barycenter[1] / delta;
+		}
+
 		//console.log(this.barycenter[0] * delta, this.x)
 	}
 
@@ -292,10 +356,6 @@ Craft.prototype.draw = function(origin)
 	context.closePath();
 
 }
-
-
-
-
 
 
 
