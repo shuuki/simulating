@@ -332,7 +332,8 @@ Craft.prototype.draw = function(origin)
 		context.lineTo(selected.x, selected.y);
 		context.strokeStyle = 'rgba(255,0,0,' + selected.w * 1000 + ')';
 		context.lineWidth = 4;
-		context.stroke();
+		//disabling the gravity view for aesthetics
+		//context.stroke();
 		context.closePath();
 	}
 	
