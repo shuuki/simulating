@@ -41,17 +41,16 @@ var voyager = {
 	seed: {
 		//stage: new Stage(),
 		//camera: new Camera(),
-		ticker: new Ticker(),
 
-		//                       kg
-		//                x,y    mass
-		ship: new Craft(420,600, 721.9),
+		//                                kg
+		//                x,y   vel x,y   mass
+		ship: new Craft(460,310,   0, 420, 721.9),
 
 		// magling data from NASA
 		//             10^24 kg,       km,   10^6 km,  km/s,       hex    //   10^6 km,  10^6 km,
 	 	//                 mass, diameter,  distance, speed,     color    // periapsis, apoapsis,
 	 	slvr: new Body(       0,100000000,         0,     0, '#080808' ), //         0,        0,
-		sonn: new Body( 1988.435,   69570.0,         0,     0, '#f8f8f2' ), //         0,        0,
+		sonn: new Body( 1988435,   69570.0,         0,     0, '#f8f8f2' ), //         0,        0,
 		mirk: new Body(   0.330,     4879,      57.9,  47.4, '#787878' ), //      46.0,     69.8,
 		vans: new Body(    4.87,    12104,     108.2,  35.0, '#ae885d' ), //     107.5,    108.9,
 		erth: new Body(    5.97,    12756,     149.6,  29.8, '#888ba0' ), //     147.1,    152.1,
@@ -70,37 +69,13 @@ var voyager = {
 
 
 
-// little thing that ticks in one second increments
-
-function Ticker()
-{
-	this.time = 0;
-}
-Ticker.prototype.update = function(origin)
-{
-	var delta = origin.time.delta;
-	this.time += (delta / 1000);
-}
-Ticker.prototype.draw = function(origin)
-{
-	var context = origin.context;
-	context.fillText(this.time.toFixed(0), 12, (context.canvas.height - 12));
-}
-
-
-
-
-
-
-
-
 // celestial bodies
 
 function Body(mass, diameter, distance, speed, color) // periapsis, apoapsis
 {
 	var scale = {
 		distance: 1,
-		diameter: 0.0001,
+		diameter: 0.0005,
 		time: 0.0001
 	}
 
@@ -173,14 +148,14 @@ Body.prototype.draw = function(origin)
 
 // space craft
 
-function Craft(x, y, m)
+function Craft(x, y, velX, velY, m)
 {
-	this.t = 0;
 	this.x = x || 0;
 	this.y = y || 0;
+	this.velX = velX || 0;
+	this.velY = velY || 0;
 	this.m = m || 0;
-	this.velX = 0;
-	this.velY = 0;
+	this.t = 0;
 	this.velTurn = 0;
 	this.direction = 0;
 	this.history = [];
@@ -193,13 +168,15 @@ function Craft(x, y, m)
 Craft.prototype.update = function(origin)
 {
 
-	//f = m * a
-	//a = f 
+	// get delta time
+	var delta = origin.time.delta;
+	// try stepping to increase accuracy when delta gets too high
+	// steps = Math.ceil(delta / 16);
 
 	// build a list of all bodies x/y with their masses
 	this.bodies = [];
 	this.bodiesTotalWeight = 0;
-
+	
 	for (var body in origin.entity.active)
 	{
 		var isType = origin.entity.active[body].constructor.name;
@@ -219,15 +196,15 @@ Craft.prototype.update = function(origin)
 				x: selected.x,
 				y: selected.y,
 				m: selected.m,
+				d: selected.d,
 				w: weight
 			});
 		}
 	}
 
 	// average out a gravity vector
-	this.vectorAngle = 0;
 	var avX = 0,
-		avY = 0;
+			avY = 0;
 
 	for (var k = 0; k < this.bodies.length; k++)
 	{	
@@ -243,49 +220,33 @@ Craft.prototype.update = function(origin)
 		avY += selected.y * multiplier;
 	}
 
+	// reset gravity vector angle, calibrate a new weighted vector
+	this.vectorAngle = 0;
 	this.vectorAngle = angle([this.x, this.y], [avX, avY])
 	this.barycenter = polarToCoord(this.bodiesTotalWeight, this.vectorAngle);
 
-	// update internal time
-	var delta = origin.time.delta
-	
-	
-	if (delta > 1000)
-	{
-		delta = 1000
-	}
-	
-	this.t += delta;
-	
-	// do x/y transforms
-	
-	// debug thrust
-	//this.x += 1 * origin.time.delta / 200
-	//this.y -= 2 * origin.time.delta / 200
-	
+	// do x/y transforms	
 	if (this.barycenter[0] && this.barycenter[1])
 	{
-		var mdX = this.barycenter[0] / this.velX,
-		mdY = this.barycenter[1] / this.velY;
-		
-		//console.log(mdX, mdY)
-		if (!mdX || !mdY)
-		{
-			console.log('too hot')
-		}
-		else 
-		{
-			this.velX += this.barycenter[0] / delta;
-			this.velY += this.barycenter[1] / delta;
-		}
-
-		//console.log(this.barycenter[0] * delta, this.x)
+			this.velX = this.velX + this.barycenter[0] / 2 / delta;
+			this.velY = this.velY + this.barycenter[1] / 2 / delta;
 	}
+	
+	this.x += this.velX / this.m
+	this.y += this.velY / this.m
+	
+	
+	// http://gafferongames.com/game-physics/integration-basics/
+	// f = ma
+	// a = f/m
 
-	this.x += this.velX
-	this.y += this.velY
-	//console.log(this.x, this.y)
+	// http://lolengine.net/blog/2011/12/14/understanding-motion-in-games
+	// (old_velocity + new_velocity) * 0.5 * dt
 
+
+	// update internal time
+	this.t += delta;
+	
 	// truncate history older than 10000 steps
 	if (this.history.length > 10000) {
 		this.history.shift()
@@ -340,7 +301,7 @@ Craft.prototype.draw = function(origin)
 	// draw current gravity vector
 	context.beginPath();
 	context.moveTo(this.x, this.y)
-	context.strokeStyle = 'rgba(0,255,255,0.5)';
+	context.strokeStyle = 'rgba(255,255,0,0.1)';
 	context.lineWidth = 2;
 	context.lineTo(this.x + this.barycenter[0], this.y + this.barycenter[1]);
 	context.stroke();
@@ -348,11 +309,11 @@ Craft.prototype.draw = function(origin)
 
 	// draw a trail behind craft using points in history
 	context.beginPath();
-	context.fillStyle = '#444';
 	for (var key = 0; key < this.history.length; key++)
 	{
 		context.lineTo(this.history[key].x, this.history[key].y);
 	}
+	context.strokeStyle = 'rgba(0,255,255,0.3)';
 	context.stroke();
 	context.closePath();
 
