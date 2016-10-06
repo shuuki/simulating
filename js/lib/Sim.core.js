@@ -47,15 +47,15 @@ var sim = {
 		}
 
 		// set up display values
-		if (config.display && config.display.width && config.display.height)
+		if (config.display && config.display.width && config.display.height )
 		{
 			this.display = config.display;
 		}
 		else
 		{
 			this.display = {
-				width: 320,
-				height: 200
+				width: window.innerWidth,
+				height: window.innerHeight
 			};
 		}
 

@@ -3,7 +3,6 @@
 
 window.addEventListener('load', function()
 {
-	sim.test();
 	sim.init(flatland);
 	sim.start();
 }, false);
@@ -12,14 +11,7 @@ window.addEventListener('load', function()
 // seed
 
 var flatland = {
-	test: 'flatland seed ready',
-	display: {
-		width: 320,
-		height: 200
-	},
 	seed: {
-		//camera: new Camera(),
-		//stage: new Stage(),
 		ship: new Ship()
 	}
 }

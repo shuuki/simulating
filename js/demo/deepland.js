@@ -5,8 +5,6 @@ var screenWidth = window.innerWidth,
 	screenPixels = 2;
 
 
-
-
 // load
 
 window.addEventListener('load', function()
@@ -31,7 +29,7 @@ scene = new THREE.Scene();
 
 camera = new THREE.PerspectiveCamera(70, screenWidth / screenHeight, 0.1, 1000);
 
-renderer = new THREE.WebGLRenderer({antialias: true});
+renderer = new THREE.WebGLRenderer();
 renderer.setSize(screenWidth / screenPixels, screenHeight / screenPixels, false);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.BasicShadowMap;
@@ -63,7 +61,7 @@ scene.add(cube);
 
 
 
-var geometry2 = new THREE.PlaneGeometry(100,100,30,30);
+var geometry2 = new THREE.PlaneGeometry(1000,1000,50,50);
 for (var i = 0, l = geometry2.vertices.length; i < l; i++) {
 	geometry2.vertices[i].z = (Math.random() * i)/200;
 }
@@ -75,7 +73,7 @@ var material2 = new THREE.MeshPhongMaterial({
 });
 
 plane = new THREE.Mesh(geometry2, material2);
-plane.position.set(30,0,-40)
+plane.position.set(30,-10,-40)
 plane.rotation.set(-1.52,0,-3)
 plane.castShadow = true;
 plane.receiveShadow = true;
@@ -84,34 +82,22 @@ scene.add(plane);
 
 
 
-var curve = new THREE.EllipseCurve(
-	0, 0, // ax, aY
-	2, 4, // xRadius, yRadius
-	0, 3 / 2 * Math.PI, // aStartAngle, aEndAngle
-	false // aClockwise
-);
 
 
 
-var points = curve.getSpacedPoints(20);
-var path = new THREE.Path();
-var geometry = path.createGeometry(points);
-var material = new THREE.MeshPhongMaterial({
-	color: 0xffffff,
-	//linewidth: 1,
+
+var geometry = new THREE.ConeGeometry( 1, 3, 6 );
+var material = new THREE.MeshBasicMaterial({
+	color: 0xffff00,
+	wireframe: true
 });
+var cone = new THREE.Mesh( geometry, material );
+cone.castShadow = true;
+cone.position.set(-6,0,-1)
+cone.rotation.set(-1,0,-1)
+cone.receiveShadow = true;
 
-line = new THREE.Line(geometry, material);
-line.castShadow = true;
-line.receiveShadow = true;
-scene.add(line);
-
-
-
-
-
-
-
+scene.add( cone );
 
 
 /**** LIGHTING */
@@ -121,15 +107,10 @@ var ambientLight, spotLight, spotLight2;
 ambientLight = new THREE.AmbientLight(0x212121)
 scene.add(ambientLight);
 
-spotLight = new THREE.DirectionalLight(0xff0000, 1.8);
-spotLight.position.set(0,1,20);
+spotLight = new THREE.DirectionalLight(0xffffff, 0.5);
+spotLight.position.set(0,20,20);
 spotLight.castShadow = true;
 scene.add(spotLight);
-
-spotLight2 = new THREE.DirectionalLight(0x0000ff, 1);
-spotLight2.position.set(-40,40,0);
-spotLight2.castShadow = true;
-scene.add(spotLight2);
 
 
 /**** CAMERA */
@@ -147,6 +128,12 @@ function render() {
 	//cube.rotation.x += 0.005;
 	//cube.rotation.y += 0.01;
 	//camera.lookAt(cube.position);
+
+	if (sim.input.isDown('RIGHT'))
+	{
+		console.log("yehoo")
+	}
+
 
 	renderer.render(scene, camera);
 }
