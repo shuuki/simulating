@@ -129,11 +129,6 @@ function render() {
 	//cube.rotation.y += 0.01;
 	//camera.lookAt(cube.position);
 
-	if (sim.input.isDown('RIGHT'))
-	{
-		console.log("yehoo")
-	}
-
 
 	renderer.render(scene, camera);
 }

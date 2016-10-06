@@ -84,8 +84,7 @@ var sim = {
 	update: function()
 	{
 		// update clock
-		var now;
-		now = new Date().getTime();
+		var now = new Date().getTime();
 		this.time.delta = (now - (this.time.now || now));
 		this.time.now = now;
 		this.time.up += this.time.delta;
