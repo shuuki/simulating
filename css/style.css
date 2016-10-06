@@ -1,12 +1,22 @@
 body {
-	background: #f9f9fc;
-	color: #111;
+	background: #1e1a1c;
+	color: #f9f9fc;
 	margin: 0;
-	font-family: monospace;
+	font-family: sans-serif;
 }
 
 canvas {
 	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAAAAACo4kLRAAAAF0lEQVR4AWN4DQcP4WBoCyKYCOkhLQgA355ncNg2H2MAAAAASUVORK5CYII=');
+	/*
+	height: 100%;
+  width: 100%;
+	*/
+  margin: 0;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: pixelated;
+	-ms-interpolation-mode: nearest-neighbor;
+
 }
 
 button {
