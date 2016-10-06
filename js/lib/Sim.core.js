@@ -6,13 +6,13 @@
 // save / load with localstorage
 // track scene elements and entities
 
-var sim = {
+var Sim = {
 	
 	// first steps
 	init: function(config)
 	{
 		// proof of life
-		console.log('SIM READY');
+		console.log('Sim ready');
 
 		// takes an object with starting values
 		// set empty config if none is passed

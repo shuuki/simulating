@@ -1,8 +1,9 @@
 body {
 	background: #1e1a1c;
 	color: #f9f9fc;
-	margin: 0;
 	font-family: sans-serif;
+	margin: 0;
+	overflow: hidden;
 }
 
 canvas {
@@ -14,7 +15,6 @@ canvas {
   image-rendering: -moz-crisp-edges;
   image-rendering: pixelated;
 	-ms-interpolation-mode: nearest-neighbor;
-
 }
 
 button {

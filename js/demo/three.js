@@ -12,8 +12,8 @@ var screenWidth = window.innerWidth,
 window.addEventListener('load', function()
 {
 	init();
-	sim.init();
-	sim.start();
+	Sim.init();
+	Sim.start();
 }, false);
 
 

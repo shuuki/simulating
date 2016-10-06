@@ -3,7 +3,7 @@
 // tools for making entropy
 // inspired by dice and cards
 
-sim.rand = {
+Sim.rand = {
   // roll a random whole number between 0 and a maximum
   roll: function(max)
   {

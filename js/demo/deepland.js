@@ -1,3 +1,16 @@
+
+// load
+
+window.addEventListener('load', function()
+{
+	init();
+	//Sim.init();
+	//Sim.start();
+}, false);
+
+
+// setup
+
 var scene, camera, renderer, cube, plane, line;
 
 var screenWidth = window.innerWidth,
@@ -5,31 +18,19 @@ var screenWidth = window.innerWidth,
 	screenPixels = 2;
 
 
-// load
-
-window.addEventListener('load', function()
-{
-	init();
-	sim.init();
-	sim.start();
-}, false);
-
-
-
-
-
-
-
 /**** INIT */
 
 function init()
 {
 
+
+
+
+
 scene = new THREE.Scene();
-
 camera = new THREE.PerspectiveCamera(70, screenWidth / screenHeight, 0.1, 1000);
-
 renderer = new THREE.WebGLRenderer();
+
 renderer.setSize(screenWidth / screenPixels, screenHeight / screenPixels, false);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.BasicShadowMap;
@@ -108,7 +109,7 @@ ambientLight = new THREE.AmbientLight(0x212121)
 scene.add(ambientLight);
 
 spotLight = new THREE.DirectionalLight(0xffffff, 0.5);
-spotLight.position.set(0,20,20);
+spotLight.position.set(200,200,200);
 spotLight.castShadow = true;
 scene.add(spotLight);
 

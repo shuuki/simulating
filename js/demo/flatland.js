@@ -3,8 +3,8 @@
 
 window.addEventListener('load', function()
 {
-	sim.init(flatland);
-	sim.start();
+	Sim.init(flatland);
+	Sim.start();
 }, false);
 
 
