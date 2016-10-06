@@ -19,9 +19,9 @@
 
 window.addEventListener('load', function()
 {
-	Sim.test();
-	Sim.init(voyager);
-	Sim.start();
+	sim.test();
+	sim.init(voyager);
+	sim.start();
 }, false);
 
 

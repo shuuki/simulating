@@ -3,9 +3,9 @@
 
 window.addEventListener('load', function()
 {
-	Sim.test();
-	Sim.init(intro);
-	Sim.start();
+	sim.test();
+	sim.init(intro);
+	sim.start();
 }, false);
 
 

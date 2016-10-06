@@ -5,7 +5,7 @@
 // degree / radian converter
 // some trig
 
-Sim.util = {
+sim.util = {
 	// cache pi for speed
 	pi: 3.141592653589793,
 	// convert degrees to radians

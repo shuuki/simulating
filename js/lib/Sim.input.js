@@ -2,12 +2,12 @@
 
 // receives data from event listeners
 // recognizes keyboard and mouse (for now)
-// current events available at Sim.input.active
+// current events available at sim.input.active
 // many keyboard buttons named for easy use
 // adds mouse coordinates on mousedown
 // clears mouse coordinates on mouseup
 
-Sim.input = {
+sim.input = {
   // cache of keys currently active
   active: {},
 
@@ -59,14 +59,14 @@ Sim.input = {
 
 window.addEventListener('keyup', function(event)
 {
-	Sim.input.keyUp(event);
+	sim.input.keyUp(event);
 }, false);
 
 window.addEventListener('keydown', function(event)
 {
-	Sim.input.keyDown(event);
+	sim.input.keyDown(event);
 	//console.log(event.keyCode)
-	//console.log(Sim.input.active)
+	//console.log(sim.input.active)
 }, false);
 
 // mouse events
@@ -78,13 +78,13 @@ window.addEventListener('click', function()
 
 window.addEventListener('mouseup', function()
 {
-  Sim.input.mouseUp(event)
+  sim.input.mouseUp(event)
   //console.log(event.type, event.x, event.y)
 }, false);
 
 window.addEventListener('mousedown', function()
 {
-	Sim.input.mouseDown(event)
+	sim.input.mouseDown(event)
 	//console.log(event.type, event.x, event.y)
-	//console.log(Sim.input.active)
+	//console.log(sim.input.active)
 }, false);

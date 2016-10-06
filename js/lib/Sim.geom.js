@@ -3,7 +3,7 @@
 // mostly untested drawing tools
 // ported from QUANWOYO TRIANGLES
 
-Sim.geom = {
+sim.geom = {
 	// distance calculation
 	// takes start and target coordinates
 	// returns distance between points

@@ -7,10 +7,8 @@ body {
 
 canvas {
 	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAAAAACo4kLRAAAAF0lEQVR4AWN4DQcP4WBoCyKYCOkhLQgA355ncNg2H2MAAAAASUVORK5CYII=');
-	/*
 	height: 100%;
   width: 100%;
-	*/
   margin: 0;
   image-rendering: -webkit-optimize-contrast;
   image-rendering: -moz-crisp-edges;

@@ -6,7 +6,7 @@
 // save / load with localstorage
 // track scene elements and entities
 
-var Sim = {
+var sim = {
 	// proof of life
 	test: function()
 	{
@@ -56,8 +56,8 @@ var Sim = {
 		else
 		{
 			this.display = {
-				width: 480,
-				height: 300
+				width: 320,
+				height: 200
 			};
 		}
 
@@ -75,7 +75,7 @@ var Sim = {
 		}
 
 		// add canvas to body
-		document.getElementsByTagName('body')[0].appendChild(canvas);
+		document.body.appendChild(canvas);
 
 		// attach canvas to Sim
 		this.canvas = document.getElementById(canvas.id);
