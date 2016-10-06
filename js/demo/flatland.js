@@ -27,35 +27,6 @@ var flatland = {
 
 // entities
 
-function Camera(settings)
-{
-	this.width =  settings.width;
-	this.height = settings.height;
-	this.x = settings.x;
-	this.y = settings.y;
-	this.z = settings.z;
-	this.aspect = this.width / this.height;
-}
-Camera.prototype.update = function()
-{
-	// take any transforms to the camera object
-	// change x/y probably
-	// maybe the aspect sometimes too
-}
-Camera.prototype.draw = function()
-{}
-
-
-function Stage()
-{
-	this.area = [];
-}
-Stage.prototype.update = function()
-{}
-Stage.prototype.draw = function()
-{}
-
-
 function Ship()
 {
 	this.x = 40;

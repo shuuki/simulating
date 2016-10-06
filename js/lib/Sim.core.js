@@ -7,15 +7,13 @@
 // track scene elements and entities
 
 var sim = {
-	// proof of life
-	test: function()
-	{
-		console.log('Sim ready');
-	},
 	
 	// first steps
 	init: function(config)
 	{
+		// proof of life
+		console.log('SIM READY');
+
 		// takes an object with starting values
 		// set empty config if none is passed
 		if (!config)
@@ -85,14 +83,15 @@ var sim = {
 	// main loop heartbeat
 	update: function()
 	{
-		// start the next frame
-		this.time.running = requestAnimationFrame(this.update.bind(this));
-
 		// update clock
-		var now = new Date().getTime();
+		var now;
+		now = new Date().getTime();
 		this.time.delta = (now - (this.time.now || now));
 		this.time.now = now;
 		this.time.up += this.time.delta;
+
+		// start the next frame
+		this.time.running = requestAnimationFrame(this.update.bind(this));
 
 		// run updates for current time
 		this.entity.updateAll(this);
@@ -102,24 +101,10 @@ var sim = {
 	},
 	render: function()
 	{
-		// clear frame
-		this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		this.context.moveTo(0, 0);
-		this.context.beginPath()
-
-		// add some debug text
-		var debug = this.time.now + ' ' + (1000 / this.time.delta).toFixed(0) + 'fps';
-		this.context.font = '12px monospace';
-		this.context.fillStyle = 'gray';
-		this.context.fillText(debug, 12, 12);
 
 		// draw all entities in event queue
 		this.entity.drawAll(this);
 
-		// close out drawing
-		//this.context.fill();
-		//this.context.stroke();
-		//this.context.closePath();
 	},
 
 	// start / stop updates
@@ -185,29 +170,18 @@ var sim = {
 	{
 		// current entities being simulated
 		active: {},
-		inactive: {},
 
 		// queue of entities being processed
 		queue: [],
 
 		// manage entities
-		assign: function(id, data)
+		add: function(id, data)
 		{
 			this.active[id] = data;
 		},
-		destroy: function(id)
+		remove: function(id)
 		{
 			delete this.active[id];
-		},
-		deactivate: function(id)
-		{
-			this.inactive[id] = this.active[id];
-			delete this.active[id];
-		},
-		reactivate: function(id)
-		{
-			this.active[id] = this.inactive[id];
-			delete this.inactive[id];
 		},
 
 		// batch controls
