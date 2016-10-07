@@ -7,77 +7,55 @@
 // track scene elements and entities
 
 var Sim = {
-	
+	// defaults
+	scene: {},
+	camera: {},
+	renderer: {},
+	time: {
+		running: 0,
+		up: 0,
+		now: 0,
+		delta: 0
+	},
 	// first steps
 	init: function(config)
 	{
-		// proof of life
-		console.log('Sim ready');
-
 		// takes an object with starting values
 		// set empty config if none is passed
-		if (!config)
+		if (config)
 		{
-			var config = {};
+			// set the clock
+			if (config.time)
+			{
+				this.time = config.time;
+			}
+
+			// declare entities to simulate
+			if (config.seed)
+			{
+				this.entity.active = config.seed;
+			}
 		}
 
-		// set the clock
-		if (config.time)
-		{
-			this.time = config.time;
-		}
-		else
-		{
-			this.time = {
-				running: 0,
-				up: 0,
-				now: 0,
-				delta: 0
-			};
-		}
+		// default values for display
+		var screenWidth = window.innerWidth,
+			screenHeight = window.innerHeight,
+			screenPixels = 2;
 
-		// declare entities to simulate
-		if (config.seed)
-		{
-			this.entity.active = config.seed;
-		}
-		else
-		{
-			this.entity.active = {};
-		}
+		// set up three.js
+		this.scene = new THREE.Scene();
+		this.camera = new THREE.PerspectiveCamera(70, screenWidth / screenHeight, 0.1, 1000);
+		this.renderer = new THREE.WebGLRenderer();
+		this.renderer.setSize(screenWidth / screenPixels, screenHeight / screenPixels, false);
+		this.renderer.shadowMap.enabled = true;
+		this.renderer.shadowMap.type = THREE.BasicShadowMap;
+		document.body.appendChild(this.renderer.domElement);
 
-		// set up display values
-		if (config.display && config.display.width && config.display.height )
-		{
-			this.display = config.display;
-		}
-		else
-		{
-			this.display = {
-				width: window.innerWidth,
-				height: window.innerHeight
-			};
-		}
+		// run updates
+		this.entity.batch(this, 0);
 
-		// initialize canvas
-		var canvas = document.createElement('canvas');
-		canvas.id = 'display';
-		canvas.width = this.display.width;
-		canvas.height = this.display.height;
-
-		// delete canvas if one is present
-		var existing = document.getElementById(canvas.id);
-		if (existing && existing.parentNode)
-		{
-			existing.parentNode.removeChild(existing);
-		}
-
-		// add canvas to body
-		document.body.appendChild(canvas);
-
-		// attach canvas to Sim
-		this.canvas = document.getElementById(canvas.id);
-		this.context = this.canvas.getContext('2d');
+		// proof of life
+		console.log('Sim ready');
 	},
 
 	// main loop heartbeat
@@ -93,17 +71,17 @@ var Sim = {
 		this.time.running = requestAnimationFrame(this.update.bind(this));
 
 		// run updates for current time
-		this.entity.updateAll(this);
+		this.entity.batch(this, 1);
 
 		// render scene
 		this.render();
 	},
 	render: function()
 	{
+		// draw all entities
+		this.entity.batch(this, 2);
 
-		// draw all entities in event queue
-		this.entity.drawAll(this);
-
+		this.renderer.render(this.scene, this.camera);
 	},
 
 	// start / stop updates
@@ -119,94 +97,60 @@ var Sim = {
 		window.cancelAnimationFrame(this.time.running);
 		this.time.running = false;
 	},
+}
 
-	// manage state
-	save: function()
+// entities
+Sim.entity = {
+	// current entities being simulated
+	active: {},
+
+	// queue of entities being processed
+	queue: [],
+
+	// manage entities
+	add: function(id, data)
 	{
-		// cache current sim state
-		this.cache = {
-			display: this.display,
-			time: this.time,
-			seed: this.entity.active
-		};
-
-		// save to localStorage
-		localStorage.setItem('SimSave', JSON.stringify(this.cache));
+		this.active[id] = data;
 	},
-	load: function()
-	{		
-		if (localStorage.getItem('SimSave'))
-		{
-			this.cache = JSON.parse(localStorage.getItem('SimSave'));
-			// loading is currently broken
-			this.init(this.cache);
-		}
-		else
-		{
-			console.log('No SimSave present')
-		}
-	},
-	reset: function()
+	remove: function(id)
 	{
-		// clear cache
-		if (this.cache)
-		{
-			this.cache = {};
-		}
-
-		// start an empty sim
-		this.init();
-
-		// if present, remove locally stored data 
-		if (localStorage.getItem('SimSave'))
-		{
-			localStorage.removeItem('SimSave');
-		}
+		delete this.active[id];
 	},
 
-	// entities
-	entity:
+	// batch controls
+	batch: function(origin, step)
 	{
-		// current entities being simulated
-		active: {},
+		// build event queue
+		this.queue = (Object.keys(this.active));
 
-		// queue of entities being processed
-		queue: [],
-
-		// manage entities
-		add: function(id, data)
+		// go through queue from top to bottom
+		while (this.queue.length > 0)
 		{
-			this.active[id] = data;
-		},
-		remove: function(id)
-		{
-			delete this.active[id];
-		},
-
-		// batch controls
-		updateAll: function(origin)
-		{
-			// build the queue
-			this.queue = (Object.keys(this.active));
-
-			// go through queue from top to bottom
-			while (this.queue.length > 0)
+			// act on top entity based on current step
+			if (step === 0)
+			{	
+				this.active[this.queue[0]].init(origin);
+			}
+			if (step === 1)
 			{
 				this.active[this.queue[0]].update(origin);
-				this.queue.shift();
 			}
-		},
-		drawAll: function(origin)
-		{
-			// build the queue
-			this.queue = (Object.keys(this.active));
-
-			// go through queue from top to bottom
-			while (this.queue.length > 0)
+			if (step === 2)
 			{
-				this.active[this.queue[0]].draw(origin);
-				this.queue.shift();
+				this.active[this.queue[0]].render(origin);
 			}
+			
+			// delete top entry
+			this.queue.shift();
 		}
 	}
+
+	/*
+	// Thing entity
+	function Thing() {}
+	Thing.prototype.init = function(origin) {}
+	Thing.prototype.update = function(origin) {}
+	Thing.prototype.render = function(origin) {}
+	*/
+
 }

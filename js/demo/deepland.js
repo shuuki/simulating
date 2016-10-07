@@ -3,135 +3,115 @@
 
 window.addEventListener('load', function()
 {
-	init();
-	//Sim.init();
-	//Sim.start();
+	Sim.init(deepland);
+	Sim.start();
+	seed()
 }, false);
 
 
+var deepland = {
+	seed: {
+		land: new Land(),
+		craft: new Craft()
+	}
+}
+
 // setup
 
-var scene, camera, renderer, cube, plane, line;
-
-var screenWidth = window.innerWidth,
-	screenHeight = window.innerHeight,
-	screenPixels = 2;
-
-
 /**** INIT */
-
-function init()
+function seed()
 {
-
-
-
-
-
-scene = new THREE.Scene();
-camera = new THREE.PerspectiveCamera(70, screenWidth / screenHeight, 0.1, 1000);
-renderer = new THREE.WebGLRenderer();
-
-renderer.setSize(screenWidth / screenPixels, screenHeight / screenPixels, false);
-renderer.shadowMap.enabled = true;
-renderer.shadowMap.type = THREE.BasicShadowMap;
-
-document.body.appendChild(renderer.domElement);
-
-
-
-
-
-
-
-
-
-/**** GEOMETRY */
-
-var geometry = new THREE.BoxGeometry(1, 1, 1);
-var material = new THREE.MeshPhongMaterial({
-	color: 0x111111,
-	//wireframe: true
-});
-
-cube = new THREE.Mesh(geometry, material);
-cube.castShadow = true;
-cube.receiveShadow = true;
-scene.add(cube);
-
-
-
-
-
-var geometry2 = new THREE.PlaneGeometry(1000,1000,50,50);
-for (var i = 0, l = geometry2.vertices.length; i < l; i++) {
-	geometry2.vertices[i].z = (Math.random() * i)/200;
-}
-
-var material2 = new THREE.MeshPhongMaterial({
-	color: 0xffffff,
-	shading: THREE.FlatShading,
-	//wireframe: true
-});
-
-plane = new THREE.Mesh(geometry2, material2);
-plane.position.set(30,-10,-40)
-plane.rotation.set(-1.52,0,-3)
-plane.castShadow = true;
-plane.receiveShadow = true;
-scene.add(plane);
-
-
-
-
-
-
-
-
-var geometry = new THREE.ConeGeometry( 1, 3, 6 );
-var material = new THREE.MeshBasicMaterial({
-	color: 0xffff00,
-	wireframe: true
-});
-var cone = new THREE.Mesh( geometry, material );
-cone.castShadow = true;
-cone.position.set(-6,0,-1)
-cone.rotation.set(-1,0,-1)
-cone.receiveShadow = true;
-
-scene.add( cone );
-
-
-/**** LIGHTING */
-
-var ambientLight, spotLight, spotLight2;
-
-ambientLight = new THREE.AmbientLight(0x212121)
-scene.add(ambientLight);
-
-spotLight = new THREE.DirectionalLight(0xffffff, 0.5);
-spotLight.position.set(200,200,200);
-spotLight.castShadow = true;
-scene.add(spotLight);
-
-
-/**** CAMERA */
-
-camera.position.set(-4, 0, 12);
-
+	console.log("old seed fired")
+	/**** CAMERA */
+	Sim.camera.position.set(-4, 0, 12);
 }
 
 
-/**** */
+// Craft entity
+function Craft(x, y, z) {
+	this.x = x || 0;
+	this.y = y || 0;
+	this.z = z || 0;
+};
+Craft.prototype.init = function(origin) {
 
-function render() {
-	requestAnimationFrame(render);
+	var geometry = new THREE.ConeGeometry( 1, 3, 6 ),
+		material = new THREE.MeshBasicMaterial({
+			color: 0xffff00,
+			wireframe: true 
+		});
 
-	//cube.rotation.x += 0.005;
-	//cube.rotation.y += 0.01;
-	//camera.lookAt(cube.position);
+	this.cone = new THREE.Mesh( geometry, material);
+	this.cone.castShadow = true;
+	this.cone.position.set(-6,0,-1)
+	this.cone.rotation.set(0,0,0)
+	this.cone.receiveShadow = true;
 
+	origin.scene.add(this.cone);
 
-	renderer.render(scene, camera);
+	console.log('craft is a go')
 }
+Craft.prototype.update = function() {}
+Craft.prototype.render = function() {}
 
-render();
+
+
+// Land entity 
+function Land(x, y, z) {
+	this.x = x || 0;
+	this.y = y || 0;
+	this.z = z || 0;
+}
+Land.prototype.init = function(origin) {
+
+	
+	/**** GEOMETRY */
+
+	var geometry2 = new THREE.PlaneGeometry(1000,1000,50,50);
+	for (var i = 0, l = geometry2.vertices.length; i < l; i++) {
+		geometry2.vertices[i].z = (Math.random() * i)/200;
+	}
+
+	var material2 = new THREE.MeshPhongMaterial({
+		color: 0xffffff,
+		shading: THREE.FlatShading,
+		//wireframe: true
+	});
+
+	this.plane = new THREE.Mesh(geometry2, material2);
+	this.plane.position.set(30,-10,-40)
+	this.plane.rotation.set(-1.52,0,-3)
+	this.plane.castShadow = true;
+	this.plane.receiveShadow = true;
+	this.plane.geometry.dynamic = true;
+	this.plane.geometry.verticesNeedUpdate = true;
+
+	origin.scene.add(this.plane);
+
+
+	// lighting
+
+	var ambientLight = new THREE.AmbientLight(0x212121)
+	Sim.scene.add(ambientLight);
+
+	var spotLight = new THREE.DirectionalLight(0xffffff, 0.5);
+	spotLight.position.set(200,200,200);
+	spotLight.castShadow = true;
+
+	origin.scene.add(spotLight);
+	
+	
+	console.log('land is a go')
+
+}
+Land.prototype.update = function(origin) {
+
+	var foo = this.plane.geometry.vertices;
+	for (var i = 0, l = foo.length; i < l; i++) {
+		foo[i].z = (Math.random() * 2);
+	}
+	
+	
+	
+}
+Land.prototype.render = function(origin) {}
