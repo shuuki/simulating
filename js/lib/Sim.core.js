@@ -48,7 +48,7 @@ var Sim = {
 		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.setSize(screenWidth / screenPixels, screenHeight / screenPixels, false);
 		this.renderer.shadowMap.enabled = true;
-		//this.renderer.shadowMap.type = THREE.BasicShadowMap;
+		this.renderer.shadowMap.type = THREE.BasicShadowMap;
 		document.body.appendChild(this.renderer.domElement);
 
 		// run updates
