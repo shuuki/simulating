@@ -20,17 +20,20 @@ var deepland = {
 
 // entities
 
-// Craft entity
-function Craft(pos, vel) {
-	this.pos = pos || new THREE.Vector3(0,0,0);
-	this.vel = vel || new THREE.Vector3(0,0,0);
+// Craft
+
+function Craft(position, velocity, orientation) {
+	this.position = position || new THREE.Vector3(0,0,0);
+	this.velocity = velocity || new THREE.Vector3(0,0,0);
+	this.orientation = orientation || new THREE.Vector3(0,0,0);
+			
 	this.mass = 700;
+	
+
 }
 
-Craft.prototype.init = function(origin) {
+Craft.prototype.init = function(sim) {
 
-	origin.camera.position.set(0,-1,0.5)
-	origin.camera.rotation.set(1.6,0,0)
 
 	var geometry = new THREE.ConeGeometry( 1, 3, 6 );
 	var material = new THREE.MeshBasicMaterial({
@@ -40,62 +43,86 @@ Craft.prototype.init = function(origin) {
 
 	this.cone = new THREE.Mesh( geometry, material);
 	this.cone.castShadow = true;
-	this.cone.position.set(this.pos.x,this.pos.y,this.pos.z)
+
+	this.cone.position.set(this.position.x,this.position.y,this.position.z)
+
 	this.cone.rotation.set(-1.6,0,0)
 	this.cone.receiveShadow = true;
 
-	origin.scene.add(this.cone);
+	sim.scene.add(this.cone);
 
-	this.cone.add(origin.camera)
+	this.cone.add(sim.camera)
+	sim.camera.position.set(0,-1,0.5)
+	sim.camera.rotation.set(1.6,0,0)
+
 
 	console.log('craft is a go')
 }
-Craft.prototype.update = function(origin) {
+Craft.prototype.update = function(sim) {
 	
 
-	if (origin.input.isDown(origin.input.W))
+	var thrust, orientation;
+	
+	var drag;
+
+	if (sim.input.isDown(sim.input.W))
 	{
-		this.vel.z -= 0.1 * origin.time.delta / this.mass;
+		this.velocity.z -= 0.1 * sim.time.delta / this.mass;
 	}
-	if (origin.input.isDown(origin.input.S))
+	if (sim.input.isDown(sim.input.S))
 	{
-		this.vel.z += 0.1 * origin.time.delta / this.mass;
+		this.velocity.z += 0.1 * sim.time.delta / this.mass;
 	}
-	if (origin.input.isDown(origin.input.A))
+	if (sim.input.isDown(sim.input.A))
 	{
-		this.vel.x -= 0.1 * origin.time.delta / this.mass;
+		this.velocity.x -= 0.1 * sim.time.delta / this.mass;
 	}
-	if (origin.input.isDown(origin.input.D))
+	if (sim.input.isDown(sim.input.D))
 	{
-		this.vel.x += 0.1 * origin.time.delta / this.mass;
+		this.velocity.x += 0.1 * sim.time.delta / this.mass;
 	}	
-	if (origin.input.isDown(origin.input.UP))
+	if (sim.input.isDown(sim.input.UP))
 	{
-		this.cone.rotation.x -= 0.01;
+		this.orientation.x -= 0.01;
 	}
-	if (origin.input.isDown(origin.input.DOWN))
+	if (sim.input.isDown(sim.input.DOWN))
 	{
-		this.cone.rotation.x += 0.01;
+		this.orientation.x += 0.01;
 	}
-	if (origin.input.isDown(origin.input.LEFT))
+	if (sim.input.isDown(sim.input.LEFT))
 	{
-		this.cone.rotation.y -= 0.01;
+		this.orientation.y -= 0.01;
 	}
-	if (origin.input.isDown(origin.input.RIGHT))
+	if (sim.input.isDown(sim.input.RIGHT))
 	{
 		//this.vel.applyAxisAngle(new THREE.Vector3(0,0,1), 0.01);
-		this.cone.rotation.y += 0.01;
-	}
-	
-	if (origin.input.isDown(origin.input.SPACE))
+		this.orientation.y += 0.01;
+	}	
+	if (sim.input.isDown(sim.input.SPACE))
 	{
-		this.vel = new THREE.Vector3
+		this.velocity = new THREE.Vector3
 	}
 
-	this.cone.position.add(this.vel)
+	this.cone.position.add(this.velocity)
 	
 }
 Craft.prototype.render = function() {}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -105,20 +132,19 @@ function Land(x, y, z) {
 	this.y = y || 0;
 	this.z = z || 0;
 }
-Land.prototype.init = function(origin) {
+Land.prototype.init = function(sim) {
 
 	
 	/**** GEOMETRY */
 
+	// big sphere
 	var geometry = new THREE.SphereGeometry( 1200, 60, 60 );
 	var material = new THREE.MeshPhongMaterial( {color: 0xffff00, shading: THREE.FlatShading} );
 	var sphere = new THREE.Mesh( geometry, material );
 	sphere.position.set(0,-1209.4,0)
 	sphere.castShadow = true;
 	sphere.receiveShadow = true;
-	//origin.scene.add( sphere );
-
-
+	sim.scene.add( sphere );
 
 	var geometry2 = new THREE.PlaneGeometry(1000,1000,50,50);
 	for (var i = 0, l = geometry2.vertices.length; i < l; i++) {
@@ -139,7 +165,7 @@ Land.prototype.init = function(origin) {
 	this.plane.geometry.dynamic = true;
 	this.plane.geometry.verticesNeedUpdate = true;
 	this.plane.geometry.normalsNeedUpdate = true;
-	origin.scene.add(this.plane);
+	sim.scene.add(this.plane);
 
 
 	// lighting
@@ -147,21 +173,23 @@ Land.prototype.init = function(origin) {
 	var ambientLight = new THREE.AmbientLight(0x212121)
 	Sim.scene.add(ambientLight);
 
-	var spotLight = new THREE.PointLight(0xffffff, 0.5);
-	spotLight.position.set(200,200,200);
-	spotLight.castShadow = true;
+	var light = new THREE.PointLight(0xffffff, 0.5);
+	light.position.set(200,200,200);
+	light.shadow.mapSize.width = 1024;
+	light.shadow.mapSize.height = 1024;
+	light.castShadow = true;
 
-	origin.scene.add(spotLight);
+	sim.scene.add(light);
 	
 	
 	console.log('land is a go')
 
 }
-Land.prototype.update = function(origin) {
+Land.prototype.update = function(sim) {
 
 	for (var i = 0, l = this.plane.geometry.vertices.length; i < l; i++) {
 		this.plane.geometry.vertices[i].z = (Math.random() * i)/50;
 	}
 	
 }
-Land.prototype.render = function(origin) {}
+Land.prototype.render = function(sim) {}
