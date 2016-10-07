@@ -23,7 +23,10 @@ function seed()
 {
 	console.log("old seed fired")
 	/**** CAMERA */
-	Sim.camera.position.set(-4, 0, 12);
+	Sim.camera.position.set(0,-1,0.5)
+	Sim.camera.rotation.set(1.6,0,0)
+
+	//Sim.camera.position.set(-4, 0, 12);
 }
 
 
@@ -35,6 +38,7 @@ function Craft(x, y, z) {
 };
 Craft.prototype.init = function(origin) {
 
+
 	var geometry = new THREE.ConeGeometry( 1, 3, 6 ),
 		material = new THREE.MeshBasicMaterial({
 			color: 0xffff00,
@@ -43,15 +47,59 @@ Craft.prototype.init = function(origin) {
 
 	this.cone = new THREE.Mesh( geometry, material);
 	this.cone.castShadow = true;
-	this.cone.position.set(-6,0,-1)
-	this.cone.rotation.set(0,0,0)
+	this.cone.position.set(-2,-1,0)
+	this.cone.rotation.set(-1.6,0,0)
 	this.cone.receiveShadow = true;
 
 	origin.scene.add(this.cone);
 
 	console.log('craft is a go')
 }
-Craft.prototype.update = function() {}
+Craft.prototype.update = function(origin) {
+
+
+	this.cone.add(origin.camera)
+
+	if (origin.input.isDown(origin.input.W))
+	{
+		this.cone.position.y += 0.1;
+	}
+	if (origin.input.isDown(origin.input.S))
+	{
+		this.cone.position.y -= 0.1;
+	}
+	if (origin.input.isDown(origin.input.A))
+	{
+		this.cone.position.z += 0.01;
+	}
+	if (origin.input.isDown(origin.input.D))
+	{
+		this.cone.position.z -= 0.01;
+	}
+	
+	
+	
+	
+	if (origin.input.isDown(origin.input.DOWN))
+	{
+		this.cone.rotation.x += 0.01;
+	}
+	if (origin.input.isDown(origin.input.UP))
+	{
+		this.cone.rotation.x -= 0.01;
+	}
+	
+	
+	if (origin.input.isDown(origin.input.LEFT))
+	{
+		this.cone.rotation.y += 0.01;
+	}
+	if (origin.input.isDown(origin.input.RIGHT))
+	{
+		this.cone.rotation.y -= 0.01;
+	}
+	
+}
 Craft.prototype.render = function() {}
 
 
@@ -66,6 +114,16 @@ Land.prototype.init = function(origin) {
 
 	
 	/**** GEOMETRY */
+
+	var geometry = new THREE.SphereGeometry( 1200, 60, 60 );
+	var material = new THREE.MeshPhongMaterial( {color: 0xffff00, shading: THREE.FlatShading} );
+	var sphere = new THREE.Mesh( geometry, material );
+	sphere.position.set(0,-1209.4,0)
+	sphere.castShadow = true;
+	sphere.receiveShadow = true;
+	//origin.scene.add( sphere );
+
+
 
 	var geometry2 = new THREE.PlaneGeometry(1000,1000,50,50);
 	for (var i = 0, l = geometry2.vertices.length; i < l; i++) {
@@ -106,11 +164,6 @@ Land.prototype.init = function(origin) {
 }
 Land.prototype.update = function(origin) {
 
-	var foo = this.plane.geometry.vertices;
-	for (var i = 0, l = foo.length; i < l; i++) {
-		foo[i].z = (Math.random() * 2);
-	}
-	
 	
 	
 }
