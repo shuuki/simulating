@@ -13,7 +13,7 @@ window.addEventListener('load', function()
 var deepland = {
 	seed: {
 		land: new Land(),
-		craft: new Craft(new THREE.Vector3(-2,5,0))
+		craft: new Craft()
 	}
 }
 
@@ -42,11 +42,8 @@ Craft.prototype.init = function(sim) {
 	});
 
 	this.cone = new THREE.Mesh( geometry, material);
+
 	this.cone.castShadow = true;
-
-	this.cone.position.set(this.position.x,this.position.y,this.position.z)
-
-	this.cone.rotation.set(-1.6,0,0)
 	this.cone.receiveShadow = true;
 
 	sim.scene.add(this.cone);
@@ -60,18 +57,17 @@ Craft.prototype.init = function(sim) {
 }
 Craft.prototype.update = function(sim) {
 	
-
 	var thrust, orientation;
 	
 	var drag;
 
 	if (sim.input.isDown(sim.input.W))
 	{
-		this.velocity.z -= 0.1 * sim.time.delta / this.mass;
+		this.velocity.y -= 0.1 * sim.time.delta / this.mass;
 	}
 	if (sim.input.isDown(sim.input.S))
 	{
-		this.velocity.z += 0.1 * sim.time.delta / this.mass;
+		this.velocity.y += 0.1 * sim.time.delta / this.mass;
 	}
 	if (sim.input.isDown(sim.input.A))
 	{
@@ -104,6 +100,8 @@ Craft.prototype.update = function(sim) {
 	}
 
 	this.cone.position.add(this.velocity)
+	this.cone.rotation.setFromVector3(this.orientation)
+
 	
 }
 Craft.prototype.render = function() {}
@@ -141,7 +139,7 @@ Land.prototype.init = function(sim) {
 	var geometry = new THREE.SphereGeometry( 1200, 60, 60 );
 	var material = new THREE.MeshPhongMaterial( {color: 0xffff00, shading: THREE.FlatShading} );
 	var sphere = new THREE.Mesh( geometry, material );
-	sphere.position.set(0,-1209.4,0)
+	sphere.position.set(600, 1200, -1200)
 	sphere.castShadow = true;
 	sphere.receiveShadow = true;
 	sim.scene.add( sphere );
@@ -170,13 +168,13 @@ Land.prototype.init = function(sim) {
 
 	// lighting
 
-	var ambientLight = new THREE.AmbientLight(0x212121)
+	var ambientLight = new THREE.AmbientLight(0x440044)
 	Sim.scene.add(ambientLight);
 
 	var light = new THREE.PointLight(0xffffff, 0.5);
 	light.position.set(200,200,200);
-	light.shadow.mapSize.width = 1024;
-	light.shadow.mapSize.height = 1024;
+	//light.shadow.mapSize.width = 1024;
+	//light.shadow.mapSize.height = 1024;
 	light.castShadow = true;
 
 	sim.scene.add(light);
