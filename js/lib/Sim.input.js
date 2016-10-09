@@ -23,6 +23,8 @@ Sim.input = {
   A: 65,
   S: 83,
   D: 68,
+  R: 82,
+  F: 70, 
   SPACE: 32,
   ENTER: 13,
   SHIFT: 16,
