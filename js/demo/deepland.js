@@ -162,10 +162,14 @@ Craft.prototype.update = function( sim )
 	// expose the rotation vector for convenience
 	this.cone.rotation.setFromQuaternion(this.cone.quaternion, this.cone.rotation.order);
 
+var latest = new THREE.Vector3( this.cone.position.x, this.cone.position.y, this.cone.position.z)
 
-
-	var latest = new THREE.Vector3(this.cone.position.x, this.cone.position.y, this.cone.position.z)
 	this.line.geometry.vertices.push( latest );
+
+	this.history.push( latest ) 
+	if (history.length > 200) {
+		history.shift();
+	}
 	this.line.geometry.verticesNeedUpdate = true;
 
 
@@ -243,13 +247,22 @@ function Land() {}
 Land.prototype.init = function(sim)
 {
 	// geometry
+
+	// noise helper
+	var gen = new SimplexNoise();
+	function noise( nx, ny, mult ) {
+		return gen.noise2D( nx, ny ) * mult;
+	}
+	function noise3( nx, ny, nz, mult ) {
+		return gen.noise2D( nx, ny, nz ) * mult;
+	}
+	
 	
 	// little sphere
 	var geometry = new THREE.IcosahedronGeometry( 1200, 3 );
 	for (var i = 0, l = geometry.faces.length; i < l; i++) {
 		geometry.faces[i].color.setHSL( Math.random() * 2 + 0.2, 0.1, 0.5 )
 	}
-	
 	var material = new THREE.MeshPhongMaterial({
 		color: 0xffff00,
 		shading: THREE.FlatShading,
@@ -277,23 +290,20 @@ Land.prototype.init = function(sim)
 	
 	// plane
 	
-	var plane = new THREE.PlaneGeometry( 100, 100, 20, 20 );
 
-	var gen = new SimplexNoise();
-	function noise( nx, ny, mult ) {
-	  return gen.noise2D( nx, ny ) * mult;
-	}
+	
+	var plane = new THREE.PlaneGeometry( 1000, 1000, 20, 20 );
 
 	for (var i = 0, l = plane.vertices.length; i < l; i++) {
-
-		var width = 100,
-			height = 100,
+		var width = 1000,
+			height = 1000,
 			nx = plane.vertices[i].x / width - 0.5,
 			ny = plane.vertices[i].y / height - 0.5;
 
-		plane.vertices[i].z = noise(1 * nx, 1 * ny, 12)
-												+ noise(3 * nx, 3 * ny, 3)
-												+ noise(6 * nx, 6 * ny, 1);
+		plane.vertices[i].z = noise(1 * nx, 2 * ny, 32)
+												+ noise(2 * nx, 2 * ny, 16)
+												+ noise(3 * nx, 3 * ny, 4)
+												+ noise(8 * nx, 8 * ny, 8);
 
 	}
 	var material2 = new THREE.MeshPhongMaterial({
