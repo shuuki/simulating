@@ -22,19 +22,32 @@ var deepland = {
 
 // Craft
 
-function Craft(position, velocity, orientation) {
-	this.position = position || new THREE.Vector3(0,0,0);
-	this.velocity = velocity || new THREE.Vector3(0,0,0);
-	this.orientation = orientation || new THREE.Vector3(0,0,0);
-			
-	this.mass = 700;
-	
+function Craft(position, velocity, orientation)
+{
+
+	this.mass = 50000;
+
+	this.movementSpeed = 5;
+	this.rollSpeed = 0.1;
+
+	this.moveState = {
+		up: 0, down: 0, left: 0, right: 0,
+		forward: 0, back: 0,
+		pitchUp: 0, pitchDown: 0,
+		yawLeft: 0, yawRight: 0,
+		rollLeft: 0, rollRight: 0
+	};
+	this.moveVector = new THREE.Vector3( 0, 0, 0 );
+	this.rotationVector = new THREE.Vector3( 0, 0, 0 );
+	this.tmpQuaternion = new THREE.Quaternion();
+
 
 }
-
-Craft.prototype.init = function(sim) {
-
-
+Craft.prototype.init = function(sim)
+{
+	
+	var delta = sim.time.delta;
+	
 	var geometry = new THREE.ConeGeometry( 1, 3, 6 );
 	var material = new THREE.MeshBasicMaterial({
 		color: 0xffff00,
@@ -42,69 +55,113 @@ Craft.prototype.init = function(sim) {
 	});
 
 	this.cone = new THREE.Mesh( geometry, material);
-
 	this.cone.castShadow = true;
 	this.cone.receiveShadow = true;
 
+	// add cone to scene
 	sim.scene.add(this.cone);
 
+	// add camera to cone
 	this.cone.add(sim.camera)
 	sim.camera.position.set(0,-1,0.5)
-	sim.camera.rotation.set(1.6,0,0)
+	sim.camera.rotation.set(0,0,0)
 
 
 	console.log('craft is a go')
 }
-Craft.prototype.update = function(sim) {
+Craft.prototype.update = function(sim)
+{
 	
-	var thrust, orientation;
+
+	
+	var thrust;
 	
 	var drag;
 
-	if (sim.input.isDown(sim.input.W))
-	{
-		this.velocity.y -= 0.1 * sim.time.delta / this.mass;
-	}
-	if (sim.input.isDown(sim.input.S))
-	{
-		this.velocity.y += 0.1 * sim.time.delta / this.mass;
-	}
-	if (sim.input.isDown(sim.input.A))
-	{
-		this.velocity.x -= 0.1 * sim.time.delta / this.mass;
-	}
-	if (sim.input.isDown(sim.input.D))
-	{
-		this.velocity.x += 0.1 * sim.time.delta / this.mass;
-	}	
-	if (sim.input.isDown(sim.input.UP))
-	{
-		this.orientation.x -= 0.01;
-	}
-	if (sim.input.isDown(sim.input.DOWN))
-	{
-		this.orientation.x += 0.01;
-	}
+
+
+
 	if (sim.input.isDown(sim.input.LEFT))
 	{
-		this.orientation.y -= 0.01;
-	}
-	if (sim.input.isDown(sim.input.RIGHT))
-	{
-		//this.vel.applyAxisAngle(new THREE.Vector3(0,0,1), 0.01);
-		this.orientation.y += 0.01;
-	}	
-	if (sim.input.isDown(sim.input.SPACE))
-	{
-		this.velocity = new THREE.Vector3
+		this.moveState.rollLeft += 1;
 	}
 
-	this.cone.position.add(this.velocity)
-	this.cone.rotation.setFromVector3(this.orientation)
+	if (sim.input.isDown(sim.input.RIGHT))
+	{
+		this.moveState.rollRight += 1;
+	}
+
+
+	if (sim.input.isDown(sim.input.W)) { this.moveState.forward += 1; }
+
+	if (sim.input.isDown(sim.input.S)) { this.moveState.back += 1; }
+
+	if (sim.input.isDown(sim.input.A)) { this.moveState.left += 1; }
+	
+	if (sim.input.isDown(sim.input.D)) { this.moveState.right += 1; }
+ 	
+	if (sim.input.isDown(sim.input.DOWN)) { this.moveState.pitchUp += 1; }
+
+	if (sim.input.isDown(sim.input.UP)) { this.moveState.pitchDown += 1; }
+
+	if (sim.input.isDown(sim.input.Q)) { this.moveState.yawLeft += 1; }
+
+	if (sim.input.isDown(sim.input.E)) { this.moveState.yawRight += 1; }	
+
+
+
+	if (sim.input.isDown(sim.input.SPACE)) { }
+
+	if (sim.input.isDown(sim.input.SHIFT))
+	{  }
+
+
+
+
+
+	this.rotationVector.x = ( - this.moveState.pitchDown + this.moveState.pitchUp );
+	this.rotationVector.y = ( - this.moveState.yawRight  + this.moveState.yawLeft );
+	this.rotationVector.z = ( - this.moveState.rollRight + this.moveState.rollLeft );
+
+	//console.log( 'rotate:', [ this.rotationVector.x, this.rotationVector.y, this.rotationVector.z ] );
+
+	this.moveVector.x = ( - this.moveState.left    + this.moveState.right );
+	this.moveVector.y = ( - this.moveState.down    + this.moveState.up );
+	this.moveVector.z = ( - this.moveState.forward + this.moveState.back );
+
+
+
+	//console.log( 'move:', [ this.moveVector.x, this.moveVector.y, this.moveVector.z ] );
+
+	var moveMult = sim.time.delta * this.movementSpeed / this.mass ;
+	var rotMult = sim.time.delta * this.rollSpeed / this.mass;
+
+	
+
+	this.cone.translateX( this.moveVector.x * moveMult );
+	this.cone.translateY( this.moveVector.y * moveMult );
+	this.cone.translateZ( this.moveVector.z * moveMult );
+
+	this.tmpQuaternion.set( this.rotationVector.x * rotMult, this.rotationVector.y * rotMult, this.rotationVector.z * rotMult, 1 ).normalize();
+	this.cone.quaternion.multiply( this.tmpQuaternion );
+
+	// expose the rotation vector for convenience
+	this.cone.rotation.setFromQuaternion( this.cone.quaternion, this.cone.rotation.order );
+
+
+
+	//this.cone.rotation.set(this.rotationVector)
+
+	//this.cone.rotation.setFromVector3(this.orientation)
+
+	//this.cone.position.add(this.velocity)
 
 	
 }
-Craft.prototype.render = function() {}
+Craft.prototype.render = function() {
+
+
+}
 
 
 
