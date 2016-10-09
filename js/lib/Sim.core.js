@@ -44,7 +44,7 @@ var Sim = {
 
 		// set up three.js
 		this.scene = new THREE.Scene();
-		this.camera = new THREE.PerspectiveCamera(70, screenWidth / screenHeight, 0.1, 100000);
+		this.camera = new THREE.PerspectiveCamera(70, screenWidth / screenHeight, 0.1, 10000000);
 		this.renderer = new THREE.WebGLRenderer();
 		this.renderer.setSize(screenWidth / screenPixels, screenHeight / screenPixels, false);
 		this.renderer.shadowMap.enabled = true;
