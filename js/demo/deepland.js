@@ -43,14 +43,22 @@ function Craft( position, velocity, orientation )
 	this.movementSpeed = 50;
 	this.rollSpeed = 4;
 
-	this.moveState = {
-		up: 0, down: 0,
-		left: 0, right: 0,
-		forward: 0, back: 0,
-		pitchUp: 0, pitchDown: 0,
-		yawLeft: 0, yawRight: 0,
-		rollLeft: 0, rollRight: 0
-	};
+
+
+	this.moveState = {};
+	
+	this.resetMoveState = function()
+	{
+		this.moveState = {
+			up: 0, down: 0,
+			left: 0, right: 0,
+			forward: 0, back: 0,
+			pitchUp: 0, pitchDown: 0,
+			yawLeft: 0, yawRight: 0,
+			rollLeft: 0, rollRight: 0
+		}
+	}
+	this.resetMoveState();
 
 	this.moveVector = new THREE.Vector3( 0, 0, 0 );
 	this.rotationVector = new THREE.Vector3( 0, 0, 0 );
@@ -137,7 +145,7 @@ Craft.prototype.update = function( sim )
 	
 	if (sim.input.isDown(sim.input.SPACE))
 	{
-		brakes = 0.985;
+		brakes = 0.95;
 
 		var queue = (Object.keys(this.moveState));
 		while (queue.length > 0)
@@ -145,24 +153,29 @@ Craft.prototype.update = function( sim )
 			this.moveState[queue[0]] = this.moveState[queue[0]] * brakes;
 			queue.shift()
 		}
+
 	}
 
 
 	// update rotation vector
-
 	this.rotationVector.x = ( - this.moveState.pitchDown + this.moveState.pitchUp );
 	this.rotationVector.y = ( - this.moveState.yawRight  + this.moveState.yawLeft );
 	this.rotationVector.z = ( - this.moveState.rollRight + this.moveState.rollLeft );
 	//console.log( 'rotate:', [ this.rotationVector.x, this.rotationVector.y, this.rotationVector.z ] );
 
-
 	// update movement vector
-
 	this.moveVector.x = ( - this.moveState.left + this.moveState.right );
 	this.moveVector.y = ( - this.moveState.down + this.moveState.up );
 	this.moveVector.z = ( - this.moveState.forward + this.moveState.back );
 	//console.log( 'move:', [ this.moveVector.x, this.moveVector.y, this.moveVector.z ] );
 	//console.log(this.moveVector)
+
+	var speed = this.moveVector.length();
+	if (speed > 0 && speed < 0.1)
+	{		
+		this.resetMoveState();
+	}
+
 	
 
 	this.cone.translateX( this.moveVector.x * moveMult );
@@ -196,27 +209,6 @@ Craft.prototype.update = function( sim )
 
 	
 }
-Craft.prototype.render = function(sim) {
-
-
-
-
-
-	// update plane and reset for next turn
-	//	for (var i = 0, l = this.history.length; i < l; i++) {
-			
-	//	}
-	//	for (var key = 0; key < this.history.length; key++)
-	//	{
-			//context.lineTo(this.history[key].x, this.history[key].y);
-	//	}
-		//context.strokeStyle = 'rgba(0,255,255,0.3)';
-
-
-
-
-
-}
 
 
 function Light() {}
@@ -242,7 +234,6 @@ Light.prototype.init = function(sim)
 		
 }
 Light.prototype.update = function(sim) {}
-Light.prototype.render = function(sim) {}
 
 
 // Land entity 
@@ -256,6 +247,7 @@ Land.prototype.init = function(sim)
 	function noise( nx, ny, mult ) {
 		return gen.noise2D( nx, ny ) * mult;
 	}
+	// http://www.redblobgames.com/maps/terrain-from-noise/#demo
 
 	// little sphere
 	var geometry = new THREE.IcosahedronGeometry( 1200, 3 );
@@ -345,4 +337,3 @@ Land.prototype.update = function(sim)
 	this.sphere2.rotation.y += 0.00005;
 
 }
-Land.prototype.render = function(sim) {}
