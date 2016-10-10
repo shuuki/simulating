@@ -79,8 +79,6 @@ var Sim = {
 	render: function()
 	{
 		// draw all entities
-		this.entity.batch(this, 2);
-
 		this.renderer.render(this.scene, this.camera);
 	},
 
@@ -134,10 +132,6 @@ Sim.entity = {
 			if (step === 1)
 			{
 				this.active[this.queue[0]].update(origin);
-			}
-			if (step === 2)
-			{
-				this.active[this.queue[0]].render(origin);
 			}
 			
 			// delete top entry

@@ -19,6 +19,19 @@ var deepland = {
 }
 
 
+// wish list:
+
+// motion independent of orientation
+
+// collision
+
+// gravity
+
+// be able to update land geometry
+
+// play sounds
+
+
 // entities
 
 // Craft
@@ -27,7 +40,7 @@ function Craft( position, velocity, orientation )
 {
 
 	this.mass = 1980;
-	this.movementSpeed = 35;
+	this.movementSpeed = 50;
 	this.rollSpeed = 4;
 
 	this.moveState = {
@@ -104,11 +117,11 @@ Craft.prototype.update = function( sim )
 	if (sim.input.isDown(sim.input.UP))  { this.moveState.pitchDown += 1; this.moveState.pitchUp -= 1; }
 	if (sim.input.isDown(sim.input.DOWN)) { this.moveState.pitchUp += 1; this.moveState.pitchDown -= 1; }
 
-	if (sim.input.isDown(sim.input.LEFT)) { this.moveState.rollLeft += 1; this.moveState.rollRight -= 1; }
-	if (sim.input.isDown(sim.input.RIGHT)) { this.moveState.rollRight += 1; this.moveState.rollLeft -= 1; }
+	if (sim.input.isDown(sim.input.Q)) { this.moveState.rollLeft += 1; this.moveState.rollRight -= 1; }
+	if (sim.input.isDown(sim.input.E)) { this.moveState.rollRight += 1; this.moveState.rollLeft -= 1; }
 
-	if (sim.input.isDown(sim.input.Q)) { this.moveState.yawLeft += 1; this.moveState.yawRight -= 1; }
-	if (sim.input.isDown(sim.input.E)) { this.moveState.yawRight += 1; this.moveState.yawLeft -= 1; }	
+	if (sim.input.isDown(sim.input.LEFT)) { this.moveState.yawLeft += 1; this.moveState.yawRight -= 1; }
+	if (sim.input.isDown(sim.input.RIGHT)) { this.moveState.yawRight += 1; this.moveState.yawLeft -= 1; }	
 
 	if (sim.input.isDown(sim.input.W)) { this.moveState.forward += 1; this.moveState.back -= 1; }
 	if (sim.input.isDown(sim.input.S)) { this.moveState.back += 1; this.moveState.forward -= 1; }
@@ -162,15 +175,15 @@ Craft.prototype.update = function( sim )
 	// expose the rotation vector for convenience
 	this.cone.rotation.setFromQuaternion(this.cone.quaternion, this.cone.rotation.order);
 
-var latest = new THREE.Vector3( this.cone.position.x, this.cone.position.y, this.cone.position.z)
+	//var latest = new THREE.Vector3( this.cone.position.x, this.cone.position.y, this.cone.position.z)
 
-	this.line.geometry.vertices.push( latest );
+	//this.line.geometry.vertices.push( latest );
 
-	this.history.push( latest ) 
-	if (history.length > 200) {
-		history.shift();
-	}
-	this.line.geometry.verticesNeedUpdate = true;
+	//this.history.push( latest ) 
+	//if (history.length > 200) {
+	//	history.shift();
+	//}
+	//this.line.geometry.verticesNeedUpdate = true;
 
 
 
@@ -190,29 +203,20 @@ Craft.prototype.render = function(sim) {
 
 
 	// update plane and reset for next turn
-//	for (var i = 0, l = this.history.length; i < l; i++) {
-		
-//	}
-//	for (var key = 0; key < this.history.length; key++)
-//	{
-		//context.lineTo(this.history[key].x, this.history[key].y);
-//	}
-	//context.strokeStyle = 'rgba(0,255,255,0.3)';
+	//	for (var i = 0, l = this.history.length; i < l; i++) {
+			
+	//	}
+	//	for (var key = 0; key < this.history.length; key++)
+	//	{
+			//context.lineTo(this.history[key].x, this.history[key].y);
+	//	}
+		//context.strokeStyle = 'rgba(0,255,255,0.3)';
 
 
 
 
 
 }
-
-
-// wish list:
-// motion independent of orientation
-// collision
-// gravity
-// be able to update land geometry
-// play sounds
-
 
 
 function Light() {}
@@ -241,7 +245,6 @@ Light.prototype.update = function(sim) {}
 Light.prototype.render = function(sim) {}
 
 
-
 // Land entity 
 function Land() {}
 Land.prototype.init = function(sim)
@@ -253,11 +256,7 @@ Land.prototype.init = function(sim)
 	function noise( nx, ny, mult ) {
 		return gen.noise2D( nx, ny ) * mult;
 	}
-	function noise3( nx, ny, nz, mult ) {
-		return gen.noise2D( nx, ny, nz ) * mult;
-	}
-	
-	
+
 	// little sphere
 	var geometry = new THREE.IcosahedronGeometry( 1200, 3 );
 	for (var i = 0, l = geometry.faces.length; i < l; i++) {
@@ -275,7 +274,6 @@ Land.prototype.init = function(sim)
 	sim.scene.add(this.sphere1);
 
 	// big sphere
-
 	var geometry = new THREE.IcosahedronGeometry( 3700, 2 );
 	var material = new THREE.MeshPhongMaterial({
 		color: 0xffffff,
@@ -289,9 +287,6 @@ Land.prototype.init = function(sim)
 
 	
 	// plane
-	
-
-	
 	var plane = new THREE.PlaneGeometry( 1000, 1000, 20, 20 );
 
 	for (var i = 0, l = plane.vertices.length; i < l; i++) {
@@ -322,7 +317,6 @@ Land.prototype.init = function(sim)
 	sim.scene.add(this.plane);
 
 	// sky
-
 	var skyGeometry = new THREE.SphereGeometry( 1000000, 10, 10 );
 	var skyMaterial = new THREE.MeshBasicMaterial({
 		// maybe texture?
@@ -332,7 +326,6 @@ Land.prototype.init = function(sim)
 	});
 	this.sky = new THREE.Mesh(skyGeometry, skyMaterial);
 	sim.scene.add(this.sky);
-
 
 	// init done
 	console.log('land is a go')
