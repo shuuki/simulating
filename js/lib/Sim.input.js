@@ -88,3 +88,12 @@ window.addEventListener('mousedown', function()
 	//console.log(event.type, event.x, event.y)
 	//console.log(Sim.input.active)
 }, false);
+
+
+// load
+
+window.addEventListener('load', function()
+{
+	//Sim.init(intro);
+	//Sim.start();
+}, false);
