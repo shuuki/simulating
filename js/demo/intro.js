@@ -1,25 +1,13 @@
 
-// load
-
-window.addEventListener('load', function()
-{
-	Sim.test();
-	Sim.init(intro);
-	Sim.start();
-}, false);
 
 
-// seed
 
-var intro = {
-	display: {
-		width: 320,
-		height: 200
-	},
+var sim = new Sim().init({
 	seed: {
 		ticker: new Ticker(),
+		ticker2: new Ticker()
 	}
-}
+});
 
 
 // little thing that ticks in one second increments
@@ -28,13 +16,18 @@ function Ticker()
 {
 	this.time = 0;
 }
-Ticker.prototype.update = function(origin)
+
+Ticker.prototype.init = function()
 {
-	var delta = origin.time.delta;
-	this.time += (delta / 1000);
-}
-Ticker.prototype.draw = function(origin)
+	this.time = Math.random() * 3;
+}	
+
+Ticker.prototype.render = function(origin)
 {
-	var context = origin.context;
-	context.fillText(this.time.toFixed(0), 12, (context.canvas.height - 12));
+	console.log(this.time)
+}	
+
+Ticker.prototype.update = function(time)
+{
+this.time += (time.delta / 1000);
 }
