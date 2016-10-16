@@ -83,17 +83,13 @@ Sim.prototype = {
 
 function Time()
 {
-
-	this.frame = 0
-	this.up = 0
-
-  this.advancing = null;
 	this.delta = 0
-
+	this.up = 0
+	this.frame = 0
 	this.steps = 0;
 	this.stepsRemaining = 0;
-  this.lastUpdated = new Date().getTime();
-
+	this.advancing = false;
+	this.lastUpdated = new Date().getTime();
 }
 Time.prototype = {
 	update: function()
@@ -101,13 +97,14 @@ Time.prototype = {
 	  var now = new Date().getTime();
 		var delta = now - this.lastUpdated;
 		
+		// cap delta at 100ms
 		if (delta > 100) 
 		{
 			delta = 100;
 		}
 
-
 		this.delta = delta;
+
 		// reset steps if exceeds ?? Number.MAX_VALUE ??
 		this.steps ++;
 		this.up += this.delta;
@@ -136,14 +133,13 @@ Time.prototype = {
 	  else if (this.stepsRemaining <= 0)
 	  {
 	    clearInterval(this.advancing);
-	    this.advancing = null;
+	    this.advancing = false;
 	    this.stepsRemaining = 0;
 	  }
 	  
 	  this.update();
 	}
 }
-
 
 
 function Scene (seed)
