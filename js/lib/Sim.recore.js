@@ -1,13 +1,10 @@
 /** the simulation */
 
-function Sim ()
+function Sim (config)
 {
-	// proof of life
-	console.log('Sim ready');
-
+	this.init(config);
 	return this;
 }
-
 Sim.prototype = {
 	init: function(config)
 	{
@@ -24,9 +21,9 @@ Sim.prototype = {
 				this.time = new Time;
 			}
 			// set entities
-			if (config.seed)
+			if (config.scene)
 			{
-				this.scene = new Scene(config.seed);
+				this.scene = new Scene(config.scene);
 			}
 			else {
 				this.scene = new Scene;
@@ -39,22 +36,19 @@ Sim.prototype = {
 			this.time = new Time;
 			this.scene = new Scene;
 		}
-		
-		this.time.update()
 
-		// send the scene a message to initialize
-		//this.scene.step('init', this.time);
-
+		console.log('Sim ready', this.time.lastUpdated);
 		return this;
 	},
-	// main loop heartbeat
 	update: function()
 	{
+		// main loop heartbeat
+
 		// update clock
 		this.time.update();
 
 		// start the next frame
-		this.time.running = requestAnimationFrame(this.update.bind(this));
+		this.time.frame = requestAnimationFrame(this.update.bind(this));
 
 		// run updates for current time
 		this.scene.step('update', this.time);
@@ -62,35 +56,32 @@ Sim.prototype = {
 		// render scene
 		this.render();
 	},
-
 	render: function()
 	{
 		// draw all entities
 		this.scene.step('render', this.time);
 		//this.renderer.render(this.scene, this.camera);
 	},
-
-	// start / stop updates
 	start: function()
 	{
-		if (!this.time.running)
+		// start / stop updates
+		if (!this.time.frame)
 		{
 			this.update();
 		}
 	},
 	stop: function()
 	{
-		window.cancelAnimationFrame(this.time.running);
-		this.time.running = false;
+		window.cancelAnimationFrame(this.time.frame);
+		this.time.frame = false;
 	},
 }
-
 
 
 function Time()
 {
 
-	this.running = 0
+	this.frame = 0
 	this.up = 0
 
   this.playing = null;
@@ -101,28 +92,35 @@ function Time()
   this.lastUpdated = new Date().getTime();
 
 }
-
 Time.prototype = {
 	update: function()
 	{
 	  var now = new Date().getTime();
-	  this.delta = now - this.lastUpdated;
+		var delta = now - this.lastUpdated;
+		
+		if (delta > 100) 
+		{
+			delta = 100;
+		}
 
-	  //console.log('update', this)
 
+		this.delta = delta;
 		// reset steps if exceeds ?? Number.MAX_VALUE ??
 		this.steps ++;
 		this.up += this.delta;
 	  this.lastUpdated = now;
 
+		//console.log('update', this)
 	  return this;
 	},
-	advance: function(steps)
+	advance: function(steps, refresh)
 	{
+		var ms = refresh || 0;
+		
 		this.stepsRemaining += steps;
 		if (!this.playing)
 		{
-			this.playing = setInterval(this.step.bind(this), 0);
+			this.playing = setInterval(this.step.bind(this), ms);
 		}
 		return this;
 	},
@@ -261,15 +259,15 @@ Scene.prototype = {
 	{
 		for (var i in this.active)
 		{
-			if (this.active[i][ref])
+			if (!this.active[i][ref])
 			{
-				this.active[i][ref](time)
 			}
-			
+			else {
+				this.active[i][ref](time);
+			}
 		}
 		return this;		
 
-		
 		//'init', 'update', 'render'
 	}
 
