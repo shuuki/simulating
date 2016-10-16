@@ -61,6 +61,7 @@ Sim.prototype = {
 		// draw all entities
 		this.scene.step('render', this.time);
 		//this.renderer.render(this.scene, this.camera);
+		return this;
 	},
 	start: function()
 	{
@@ -69,11 +70,13 @@ Sim.prototype = {
 		{
 			this.update();
 		}
+		return this;
 	},
 	stop: function()
 	{
 		window.cancelAnimationFrame(this.time.frame);
 		this.time.frame = false;
+		return this;
 	},
 }
 
@@ -84,7 +87,7 @@ function Time()
 	this.frame = 0
 	this.up = 0
 
-  this.playing = null;
+  this.advancing = null;
 	this.delta = 0
 
 	this.steps = 0;
@@ -118,9 +121,9 @@ Time.prototype = {
 		var ms = refresh || 0;
 		
 		this.stepsRemaining += steps;
-		if (!this.playing)
+		if (!this.advancing)
 		{
-			this.playing = setInterval(this.step.bind(this), ms);
+			this.advancing = setInterval(this.step.bind(this), ms);
 		}
 		return this;
 	},
@@ -132,8 +135,8 @@ Time.prototype = {
 	  }
 	  else if (this.stepsRemaining <= 0)
 	  {
-	    clearInterval(this.playing);
-	    this.playing = null;
+	    clearInterval(this.advancing);
+	    this.advancing = null;
 	    this.stepsRemaining = 0;
 	  }
 	  
@@ -170,7 +173,6 @@ function Scene (seed)
 	// queue of entities actively being processed
 	this.queue = [];
 }
-
 Scene.prototype = {
 	// entity management
 	// add new active entity, as long as id is not in use
@@ -257,19 +259,16 @@ Scene.prototype = {
 	},
 	step: function (ref, time)
 	{
+		// steps to give active entities a chance to update
+		// currently only 'update' or 'render'
 		for (var i in this.active)
 		{
-			if (!this.active[i][ref])
+			//console.log(this.active[i])
+			if (this.active[i][ref])
 			{
-			}
-			else {
-				this.active[i][ref](time);
+				this.active[i][ref](time, this)
 			}
 		}
-		return this;		
-
-		//'init', 'update', 'render'
+		return this;
 	}
-
-
 }
