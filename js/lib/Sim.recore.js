@@ -1,4 +1,5 @@
-/** the simulation */
+// THE SIMULATION
+///////////////////////////////////
 
 function Sim (config)
 {
@@ -33,6 +34,7 @@ Sim.prototype = {
 		// set empty config if none is passed
 		else
 		{
+			this.config = {};
 			this.time = new Time;
 			this.scene = new Scene;
 		}
@@ -50,17 +52,22 @@ Sim.prototype = {
 		// start the next frame
 		this.time.frame = requestAnimationFrame(this.update.bind(this));
 
-		// run updates for current time
+		// send scene a request for updates at current time 
 		this.scene.step('update', this.time);
 
 		// render scene
 		this.render();
+		
+		return this;
 	},
 	render: function()
 	{
 		// draw all entities
-		this.scene.step('render', this.time);
 		//this.renderer.render(this.scene, this.camera);
+
+		// send scene a request for rendering updates
+		this.scene.step('render', this.time);
+
 		return this;
 	},
 	start: function()
@@ -78,14 +85,15 @@ Sim.prototype = {
 		this.time.frame = false;
 		return this;
 	},
-}
+};
 
+///////////////////////////////////
 
 function Time()
 {
-	this.delta = 0
-	this.up = 0
-	this.frame = 0
+	this.delta = 0;
+	this.up = 0;
+	this.frame = 0;
 	this.steps = 0;
 	this.stepsRemaining = 0;
 	this.advancing = false;
@@ -141,6 +149,7 @@ Time.prototype = {
 	}
 }
 
+///////////////////////////////////
 
 function Scene (seed)
 {
@@ -268,3 +277,5 @@ Scene.prototype = {
 		return this;
 	}
 }
+
+///////////////////////////////////

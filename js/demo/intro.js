@@ -18,20 +18,22 @@ function Ticker(name, increment)
 	this.tick = 0;
 	this.tock = false;
 }
-Ticker.prototype.update = function(time)
+Ticker.prototype.update = function(time, scene)
 {
 	// increment a tock once every three seconds
 	this.time += time.delta / 1000;
 	this.tock = false;
 
+	// set tock to true and decrement by ticker's increment 
 	while (this.time >= this.increment) {
 		this.time -= this.increment;
 		this.tick += 1;
 		this.tock = true;
 	}
 }
-Ticker.prototype.render = function()
-{
+Ticker.prototype.render = function(time, scene)
+{		
+	//console.log(time, scene)
 	if (this.tock) {
 		console.log(this.name, this.tick)
 	}	
