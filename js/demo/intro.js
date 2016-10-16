@@ -1,33 +1,38 @@
+// 
 
-
-
-
-var sim = new Sim().init({
-	seed: {
-		ticker: new Ticker(),
-		ticker2: new Ticker()
+var sim = new Sim({
+	scene: {
+		ticker: new Ticker('bip', 1),
+		ticker2: new Ticker('BOP', 2.5)
 	}
-});
+}).start();
 
 
-// little thing that ticks in one second increments
+// ticker: a little thing that increments once every n seconds
 
-function Ticker()
+function Ticker(name, increment)
 {
+	this.name = name;
+	this.increment = increment;
 	this.time = 0;
+	this.tick = 0;
+	this.tock = false;
 }
-
-Ticker.prototype.init = function()
-{
-	this.time = Math.random() * 3;
-}	
-
-Ticker.prototype.render = function(origin)
-{
-	console.log(this.time)
-}	
-
 Ticker.prototype.update = function(time)
 {
-this.time += (time.delta / 1000);
+	// increment a tock once every three seconds
+	this.time += time.delta / 1000;
+	this.tock = false;
+
+	while (this.time >= this.increment) {
+		this.time -= this.increment;
+		this.tick += 1;
+		this.tock = true;
+	}
 }
+Ticker.prototype.render = function()
+{
+	if (this.tock) {
+		console.log(this.name, this.tick)
+	}	
+}	
