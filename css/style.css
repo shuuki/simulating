@@ -1,33 +1,36 @@
 body {
 	background: #f9f9fc;
-	color: #111;
+	color: #1e1a1c;
+	font-family: sans-serif;
 	margin: 0;
-	font-family: monospace;
+	overflow: hidden;
 }
 
 canvas {
 	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAAAAACo4kLRAAAAF0lEQVR4AWN4DQcP4WBoCyKYCOkhLQgA355ncNg2H2MAAAAASUVORK5CYII=');
+	height: 100%;
+  width: 100%;
+  margin: 0;
 }
 
 button {
-	background: rgba(255,255,255,0.5);
+	background: rgba(0,0,0,0.2);
+	color: rgba(255,255,255,0.2);
 	border: none;
 	font-family: inherit;
 	font-size: 1em;
-	padding: 1em 0.5em;
+	padding: 0.5em;
 	margin: 0;
 	user-select: none;
 	outline: none;
 }
 button:hover {
-	background: #e8e8ef;
+	background: rgba(0,0,0,0.8);
+	color: rgba(255,255,255,0.8);
 }
 button:active {
-	background: #a9a9af;
-}
-
-hr {
-	border: 2px solid #fff;
+	background: rgba(0,0,0,0.1);
+	color: rgba(255,255,255,0.1);
 }
 
 #controls {
