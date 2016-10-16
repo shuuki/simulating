@@ -15,7 +15,7 @@ canvas {
 
 button {
 	background: rgba(0,0,0,0.2);
-	color: rgba(255,255,255,0.2);
+	color: rgba(255,255,255,0.8);
 	border: none;
 	font-family: inherit;
 	font-size: 1em;
@@ -26,16 +26,14 @@ button {
 }
 button:hover {
 	background: rgba(0,0,0,0.8);
-	color: rgba(255,255,255,0.8);
 }
 button:active {
-	background: rgba(0,0,0,0.1);
-	color: rgba(255,255,255,0.1);
+	background: rgba(0,0,0,0.5);
 }
 
 #controls {
 	position: fixed;
-	bottom: 0;
-	left: 0;
-	padding: 1em;
+	top: 0;
+	right: 0;
+	padding: 0.5em;
 }
