@@ -2,23 +2,24 @@
 
 var sim = new Sim({
 	scene: {
-		landscape: new BattleLine('plains')
+		landscape: new Walk('plains')
 	}
 }).start();
 
 ////////////
 
-function BattleLine(type)
+function Walk(type)
 {
 	this.type = type;
-	this.background = new Field(16);
-	this.foreground = new Field(15);
 
-	this.refresh = 250;
+	this.background = new Field(16);
+	this.foreground = new Field(16);
+
 	this.time = 0;
-	this.tick = 0;
+	this.step = 0;
+	this.refresh = 250;
 }
-BattleLine.prototype.update = function(time, scene)
+Walk.prototype.update = function(time, scene)
 {
 	this.time += time.delta;
 	this.updated = false;
@@ -29,17 +30,24 @@ BattleLine.prototype.update = function(time, scene)
 		this.foreground.add(spawn.foreground);
 
 		this.time -= this.refresh;
-		this.tick += 1;
+		this.step += 1;
 		this.updated = true;
+		
+		if (this.foreground.isOccupied(0))
+		{
+			console.log('encounter')
+			//this.refresh = 5000;
+		}
+		
 	}
 }
-BattleLine.prototype.render = function(time, scene)
-{	
+Walk.prototype.render = function(time, scene)
+{
 	if (this.updated) {
-		this.background.draw()
-		this.foreground.draw()
+		this.background.draw();
+		this.foreground.draw();
 	}
-}	
+}
 
 ////////////
 
@@ -66,6 +74,16 @@ Field.prototype.draw = function()
 	console.log(view)
 	return this;
 }
+Field.prototype.isOccupied = function(i)
+{
+	if (this.a[i] === ' ')
+	{
+		return false;
+	}
+	else {
+		return true;
+	}
+}
 
 // field tests
 //var bar = new Field(12)
@@ -73,11 +91,13 @@ Field.prototype.draw = function()
 
 ////////////
 
-function roll(max) {
+function roll(max)
+{
 	var outcome = Math.random() * max;
 	return outcome;
 }
-function makeA(set, subset) {
+function makeA(set, subset)
+{
 	// get elements within the passed set and its collection
 	var elements = Object.keys(set[subset]);
 	var selected = {};
