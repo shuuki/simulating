@@ -20,7 +20,7 @@ function Ticker(name, increment)
 }
 Ticker.prototype.update = function(time, scene)
 {
-	// increment a tock once every three seconds
+	// reset tock and delta since last update
 	this.time += time.delta / 1000;
 	this.tock = false;
 
