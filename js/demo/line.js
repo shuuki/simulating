@@ -13,22 +13,38 @@ function BattleLine(type)
 	this.type = type;
 	this.background = new Field(16);
 	this.foreground = new Field(15);
+
+	this.refresh = 250;
+	this.time = 0;
+	this.tick = 0;
 }
 BattleLine.prototype.update = function(time, scene)
 {
-	var spawn = makeA(biome, this.type);
-	this.background.add(spawn.background);
-	this.foreground.add(spawn.foreground);
+	this.time += time.delta;
+	this.updated = false;
+
+	while (this.time >= this.refresh) {
+		var spawn = makeA(biome, this.type);
+		this.background.add(spawn.background);
+		this.foreground.add(spawn.foreground);
+
+		this.time -= this.refresh;
+		this.tick += 1;
+		this.updated = true;
+	}
 }
 BattleLine.prototype.render = function(time, scene)
 {	
-	this.background.draw()
-	this.foreground.draw()
+	if (this.updated) {
+		this.background.draw()
+		this.foreground.draw()
+	}
 }	
 
 ////////////
 
-function Field(w) {
+function Field(w)
+{
 	this.w = w;
 	this.a = [];
 
@@ -38,16 +54,18 @@ function Field(w) {
 		this.a.push(' ');
 	}
 }
-Field.prototype.add = function(v) {
-		this.a.shift()
-		this.a.push(v)
-		return this;
-	}
-Field.prototype.draw = function() {
-		var view = this.a.join('').toString();
-		console.log(view)
-		return this;
-	}
+Field.prototype.add = function(v)
+{
+	this.a.shift()
+	this.a.push(v)
+	return this;
+}
+Field.prototype.draw = function()
+{
+	var view = this.a.join('').toString();
+	console.log(view)
+	return this;
+}
 
 // field tests
 //var bar = new Field(12)
@@ -106,7 +124,6 @@ function makeA(set, subset) {
 //console.log(makeA(weather, 'summer'))
 
 ////////////
-
 
 var biome = {
 	desert: {
@@ -253,3 +270,5 @@ var weather = {
 		}
 	}
 };
+
+////////////
