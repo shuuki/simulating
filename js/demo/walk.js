@@ -11,18 +11,19 @@ var sim = new Sim({
 function Walk(type)
 {
 	this.type = type;
-	this.background = new Field(16);
-	this.foreground = new Field(16);
 	this.active = true;
 	this.time = 0;
 	this.step = 0;
 	this.refresh = 240;
+	this.background = new Field(16);
+	this.foreground = new Field(16);
+	this.fg = makeDom('fg');
+	this.bg = makeDom('bg');
 }
 Walk.prototype.update = function(time, scene)
 {
 	this.updated = false;
 	this.time += time.delta;
-	//console.log(this.time)
 	
 	if (!this.active)
 	{
@@ -40,11 +41,6 @@ Walk.prototype.update = function(time, scene)
 		this.step += 1;
 		this.updated = true;
 
-		// check tail of foreground for new entities 
-		if (this.foreground.isOccupied(15))
-		{
-			console.log('spawn', this.foreground.check(15))	
-		}
 		// check head of foreground for entity encounter
 		if (this.foreground.isOccupied(0))
 		{
@@ -57,8 +53,8 @@ Walk.prototype.update = function(time, scene)
 Walk.prototype.render = function(time, scene)
 {
 	if (this.updated) {
-		this.background.draw();
-		this.foreground.draw();
+		this.bg.innerHTML = this.background.draw();
+		this.fg.innerHTML = this.foreground.draw();
 	}
 }
 Walk.prototype.encounter = function(e)
@@ -84,6 +80,7 @@ Walk.prototype.encounter = function(e)
 
 ////////////
 
+
 function Field(w)
 {
 	this.w = w;
@@ -92,7 +89,7 @@ function Field(w)
 	var x = w;
 	while (x > 0) {
 		x--;
-		this.area.push(' ');
+		this.area.push('_');
 	}
 }
 Field.prototype.add = function(v)
@@ -105,11 +102,11 @@ Field.prototype.draw = function()
 {
 	var view = this.area.join('').toString();
 	console.log(view)
-	return this;
+	return view;
 }
 Field.prototype.isOccupied = function(i)
 {
-	if (this.area[i] === ' ')
+	if (this.area[i] === '_')
 	{
 		return false;
 	}
@@ -138,6 +135,35 @@ function Creature()
 {}
 
 ////////////
+
+function makeDom(id, parentid)
+{
+	if (!id)
+	{
+		throw 'no id specified'
+	}
+	if (document && document.body)
+	{
+		// check for existing element with the same id and delete if found
+		var existing = document.getElementById(id);
+		if (existing && existing.parentNode)
+		{
+			existing.parentNode.removeChild(existing);
+		}
+
+		var display = document.createElement('div');
+
+		display.id = id;
+		document.body.appendChild(display);
+		display = document.getElementById(id);
+		return display;
+	}
+	else
+	{
+		throw 'no document present'
+	}
+}
+
 
 function roll(max)
 {
@@ -196,29 +222,42 @@ function makeA(set, subset)
 var biome = {
 	desert: {
 		background: {
-      ' ' : 0.1,
-      'T' : 0.06,
-      'H' : 0.02,
-			'Y' : 0.01      
+      //'_' : 1,
+      //'T' : 0.1,
+      //'H' : 0.1,
+			//'A' : 0.1,
+			//'L' : 0.1,
+			//'Y' : 0.1
+			'_': 1,
+			',': 0.15,
+			'/': 0.10,
+			';': 0.15,
+			'i': 0.05,
+			'T': 0.02,
+			'Y': 0.03,
+			'h': 0.01,
+			'L': 0.025,
+			'H': 0.025,
+			'.': 0.03
 		},
     foreground: {
-      ' ' : 1,
-      '?' : 0.1,
-      '$' : 0.1,
+      '_' : 10,
+      //'?' : 0.1,
+      //'$' : 0.1,
       '!' : 0.1
 		},
 	},
   plains: {
 		background: {
-      ' ' :  0.1,
+      '_' :  0.1,
       '.' : 0.06,
       ',' : 0.02,
 			';' :  0.01      
 		},
     foreground: {
-      ' ' :    5,
-			'K' : 0.05,
-			'G' : 0.05,
+      '_' :    5,
+			'S' : 0.05,
+			'R' : 0.05,
 			'&' : 0.03,
       '%' : 0.02
 		},
@@ -250,13 +289,13 @@ var entity = {
 		name: 'human',
 		type: 'human'
 	},
-	'K': {
+	'S': {
 		name: 'squirrel',
 		type: 'animal',
 		hp: 4,
 		agi: 3
 	},
-	'G': {
+	'R': {
 		name: 'rabbit',
 		type: 'animal',
 		hp: 5,
