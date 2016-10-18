@@ -11,34 +11,47 @@ var sim = new Sim({
 function Walk(type)
 {
 	this.type = type;
-
 	this.background = new Field(16);
 	this.foreground = new Field(16);
-
+	this.active = true;
 	this.time = 0;
 	this.step = 0;
-	this.refresh = 250;
+	this.refresh = 240;
 }
 Walk.prototype.update = function(time, scene)
 {
-	this.time += time.delta;
 	this.updated = false;
-
-	while (this.time >= this.refresh) {
+	this.time += time.delta;
+	//console.log(this.time)
+	
+	if (!this.active)
+	{
+		this.time = 0;
+	}
+	if (this.active && this.time >= this.refresh)
+	{
+		// generate landscape spaces
 		var spawn = makeA(biome, this.type);
 		this.background.add(spawn.background);
 		this.foreground.add(spawn.foreground);
 
+		// update time
 		this.time -= this.refresh;
 		this.step += 1;
 		this.updated = true;
-		
+
+		// check tail of foreground for new entities 
+		if (this.foreground.isOccupied(15))
+		{
+			console.log('spawn', this.foreground.check(15))	
+		}
+		// check head of foreground for entity encounter
 		if (this.foreground.isOccupied(0))
 		{
-			console.log('encounter')
-			//this.refresh = 5000;
+			this.active = false;
+			this.encounter(this.foreground.check(0))
 		}
-		
+
 	}
 }
 Walk.prototype.render = function(time, scene)
@@ -48,35 +61,55 @@ Walk.prototype.render = function(time, scene)
 		this.foreground.draw();
 	}
 }
+Walk.prototype.encounter = function(e)
+{
+	console.log('encounter', e, entity[e])
+	var type = entity[e].type;
+
+	if (type === 'animal')
+	{
+		console.log('animal stuff')
+	}
+	if (type === 'human')
+	{
+		console.log('human stuff')
+	}
+	if (type === 'loot')
+	{
+		console.log('loot stuff')
+	}
+
+	//this.active = true;
+}
 
 ////////////
 
 function Field(w)
 {
 	this.w = w;
-	this.a = [];
+	this.area = [];
 
 	var x = w;
 	while (x > 0) {
 		x--;
-		this.a.push(' ');
+		this.area.push(' ');
 	}
 }
 Field.prototype.add = function(v)
 {
-	this.a.shift()
-	this.a.push(v)
+	this.area.shift()
+	this.area.push(v)
 	return this;
 }
 Field.prototype.draw = function()
 {
-	var view = this.a.join('').toString();
+	var view = this.area.join('').toString();
 	console.log(view)
 	return this;
 }
 Field.prototype.isOccupied = function(i)
 {
-	if (this.a[i] === ' ')
+	if (this.area[i] === ' ')
 	{
 		return false;
 	}
@@ -84,10 +117,25 @@ Field.prototype.isOccupied = function(i)
 		return true;
 	}
 }
+Field.prototype.check = function(i)
+{
+	if (this.area[i])
+	{
+		return this.area[i];
+	}
+	else {
+		return false;
+	}
+}
 
 // field tests
 //var bar = new Field(12)
 //bar.draw().add('V').draw().add('-').draw()
+
+////////////
+
+function Creature()
+{}
 
 ////////////
 
@@ -162,18 +210,58 @@ var biome = {
 	},
   plains: {
 		background: {
-      ' ' : 0.1,
+      ' ' :  0.1,
       '.' : 0.06,
       ',' : 0.02,
-			';' : 0.01      
+			';' :  0.01      
 		},
     foreground: {
-      ' ' : 5,
-      '&' : 0.1,
-      '%' : 0.1,
-      '@' : 0.1
+      ' ' :    5,
+			'K' : 0.05,
+			'G' : 0.05,
+			'&' : 0.03,
+      '%' : 0.02
 		},
 	},
+}
+
+var entity = {
+	'Q': {
+		name: 'big dog',
+		type: 'animal'
+	},
+	'p': {
+		name: 'little dog',
+		type: 'animal'
+	},
+	'&': {
+		name: 'animal bones',
+		type: 'loot'
+	},
+	'%': {
+		name: 'human bones',
+		type: 'loot'
+	},
+	'$': {
+		name: 'stuff',
+		type: 'loot'
+	},
+	'!': {
+		name: 'human',
+		type: 'human'
+	},
+	'K': {
+		name: 'squirrel',
+		type: 'animal',
+		hp: 4,
+		agi: 3
+	},
+	'G': {
+		name: 'rabbit',
+		type: 'animal',
+		hp: 5,
+		agi: 4
+	}
 }
 
 var weather = {
