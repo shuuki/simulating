@@ -6,86 +6,82 @@ function Sim (config)
 	this.init(config);
 	return this;
 }
-Sim.prototype = {
-	init: function(config)
+Sim.prototype.init = function(config)
+{
+	// takes an object with starting values
+	if (config)
 	{
-		// takes an object with starting values
-		if (config)
+		// set clock
+		if (config.time)
 		{
-			// set clock
-			if (config.time)
-			{
-				this.time = new Time(config.time);
-			}
-			else
-			{
-				this.time = new Time;
-			}
-			// set entities
-			if (config.scene)
-			{
-				this.scene = new Scene(config.scene);
-			}
-			else {
-				this.scene = new Scene;
-			}
-			this.config = config;
+			this.time = new Time(config.time);
 		}
-		// set empty config if none is passed
 		else
 		{
-			this.config = {};
 			this.time = new Time;
+		}
+		// set entities
+		if (config.scene)
+		{
+			this.scene = new Scene(config.scene);
+		}
+		else {
 			this.scene = new Scene;
 		}
-
-		console.log('Sim ready', this.time.lastUpdated);
-		return this;
-	},
-	update: function()
+		this.config = config;
+	}
+	// set empty config if none is passed
+	else
 	{
-		// main loop heartbeat
+		this.config = {};
+		this.time = new Time;
+		this.scene = new Scene;
+	}
 
-		// update clock
-		this.time.update();
+	console.log('Sim ready', this.time.lastUpdated);
+	return this;
+}
+Sim.prototype.update = function()
+{
+	// update clock
+	this.time.update();
 
-		// start the next frame
-		this.time.frame = requestAnimationFrame(this.update.bind(this));
+	// send scene a request for updates at current time 
+	this.scene.step('update', this.time);
 
-		// send scene a request for updates at current time 
-		this.scene.step('update', this.time);
+	// start the next frame
+	this.time.frame = requestAnimationFrame(this.update.bind(this));
 
-		// render scene
-		this.render();
-		
-		return this;
-	},
-	render: function()
+	// render scene
+	this.render();
+	
+	return this;
+}
+Sim.prototype.render = function()
+{
+	// send scene a request for rendering updates
+	this.scene.step('render', this.time);
+
+	// draw all entities
+	//suggestion for syntax: this.renderer.render(this.scene, this.camera);
+
+	return this;
+}
+Sim.prototype.start = function()
+{
+	// start / stop updates
+	if (!this.time.frame)
 	{
-		// draw all entities
-		//this.renderer.render(this.scene, this.camera);
-
-		// send scene a request for rendering updates
-		this.scene.step('render', this.time);
-
-		return this;
-	},
-	start: function()
-	{
-		// start / stop updates
-		if (!this.time.frame)
-		{
-			this.update();
-		}
-		return this;
-	},
-	stop: function()
-	{
-		window.cancelAnimationFrame(this.time.frame);
-		this.time.frame = false;
-		return this;
-	},
-};
+		this.update();
+	}
+	return this;
+}
+Sim.prototype.stop = function()
+{
+	window.cancelAnimationFrame(this.time.frame);
+	this.time.frame = false;
+	return this;
+}
 
 ///////////////////////////////////
 
