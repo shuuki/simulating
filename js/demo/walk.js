@@ -35,7 +35,7 @@ Walk.prototype.update = function(time, scene)
 		var spawn = makeA(biome, this.type);
 		this.background.add(spawn.background);
 		this.foreground.add(spawn.foreground);
-		this.foreground.area[0] = 'Q';
+		//this.foreground.area[0] = '@';
 
 		// update time
 		this.time -= this.refresh;
@@ -43,10 +43,10 @@ Walk.prototype.update = function(time, scene)
 		this.updated = true;
 
 		// check head of foreground for entity encounter
-		if (this.foreground.isOccupied(1))
+		if (this.foreground.isOccupied(0))
 		{
 			this.active = false;
-			this.encounter(this.foreground.check(1))
+			this.encounter(this.foreground.check(0))
 		}
 
 	}
@@ -102,7 +102,7 @@ Field.prototype.add = function(v)
 Field.prototype.draw = function()
 {
 	var view = this.area.join('').toString();
-	console.log(view)
+	//console.log(view)
 	return view;
 }
 Field.prototype.isOccupied = function(i)
