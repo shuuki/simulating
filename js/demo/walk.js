@@ -1,6 +1,6 @@
 // 
 
-var sim = new Sim({
+var sim = new Sim().init({
 	scene: {
 		landscape: new Walk('plains')
 	}

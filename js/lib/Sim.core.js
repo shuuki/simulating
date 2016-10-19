@@ -1,9 +1,9 @@
 // THE SIMULATION
 ///////////////////////////////////
 
-function Sim (config)
+function Sim ()
 {
-	this.init(config);
+	this.active = false;
 	return this;
 }
 Sim.prototype.init = function(config)
