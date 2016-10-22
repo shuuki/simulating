@@ -29,7 +29,7 @@ var activity = {
 var action = {
 	do: function (type, actors)
 	{
-		var check = this[type](actors)
+		var check = this[type](actors);
 		activity.log(check);
 		return check;
 	},
@@ -37,14 +37,18 @@ var action = {
 	{		
 		// takes an array of actors
 		// does rolls for each
-		// resolves ties
-		// returns index of actor with highest roll
+		// returns sorted array of rolls and indices of actors, starting with highest roll
 
-		var check = actors.map( function (actor, index) {	
-				return [actor.speed + roll(actor.speed), index];
-			}).sort().reverse();
-		
-		return check;
+		var speedPlusRollSpeed = function (actor, index) {	
+			var speed = actor.stats.speed;
+			return [speed + roll(speed), index];
+		};
+
+		var check = actors.map(speedPlusRollSpeed).sort().reverse();
+		var resolve = check[0][1];
+		var winner = actors[resolve].name;
+
+		return {check, winner};
 	},
 	dodge: function (actors)
 	{
@@ -53,6 +57,16 @@ var action = {
 		// takes something out of stats
 		// does a roll
 		// returns success or failure
+		
+		var rollSpeed = function (actor, index) {	
+			var speed = actor.stats.speed;
+			return roll(speed);
+		};
+		
+		var check = actors.map(rollSpeed);
+		var resolve = check[0] - check[1] > 0 ? true : false;
+
+		return resolve;
 	},
 	attack: function (actors)
 	{
@@ -88,17 +102,14 @@ var Being = {
 	},
 	// STATS
 	stats: {},
-	make: function (life, speed)
+	make: function (stats)
 	{
-		this.stats = {
-			alive: true,
-			life: life,
-			speed: speed
-		};
+		this.stats = stats;
+		this.stats.alive = true;
 		return this;
 	},
 	is: function ()
-	{
+	{		
 		return this.stats;
 	},
 	get: function (stat)
@@ -152,6 +163,17 @@ var Being = {
 	{
 		this.equipment[item.type] = item;
 		return this;
+	},
+	//
+	check: function()
+	{
+		var check = {
+			stats: this.is(),
+			name: this.called(),
+			inventory: this.has(),
+			equipment: this.equipped()
+		};
+		return check;
 	}
 };
 
@@ -183,12 +205,17 @@ var weapon = {
 var being = {
 	dawg: Object.create(Being)
 		.name('DAWG')
-		.make(6,4)
+		.make({ life: 6, speed: 4 })
 		.equip(weapon.dawgBite),
 
 	squirrel: Object.create(Being)
 		.name('SQUIRREL')
-		.make(2,4)
+		.make({ life: 2, speed: 3 })
+		.equip(weapon.smallBite),
+
+	rabbit: Object.create(Being)
+		.name('RABBIT')
+		.make({ life: 3, speed: 4 })
 		.equip(weapon.smallBite)
 
 };
@@ -198,6 +225,6 @@ var being = {
 //.give('fire')
 //.give('eyes')
 
-
-var czz = [being.dawg.is(), being.squirrel.is()]
-console.log( action.do('initiative', czz).join(' ') )
+var cz = [ being.squirrel.check(), being.dawg.check() ]
+var czz = [being.dawg.check(), being.squirrel.check(), being.rabbit.check() ]
+console.log( action.do('initiative', czz) )//.join(' ') )
