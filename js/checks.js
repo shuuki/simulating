@@ -37,41 +37,41 @@ var action = {
 	{		
 		// takes an array of actors
 		// does rolls for each
-		// returns sorted array of rolls and indices of actors, starting with highest roll
+		// builds sorted array of rolls and indices of actors, from highest to lowest
+		// returns object with rolls array and name of the actor with the highest roll
 
 		var speedPlusRollSpeed = function (actor, index) {	
 			var speed = actor.stats.speed;
-			return [speed + roll(speed), index];
+			return [speed + roll(speed), index, actor.name];
 		};
 
-		var check = actors.map(speedPlusRollSpeed).sort().reverse();
-		var resolve = check[0][1];
+		var initiative = actors.map(speedPlusRollSpeed).sort().reverse();
+		var resolve = initiative[0][1];
 		var winner = actors[resolve].name;
 
-		return {check, winner};
+		return {initiative, winner};
 	},
 	dodge: function (actors)
 	{
-		// takes two actors
-		// dodger, other
-		// takes something out of stats
+		// takes two actors: dodger, other
 		// does a roll
 		// returns success or failure
-		
+
 		var rollSpeed = function (actor, index) {	
 			var speed = actor.stats.speed;
 			return roll(speed);
 		};
-		
-		var check = actors.map(rollSpeed);
-		var resolve = check[0] - check[1] > 0 ? true : false;
 
-		return resolve;
+		var check = actors.map(rollSpeed);
+		var dodge = check[0] - check[1] > 0 ? true : false;
+		var winner = dodge === true ? actors[0].name : actors[1].name;
+
+		return {dodge, winner};
 	},
 	attack: function (actors)
 	{
-		// takes two actors
-		// attacker, other
+		// takes two actors: attacker, other
+
 		// weapon damage
 
 		//actors[i].equipment.weapon.damage.max etc
@@ -81,6 +81,7 @@ var action = {
 		// return attack info
 
 		// does a roll
+
 		var check = roll(20) - roll(20);
 
 		return check;
@@ -196,10 +197,10 @@ var Weapon = {
 
 var weapon = {
 	dawgBite: Object.create(Weapon)
-		.build([1, 3, 'life'], 'TEETH', 'BITE'),
+		.build('TEETH', 'BITE', [1, 3, 'life']),
 
 	smallBite: Object.create(Weapon)
-		.build([0, 2, 'life'], 'TEETH', 'NIP')
+		.build('TEETH', 'NIP', [0, 2, 'life'])
 };
 
 var being = {
@@ -207,24 +208,26 @@ var being = {
 		.name('DAWG')
 		.make({ life: 6, speed: 4 })
 		.equip(weapon.dawgBite),
+		//.give('fire'),)
 
 	squirrel: Object.create(Being)
 		.name('SQUIRREL')
 		.make({ life: 2, speed: 3 })
 		.equip(weapon.smallBite),
+		//.give('eyes'),
 
 	rabbit: Object.create(Being)
 		.name('RABBIT')
-		.make({ life: 3, speed: 4 })
+		.make({ life: 3, speed: 5 })
 		.equip(weapon.smallBite)
-
 };
 
 // 
 
-//.give('fire')
-//.give('eyes')
 
-var cz = [ being.squirrel.check(), being.dawg.check() ]
-var czz = [being.dawg.check(), being.squirrel.check(), being.rabbit.check() ]
-console.log( action.do('initiative', czz) )//.join(' ') )
+
+var dsr = [being.dawg.check(), being.squirrel.check(), being.rabbit.check()]
+console.log( action.do('initiative', dsr) )//.join(' ') )
+
+var sd = [ being.squirrel.check(), being.dawg.check() ]
+//action.do('dodge', sd)
