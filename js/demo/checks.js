@@ -1,10 +1,8 @@
-function roll(max)
-{
-	var outcome = Math.ceil(Math.random() * max);
-	return outcome;
-}
+////////////
 
-// 
+
+
+// ACTIVITY LOG
 
 var activity = {
 	history: [],
@@ -23,6 +21,8 @@ var activity = {
 		return this;
 	}
 };
+
+// ACTIONS
 
 // action.do('type', [players])
 
@@ -88,7 +88,7 @@ var action = {
 	}
 };
 
-// types
+// TYPES
 
 var Being = {
 	// NAME
@@ -193,7 +193,7 @@ var Weapon = {
 	}
 };
 
-// collections
+// COLLECTIONS
 
 var weapon = {
 	dawgBite: Object.create(Weapon)
@@ -224,10 +224,8 @@ var being = {
 
 // 
 
-
-
 var dsr = [being.dawg.check(), being.squirrel.check(), being.rabbit.check()]
-console.log( action.do('initiative', dsr) )//.join(' ') )
+//console.log( action.do('initiative', dsr) )//.join(' ') )
 
 var sd = [ being.squirrel.check(), being.dawg.check() ]
 //action.do('dodge', sd)
