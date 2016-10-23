@@ -1,101 +1,97 @@
-// THE SIMULATION
 ///////////////////////////////////
+// THE SIMULATION
 
-function Sim ()
-{
-	this.active = false;
-	return this;
-}
-Sim.prototype.init = function(config)
-{
-	// takes an object with starting values
-	if (config)
+
+var Sim = {
+	active: false,
+	init: function(config)
 	{
-		// set clock
-		if (config.time)
+		// takes an object with starting values
+		if (config)
 		{
-			this.time = new Time(config.time);
+			// set clock
+			if (config.time)
+			{
+				this.time = Object.create(Timer);//.init(config.time);
+			}
+			else
+			{
+				this.time = Object.create(Timer);
+			}
+			// set entities
+			if (config.scene)
+			{
+				this.scene = Object.create(Scene).init(config.scene);
+			}
+			else {
+				this.scene = Object.create(Scene);
+			}
+			this.config = config;
 		}
+		// set empty config if none is passed
 		else
 		{
-			this.time = new Time;
+			this.config = {};
+			this.time = Object.create(Timer) ;
+			this.scene = Object.create(Scene) ;
 		}
-		// set entities
-		if (config.scene)
+
+		console.log('Sim ready', this.time.lastUpdated);
+		return this;
+	},
+	update: function()
+	{
+		// update clock
+		this.time.update();
+
+		// send scene a request for updates at current time 
+		this.scene.step('update', this.time);
+
+		// start the next frame
+		this.time.frame = requestAnimationFrame(this.update.bind(this));
+
+		// render scene
+		this.render();
+		
+		return this;
+	},
+	render: function()
+	{
+		// send scene a request for rendering updates
+		this.scene.step('render', this.time);
+
+		// draw all entities
+		//suggestion for syntax: this.renderer.render(this.scene, this.camera);
+
+		return this;
+	},
+	start: function()
+	{
+		// start / stop updates
+		if (!this.time.frame)
 		{
-			this.scene = new Scene(config.scene);
+			this.update();
 		}
-		else {
-			this.scene = new Scene;
-		}
-		this.config = config;
-	}
-	// set empty config if none is passed
-	else
+		return this;
+	},
+	stop: function()
 	{
-		this.config = {};
-		this.time = new Time;
-		this.scene = new Scene;
+		window.cancelAnimationFrame(this.time.frame);
+		this.time.frame = false;
+		return this;
 	}
-
-	console.log('Sim ready', this.time.lastUpdated);
-	return this;
-}
-Sim.prototype.update = function()
-{
-	// update clock
-	this.time.update();
-
-	// send scene a request for updates at current time 
-	this.scene.step('update', this.time);
-
-	// start the next frame
-	this.time.frame = requestAnimationFrame(this.update.bind(this));
-
-	// render scene
-	this.render();
-	
-	return this;
-}
-Sim.prototype.render = function()
-{
-	// send scene a request for rendering updates
-	this.scene.step('render', this.time);
-
-	// draw all entities
-	//suggestion for syntax: this.renderer.render(this.scene, this.camera);
-
-	return this;
-}
-Sim.prototype.start = function()
-{
-	// start / stop updates
-	if (!this.time.frame)
-	{
-		this.update();
-	}
-	return this;
-}
-Sim.prototype.stop = function()
-{
-	window.cancelAnimationFrame(this.time.frame);
-	this.time.frame = false;
-	return this;
 }
 
-///////////////////////////////////
+///////////////
 
-function Time()
-{
-	this.delta = 0;
-	this.up = 0;
-	this.frame = 0;
-	this.steps = 0;
-	this.stepsRemaining = 0;
-	this.advancing = false;
-	this.lastUpdated = new Date().getTime();
-}
-Time.prototype = {
+var Timer = {
+	delta: 0,
+	up: 0,
+	frame: 0,
+	steps: 0,
+	stepsRemaining: 0,
+	advancing: false,
+	lastUpdated: new Date().getTime(),
 	update: function()
 	{
 	  var now = new Date().getTime();
@@ -145,36 +141,37 @@ Time.prototype = {
 	}
 }
 
-///////////////////////////////////
+///////////////
 
-function Scene (seed)
-{
-	// takes a seed object to set up initial values
-	if (seed) {
-		// if both active and inactive entities are passed, assign them
-		if (seed.active && seed.inactive)
-		{
-			this.active = seed.active;
-			this.inactive = seed.inactive;
+var Scene = {
+	queue: [],
+	init: function (seed)
+	{
+		// takes a seed object to set up initial values
+		if (seed) {
+			// if both active and inactive entities are passed, assign them
+			if (seed.active && seed.inactive)
+			{
+				this.active = seed.active;
+				this.inactive = seed.inactive;
+			}
+			// if no inactive entities are passed, count all entities as active
+			if (!seed.inactive)
+			{
+				this.active = seed;
+				this.inactive = {};
+			}
 		}
-		// if no inactive entities are passed, count all entities as active
-		if (!seed.inactive)
+		// if no initial values are passed, create empty scene
+		else
 		{
-			this.active = seed;
+			this.active = {};
 			this.inactive = {};
 		}
-	}
-	// if no initial values are passed, create empty scene
-	else
-	{
-		this.active = {};
-		this.inactive = {};
-	}
 
-	// queue of entities actively being processed
-	this.queue = [];
-}
-Scene.prototype = {
+		// queue of entities actively being processed
+	},
+
 	// entity management
 	// add new active entity, as long as id is not in use
 	add: function (id, value)
@@ -272,6 +269,7 @@ Scene.prototype = {
 		}
 		return this;
 	}
+
 }
 
-///////////////////////////////////
+///////////////
