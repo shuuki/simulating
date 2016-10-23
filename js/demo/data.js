@@ -1,11 +1,11 @@
-////////////
+///////////////
 // DATA
 
-var data = {};
+var Data = {};
 
 // BIOMES 
 
-data.biome = {
+Data.biome = {
 	desert: {
 		background: {
       //'_' : 1,
@@ -52,7 +52,31 @@ data.biome = {
 
 // ENTITIES
 
-data.entity = {
+Data.entity = {
+	'@': {
+		name: 'DAWG',
+		type: 'animal',
+		stats : {
+			life: 6,
+			speed: 4
+		}
+	},
+	'S': {
+		name: 'SQUIRREL',
+		type: 'animal',
+		stats : {
+			life: 3,
+			speed: 3
+		}
+	},
+	'R': {
+		name: 'RABBIT',
+		type: 'animal',
+		stats : {
+			life: 3,
+			speed: 5
+		}
+	},
 	'Q': {
 		name: 'BIG DOG',
 		type: 'animal'
@@ -77,23 +101,11 @@ data.entity = {
 		name: 'HUMAN',
 		type: 'human'
 	},
-	'S': {
-		name: 'SQUIRREL',
-		type: 'animal',
-		hp: 4,
-		agi: 3
-	},
-	'R': {
-		name: 'RABBIT',
-		type: 'animal',
-		hp: 5,
-		agi: 4
-	}
 }
 
 // WEATHER
 
-data.weather = {
+Data.weather = {
 	summer: {
 		temp: {
 			cold: 0,
@@ -208,4 +220,4 @@ data.weather = {
 	}
 };
 
-////////////
+///////////////

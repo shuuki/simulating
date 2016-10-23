@@ -1,6 +1,4 @@
-////////////
-
-
+///////////////
 
 // ACTIVITY LOG
 
@@ -22,9 +20,9 @@ var activity = {
 	}
 };
 
-// ACTIONS
+///////////////
 
-// action.do('type', [players])
+// ACTIONS
 
 var action = {
 	do: function (type, actors)
@@ -71,22 +69,28 @@ var action = {
 	attack: function (actors)
 	{
 		// takes two actors: attacker, other
-
-		// weapon damage
-
-		//actors[i].equipment.weapon.damage.max etc
-
-		// takes something out of stats
+		// this.do('initiative', actors)
+		// this.do('dodge', actors)
 		// evaluate success or failure
 		// return attack info
-
-		// does a roll
 
 		var check = roll(20) - roll(20);
 
 		return check;
+	},
+	damage: function (actors) 
+	{
+		// takes two actors: attacker, other
+		// takes something out of stats
+		// weapon damage
+		//actors[i].equipment.weapon.damage.max etc
+
 	}
 };
+
+// action.do('type', [players])
+
+///////////////
 
 // TYPES
 
@@ -107,6 +111,11 @@ var Being = {
 	{
 		this.stats = stats;
 		this.stats.alive = true;
+		return this;
+	},
+	assign: function (attributes)
+	{
+		Object.assign(this, attributes);
 		return this;
 	},
 	is: function ()
@@ -178,6 +187,9 @@ var Being = {
 	}
 };
 
+// var foo = Object.create(Being).name('FOO').give('fire').give('eyes');
+
+
 var Weapon = {
 	type: 'weapon',
 	build: function(dam, name, action)
@@ -192,6 +204,8 @@ var Weapon = {
 		return this;
 	}
 };
+
+//var bit = smallBite: Object.create(Weapon).build('TEETH', 'NIP', [0, 2, 'life'])
 
 // COLLECTIONS
 
@@ -208,14 +222,10 @@ var being = {
 		.name('DAWG')
 		.make({ life: 6, speed: 4 })
 		.equip(weapon.dawgBite),
-		//.give('fire'),)
-
 	squirrel: Object.create(Being)
 		.name('SQUIRREL')
-		.make({ life: 2, speed: 3 })
+		.make({ life: 3, speed: 3 })
 		.equip(weapon.smallBite),
-		//.give('eyes'),
-
 	rabbit: Object.create(Being)
 		.name('RABBIT')
 		.make({ life: 3, speed: 5 })
@@ -229,3 +239,5 @@ var dsr = [being.dawg.check(), being.squirrel.check(), being.rabbit.check()]
 
 var sd = [ being.squirrel.check(), being.dawg.check() ]
 //action.do('dodge', sd)
+
+///////////////

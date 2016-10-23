@@ -1,12 +1,5 @@
-// 
 
-var sim = new Sim().init({
-	scene: {
-	//	landscape: Object.create(Walk).start('plains')
-	}
-}).start();
-
-////////////
+///////////////
 
 var Walk = {
 	active: false,
@@ -21,8 +14,6 @@ var Walk = {
 		this.refresh = 240;
 		this.background = Object.create(Field).size(16);
 		this.foreground = Object.create(Field).size(16);
-		this.fg = makeDom('fg');
-		this.bg = makeDom('bg');
 	},
 	update: function(time, scene)
 	{
@@ -36,7 +27,7 @@ var Walk = {
 		if (this.active && this.time >= this.refresh)
 		{
 			// generate landscape spaces
-			var spawn = makeA(data.biome, this.type);
+			var spawn = makeA(Data.biome, this.type);
 			this.background.add(spawn.background);
 			this.foreground.add(spawn.foreground);
 			//this.foreground.area[0] = '@';
@@ -64,8 +55,8 @@ var Walk = {
 	},
 	encounter: function(e)
 	{
-		console.log('encounter', e, data.entity[e])
-		var type = data.entity[e].type;
+		console.log('encounter', e, Data.entity[e])
+		var type = Data.entity[e].type;
 
 		if (type === 'animal')
 		{
@@ -84,7 +75,10 @@ var Walk = {
 	}
 }
 
-////////////
+//var foo = Object.create(Walk)
+//foo.start('plains')
+
+///////////////
 
 var Field = {
 	area: [],
@@ -137,7 +131,7 @@ var Field = {
 //var bar = Object.create(Field).size(12)
 //bar.draw().add('V').draw().add('-').draw()
 
-////////////
+///////////////
 
 function makeDom(id, parentid)
 {
@@ -167,12 +161,12 @@ function makeDom(id, parentid)
 	}
 }
 
-
 function roll(max)
 {
 	var outcome = Math.random() * max;
 	return outcome;
 }
+
 function makeA(set, subset)
 {
 	// get elements within the passed set and its collection
@@ -216,9 +210,9 @@ function makeA(set, subset)
 	return selected;
 }
 
-//console.log(makeA(data.biome, 'desert'))
-//console.log(makeA(data.biome, 'plains'))
-//console.log(makeA(data.weather, 'summer'))
+//console.log(makeA(Data.biome, 'desert'))
+//console.log(makeA(Data.biome, 'plains'))
+//console.log(makeA(Data.weather, 'summer'))
 
 
-////////////
+///////////////
