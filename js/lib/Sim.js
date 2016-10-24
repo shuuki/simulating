@@ -4,7 +4,7 @@
 
 var Sim = {
 	active: false,
-	init: function(scene)
+	init: function (scene)
 	{
 
 		if (scene)
@@ -12,7 +12,7 @@ var Sim = {
 			this.scene = Object.create(Scene).init(scene);
 		}
 		else {
-			this.scene = Object.create(Scene);
+			this.scene = Object.create(Scene).init();
 		}
 
 		this.time = Object.create(Time);
@@ -49,7 +49,7 @@ var Sim = {
 	},
 	start: function()
 	{
-		// start / stop updates
+		// start updates
 		if (!this.time.frame)
 		{
 			this.update();
@@ -58,6 +58,7 @@ var Sim = {
 	},
 	stop: function()
 	{
+		// stop updates
 		window.cancelAnimationFrame(this.time.frame);
 		this.time.frame = false;
 		return this;
@@ -129,38 +130,23 @@ var Time = {
 ///////////////
 
 var Scene = {
-	queue: [],
 	init: function (seed)
 	{
-		// takes a seed object to set up initial values
+		// take a seed object to set up initial values
+		
 		if (seed) {
-			// if both active and inactive entities are passed, assign them
-			if (seed.active && seed.inactive)
-			{
-				this.active = seed.active;
-				this.inactive = seed.inactive;
-			}
-			// if no inactive entities are passed, count all entities as active
-			if (!seed.inactive)
-			{
-				this.active = seed;
-				this.inactive = {};
-			}
+			this.active = seed;
 		}
-		// if no initial values are passed, create empty scene
-		else
-		{
+		else {
 			this.active = {};
-			this.inactive = {};
 		}
 
-		// queue of entities actively being processed
+		return this;
 	},
-
-	// entity management
-	// add new active entity, as long as id is not in use
 	add: function (id, value)
 	{
+		// add new active entity as long as id is not in use
+
 		if (!this.active[id])
 		{
 			this.active[id] = value;
@@ -169,17 +155,19 @@ var Scene = {
 		{
 			throw 'entity already added'
 		}
+
 		return this;
 	},
-	// add active entity without checking before any existing entity
-	assign: function (id, value)
+	assign: function (values)
 	{
-		this.active[id] = value;
+		Object.assign(this.active, values)
+
 		return this;
 	},
-	// delete active entity at id
 	remove: function (id)
 	{
+		// delete active entity at id
+
 		if (this.active[id])
 		{
 			delete this.active[id];
@@ -187,52 +175,12 @@ var Scene = {
 		else {
 			throw 'active entity not found'
 		}
+
 		return this;
 	},
-	// move active entity to inactive
-	deactivate: function (id)
-	{
-		if (this.inactive[id])
-		{
-			this.inactive[id] = this.active[id];
-			delete this.active[id];
-		}
-		else
-		{
-			throw 'active entity not found';
-		}
-		return this;
-	},
-	// move inactive entity to active
-	activate: function (id)
-	{
-		if (this.inactive[id])
-		{
-			this.active[id] = this.inactive[id];
-			delete this.inactive[id];
-		}
-		else
-		{
-			throw 'inactive entity not found';
-		}
-		return this;
-	},
-	// delete inactive entity
-	drop: function (id)
-	{
-		if (this.inactive[id])
-		{
-			delete this.active[id];
-		}
-		else
-		{
-			throw 'inactive entity not found';
-		}
-		return this;
-	},
-	// call a function on every active entity
 	forEach: function (fn, args)
 	{
+		// call a function on every active entity
 		for (i in this.active)
 		{
 			fn.apply(this, this.active[i], args)
@@ -243,10 +191,9 @@ var Scene = {
 	step: function (ref, time)
 	{
 		// steps to give active entities a chance to update
-		// currently only 'update' or 'render'
+		// currently only 'update' or 'draw'
 		for (var i in this.active)
 		{
-			//console.log(this.active[i])
 			if (this.active[i][ref])
 			{
 				this.active[i][ref](time, this)
