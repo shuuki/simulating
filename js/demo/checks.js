@@ -61,29 +61,39 @@ var action = {
 		};
 
 		var check = actors.map(rollSpeed);
-		var dodge = check[0] - check[1] > 0 ? true : false;
-		var winner = dodge === true ? actors[0].name : actors[1].name;
+		var dodged = check[0] - check[1] > 0 ? true : false;
+		var winner = dodged === true ? actors[0].name : actors[1].name;
 
-		return {dodge, winner};
+		return {dodged, winner};
 	},
 	attack: function (actors)
 	{
 		// takes two actors: attacker, other
-		// this.do('initiative', actors)
-		// this.do('dodge', actors)
+		//var initiative = this.do('initiative', actors);
+
+		// dodge check 
+		
+		var dodge = this.do('dodge', [actors[1], actors[0]]);
+		var attacked = dodge.dodged === false ? true : false;
+		var damage = attacked === true ? this.do('damage', actors) : 0;
+	
 		// evaluate success or failure
 		// return attack info
 
-		var check = roll(20) - roll(20);
+		//var check = roll(20) - roll(20);
 
-		return check;
+		return {attacked, damage};
 	},
 	damage: function (actors) 
 	{
 		// takes two actors: attacker, other
 		// takes something out of stats
 		// weapon damage
-		//actors[i].equipment.weapon.damage.max etc
+
+		var wep = actors[0].equipped('weapon').damage;
+		var damage = Math.round(roll(wep.max - wep.min) + wep.min);
+
+		return damage;
 
 	}
 };
@@ -109,8 +119,11 @@ var Being = {
 	stats: {},
 	make: function (stats)
 	{
-		this.stats = stats;
+		this.stats = {};
+		this.stats = Object.assign(this.stats, stats);
 		this.stats.alive = true;
+		this.equipment = {};
+		this.inventory = [];
 		return this;
 	},
 	assign: function (attributes)
@@ -192,7 +205,10 @@ var Being = {
 
 var Weapon = {
 	type: 'weapon',
-	build: function(dam, name, action)
+	name: null,
+	action: null,
+	damage: {},
+	build: function(name, action, dam)
 	{
 		this.name = name;
 		this.action = action;
@@ -237,7 +253,10 @@ var being = {
 var dsr = [being.dawg.check(), being.squirrel.check(), being.rabbit.check()]
 //console.log( action.do('initiative', dsr) )//.join(' ') )
 
-var sd = [ being.squirrel.check(), being.dawg.check() ]
+var sd = [ being.squirrel, being.dawg ]
 //action.do('dodge', sd)
+
+var ds = [ being.dawg, being.squirrel ]
+
 
 ///////////////
