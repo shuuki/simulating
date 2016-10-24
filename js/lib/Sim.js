@@ -4,39 +4,21 @@
 
 var Sim = {
 	active: false,
-	init: function(config)
+	init: function(scene)
 	{
-		// takes an object with starting values
-		if (config)
+
+		if (scene)
 		{
-			// set clock
-			if (config.time)
-			{
-				this.time = Object.create(Timer);//.init(config.time);
-			}
-			else
-			{
-				this.time = Object.create(Timer);
-			}
-			// set entities
-			if (config.scene)
-			{
-				this.scene = Object.create(Scene).init(config.scene);
-			}
-			else {
-				this.scene = Object.create(Scene);
-			}
-			this.config = config;
+			this.scene = Object.create(Scene).init(scene);
 		}
-		// set empty config if none is passed
-		else
-		{
-			this.config = {};
-			this.time = Object.create(Timer) ;
-			this.scene = Object.create(Scene) ;
+		else {
+			this.scene = Object.create(Scene);
 		}
 
+		this.time = Object.create(Time);
+
 		console.log('Sim ready', this.time.lastUpdated);
+
 		return this;
 	},
 	update: function()
@@ -51,15 +33,15 @@ var Sim = {
 		this.time.frame = requestAnimationFrame(this.update.bind(this));
 
 		// render scene
-		this.render();
+		this.draw();
 		
 		return this;
 	},
-	render: function()
+	draw: function()
 	{
 		// send scene a request for rendering updates
-		this.scene.step('render', this.time);
-
+		this.scene.step('draw', this.time);
+		//console.log(this.time)
 		// draw all entities
 		//suggestion for syntax: this.renderer.render(this.scene, this.camera);
 
@@ -84,31 +66,34 @@ var Sim = {
 
 ///////////////
 
-var Timer = {
-	delta: 0,
-	up: 0,
-	frame: 0,
+var Time = {
 	steps: 0,
-	stepsRemaining: 0,
-	advancing: false,
+	up: 0,
 	lastUpdated: new Date().getTime(),
-	update: function()
+	init: function ()
+	{
+		this.delta = 0;
+		this.up = 0;
+		this.frame = 0;
+		this.steps = 0;
+		this.stepsRemaining = 0;
+		this.advancing = false;
+		this.lastUpdated = new Date().getTime();
+	},
+	update: function ()
 	{
 	  var now = new Date().getTime();
 		var delta = now - this.lastUpdated;
 		
 		// cap delta at 100ms
-		if (delta > 100) 
-		{
-			delta = 100;
-		}
+		delta < 100 ? this.delta = delta : this.delta = 100;
 
-		this.delta = delta;
-
-		// reset steps if exceeds ?? Number.MAX_VALUE ??
-		this.steps ++;
 		this.up += this.delta;
 	  this.lastUpdated = now;
+
+		this.steps ++;
+		// reset steps if exceed maximum accurate number
+		//this.steps >= Number.MAX_VALUE ? this.steps = 0 : this.steps ++;
 
 		//console.log('update', this)
 	  return this;
