@@ -32,7 +32,7 @@ var action = {
 		return check;
 	},
 	initiative: function (actors)
-	{		
+	{
 		// takes an array of actors
 		// does rolls for each
 		// builds sorted array of rolls and indices of actors, from highest to lowest
@@ -69,32 +69,26 @@ var action = {
 	attack: function (actors)
 	{
 		// takes two actors: attacker, other
-		//var initiative = this.do('initiative', actors);
+		// evaluate success or failure of dodge check
+		// if attack succeeds, calculate damage
+		// return attack info
 
-		// dodge check 
-		
 		var dodge = this.do('dodge', [actors[1], actors[0]]);
 		var attacked = dodge.dodged === false ? true : false;
 		var damage = attacked === true ? this.do('damage', actors) : 0;
-	
-		// evaluate success or failure
-		// return attack info
-
-		//var check = roll(20) - roll(20);
 
 		return {attacked, damage};
 	},
 	damage: function (actors) 
 	{
 		// takes two actors: attacker, other
-		// takes something out of stats
-		// weapon damage
+		// makes a roll inside damage range of attacker's weapon
+		// returns weapon damage
 
 		var wep = actors[0].equipped('weapon').damage;
 		var damage = Math.round(roll(wep.max - wep.min) + wep.min);
 
 		return damage;
-
 	}
 };
 
@@ -258,5 +252,6 @@ var sd = [ being.squirrel, being.dawg ]
 
 var ds = [ being.dawg, being.squirrel ]
 
+var rs = [ being.rabbit, being.squirrel ]
 
 ///////////////

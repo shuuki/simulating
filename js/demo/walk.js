@@ -2,10 +2,8 @@
 ///////////////
 
 var Walk = {
-	active: false,
 	time: 0,
-	step: 0,
-	start: function(type)
+	init: function (type)
 	{
 		this.type = type;
 		this.active = true;
@@ -28,6 +26,7 @@ var Walk = {
 		{
 			// generate landscape spaces
 			var spawn = makeA(Data.biome, this.type);
+			console.log(spawn)
 			this.background.add(spawn.background);
 			this.foreground.add(spawn.foreground);
 			//this.foreground.area[0] = '@';
@@ -46,11 +45,13 @@ var Walk = {
 
 		}
 	},
-	render: function(time, scene)
+	draw: function(time, scene)
 	{
 		if (this.updated) {
-			this.bg.innerHTML = this.background.draw();
-			this.fg.innerHTML = this.foreground.draw();
+			console.log(this.foreground.draw())
+			console.log(this.background.draw())
+			//this.bg.innerHTML = this.background.draw();
+			//this.fg.innerHTML = this.foreground.draw();
 		}
 	},
 	encounter: function(e)
@@ -71,19 +72,20 @@ var Walk = {
 			console.log('loot stuff')
 		}
 
-		//this.active = true;
+		this.active = true;
 	}
 }
 
 //var foo = Object.create(Walk)
-//foo.start('plains')
+//foo.init('plains')
 
 ///////////////
 
 var Field = {
-	area: [],
+	
 	size: function (width)
 	{
+		this.area = [];
 		this.width = width;
 		var i = width;
 		while (i > 0) {
@@ -107,7 +109,6 @@ var Field = {
 	},
 	isOccupied: function (i)
 	{
-		
 		if (this.area[i] === '_' )
 		{
 			return false;
@@ -183,6 +184,16 @@ function makeA(set, subset)
 		for (var j = 0; j < conditions.length; j++) {
 			conditionChance += set[subset][elements[i]][conditions[j]]
 		}
+
+		// use reduce instead
+		// see https://danmartensen.svbtle.com/javascripts-map-reduce-and-filter
+		//set.subset.reduce()
+		//var sum = rockets.reduce(function(val, elem) {
+		//		return val + elem.launches;
+		//	}, 0);
+		//console.log(conditions)
+
+
 
 		// save the total chance for all conditions
 		var conditionTotal = conditionChance;
