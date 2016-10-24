@@ -58,19 +58,7 @@ var Walk = {
 	{
 		console.log('encounter', e, Data.entity[e])
 		var type = Data.entity[e].type;
-
-		if (type === 'animal')
-		{
-			console.log('animal stuff')
-		}
-		if (type === 'human')
-		{
-			console.log('human stuff')
-		}
-		if (type === 'loot')
-		{
-			console.log('loot stuff')
-		}
+		console.log(type + ' stuff')
 
 		this.active = true;
 	}
