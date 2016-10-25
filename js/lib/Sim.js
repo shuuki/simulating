@@ -1,20 +1,19 @@
 ///////////////////////////////////
 // THE SIMULATION
 
-
 var Sim = {
-	active: false,
 	init: function (scene)
 	{
-
-		if (scene)
+		// takes optional scene object
+		if (!scene)
 		{
-			this.scene = Object.create(Scene).init(scene);
-		}
-		else {
 			this.scene = Object.create(Scene).init();
 		}
+		else {
+			this.scene = Object.create(Scene).init(scene);
+		}
 
+		// start new time
 		this.time = Object.create(Time);
 
 		console.log('Sim ready', this.time.lastUpdated);
@@ -26,22 +25,22 @@ var Sim = {
 		// update clock
 		this.time.update();
 
+		// start the next frame
+		this.frame = requestAnimationFrame(this.update.bind(this));
+
 		// send scene a request for updates at current time 
 		this.scene.step('update', this.time);
 
-		// start the next frame
-		this.time.frame = requestAnimationFrame(this.update.bind(this));
-
 		// render scene
 		this.draw();
-		
+
 		return this;
 	},
 	draw: function()
 	{
 		// send scene a request for rendering updates
 		this.scene.step('draw', this.time);
-		//console.log(this.time)
+
 		// draw all entities
 		//suggestion for syntax: this.renderer.render(this.scene, this.camera);
 
@@ -50,19 +49,22 @@ var Sim = {
 	start: function()
 	{
 		// start updates
-		if (!this.time.frame)
+		if (!this.frame)
 		{
 			this.update();
 		}
+
 		return this;
 	},
 	stop: function()
 	{
 		// stop updates
-		window.cancelAnimationFrame(this.time.frame);
-		this.time.frame = false;
+		window.cancelAnimationFrame(this.frame);
+		this.frame = false;
+
 		return this;
 	}
+	// save, load
 }
 
 ///////////////
@@ -73,57 +75,30 @@ var Time = {
 	lastUpdated: new Date().getTime(),
 	init: function ()
 	{
+		this.steps = 0;
 		this.delta = 0;
 		this.up = 0;
-		this.frame = 0;
-		this.steps = 0;
-		this.stepsRemaining = 0;
-		this.advancing = false;
 		this.lastUpdated = new Date().getTime();
+
+		return this;
 	},
 	update: function ()
 	{
+		// get current time and find delta since last update
 	  var now = new Date().getTime();
 		var delta = now - this.lastUpdated;
-		
-		// cap delta at 100ms
+
+		// limit delta to 100ms
 		delta < 100 ? this.delta = delta : this.delta = 100;
 
+		// update 
 		this.up += this.delta;
-	  this.lastUpdated = now;
-
-		this.steps ++;
-		// reset steps if exceed maximum accurate number
-		//this.steps >= Number.MAX_VALUE ? this.steps = 0 : this.steps ++;
+		this.steps += 1;
+		this.lastUpdated = now;
+		// reset up and steps if exceed Number.MAX_VALUE ?
 
 		//console.log('update', this)
 	  return this;
-	},
-	advance: function(steps, refresh)
-	{
-		var ms = refresh || 0;
-		
-		this.stepsRemaining += steps;
-		if (!this.advancing)
-		{
-			this.advancing = setInterval(this.step.bind(this), ms);
-		}
-		return this;
-	},
-	step: function()
-	{
-	  if (this.stepsRemaining > 0) {
-	    //this.stepsRemaining--;
-	    this.steps++;
-	  }
-	  else if (this.stepsRemaining <= 0)
-	  {
-	    clearInterval(this.advancing);
-	    this.advancing = false;
-	    this.stepsRemaining = 0;
-	  }
-	  
-	  this.update();
 	}
 }
 
@@ -196,7 +171,7 @@ var Scene = {
 		{
 			if (this.active[i][ref])
 			{
-				this.active[i][ref](time, this)
+				this.active[i][ref](time, this);
 			}
 		}
 		return this;
