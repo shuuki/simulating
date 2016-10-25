@@ -75,6 +75,7 @@ var Time = {
 	lastUpdated: new Date().getTime(),
 	init: function ()
 	{
+		// reset time values
 		this.steps = 0;
 		this.delta = 0;
 		this.up = 0;
@@ -127,7 +128,7 @@ var Scene = {
 		}
 		else
 		{
-			throw 'entity already added'
+			throw 'ENTITY ALREADY ADDED'
 		}
 
 		return this;
@@ -139,6 +140,20 @@ var Scene = {
 
 		return this;
 	},
+	get: function (id) {
+		// returns entity at id, or all entities of no id is passed
+		if (!id)
+		{
+			return this.active;
+		}
+		else if (this.active[id])
+		{
+			return this.active[id];
+		}		
+		else {
+			throw 'ENTITY NOT FOUND'
+		}
+	},
 	remove: function (id)
 	{
 		// delete active entity at id
@@ -147,7 +162,7 @@ var Scene = {
 			delete this.active[id];
 		}
 		else {
-			throw 'entity not found'
+			throw 'ENTITY NOT FOUND'
 		}
 
 		return this;
