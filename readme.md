@@ -65,4 +65,5 @@ Each entity is assumed to have three methods:
 1. `init` values necessary for a new entity
 2. `update` logic for updating entity
 3. `draw` (optional) extra logic for rendering entity
+
 - `update` and `draw` both receive current instance of Time and Scene from Sim to use in their logic
