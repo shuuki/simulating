@@ -64,7 +64,7 @@ var Sim = {
 
 		return this;
 	}
-	// save, load
+	// later: save, load
 }
 
 ///////////////
@@ -100,6 +100,7 @@ var Time = {
 		//console.log('update', this)
 	  return this;
 	}
+	// later: advance, rewind
 }
 
 ///////////////
@@ -108,7 +109,6 @@ var Scene = {
 	init: function (seed)
 	{
 		// take a seed object to set up initial values
-		
 		if (seed) {
 			this.active = seed;
 		}
@@ -121,7 +121,6 @@ var Scene = {
 	add: function (id, value)
 	{
 		// add new active entity as long as id is not in use
-
 		if (!this.active[id])
 		{
 			this.active[id] = value;
@@ -135,6 +134,7 @@ var Scene = {
 	},
 	assign: function (values)
 	{
+		// map an object onto active entities
 		Object.assign(this.active, values)
 
 		return this;
@@ -142,13 +142,12 @@ var Scene = {
 	remove: function (id)
 	{
 		// delete active entity at id
-
 		if (this.active[id])
 		{
 			delete this.active[id];
 		}
 		else {
-			throw 'active entity not found'
+			throw 'entity not found'
 		}
 
 		return this;
@@ -165,8 +164,9 @@ var Scene = {
 	},
 	step: function (ref, time)
 	{
-		// steps to give active entities a chance to update
-		// currently only 'update' or 'draw'
+		// goes over all active entities
+		// calls any function matching a reference 
+		// Sim has two step types: 'update' and 'draw'
 		for (var i in this.active)
 		{
 			if (this.active[i][ref])
@@ -176,7 +176,7 @@ var Scene = {
 		}
 		return this;
 	}
-
+	// later: inactive entities
 }
 
 ///////////////
