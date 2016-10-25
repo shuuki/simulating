@@ -1,13 +1,17 @@
 # THE SIMULATION
 
+A set of tools designed to make it easy to spin up simple interactive demos in JavaScript and a web browser.
 
 ```
+<!-- include Sim.js -->
+<script src="js/lib/Sim.js"></script>
+
 // start a new empty simulation 
 var sim = Object.create(Sim).init().start();
 ```
 
 
-## Sim core
+## Sim.js
 
 ### Sim
 
@@ -62,8 +66,8 @@ var sim = Object.create(Sim).init().start();
 
 Each entity is assumed to have three methods:
 
-1. `init` values necessary for a new entity
+1. `init` (optional) values necessary for a new entity
 2. `update` logic for updating entity
 3. `draw` (optional) extra logic for rendering entity
 
-- `update` and `draw` both receive current instance of Time and Scene from Sim as arguments to use in their logic
+- `update` and `draw` are both called by `Sim.update`, receiving current instance of Time and Scene as arguments to use in their logic
