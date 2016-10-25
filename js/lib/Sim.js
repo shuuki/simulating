@@ -2,15 +2,15 @@
 // THE SIMULATION
 
 var Sim = {
-	init: function (scene)
+	init: function (seed)
 	{
 		// takes optional scene object
-		if (!scene)
+		if (!seed)
 		{
 			this.scene = Object.create(Scene).init();
 		}
 		else {
-			this.scene = Object.create(Scene).init(scene);
+			this.scene = Object.create(Scene).init(seed);
 		}
 
 		// start new time
