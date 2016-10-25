@@ -2,10 +2,15 @@
 
 A set of tools designed to make it easy to spin up simple interactive demos in JavaScript and a web browser.
 
-```
+``` HTML:
 <!-- include Sim.js -->
 <script src="js/lib/Sim.js"></script>
 
+<!-- optional intro demo -->
+<script src="js/demo/intro.js"></script>
+```
+
+``` JS:
 // start a new empty simulation 
 var sim = Object.create(Sim).init().start();
 ```
