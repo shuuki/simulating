@@ -4,10 +4,17 @@
 
 ### Sim
 
-* `frame`
-* `init(scene)`
-* `update()`
-* `draw()`
+**values**
+
+* `frame` (number)
+* `time` (Time)
+* `scene` (Scene)
+
+**methods**
+
+* `init(scene)` starts new time and scene, takes optional scene seed object
+* `update()` requests animation frame, gets updates from time and scene 
+* `draw()` gets extra update from scene for rendering 
 * `start()` start running updates if not already running
 * `stop()` stops running updates
 
@@ -31,7 +38,7 @@
 
 **values**
 
-* `active` object holding scene entities
+* `active` (object) holds scene entities
 
 **methods**
 
@@ -41,4 +48,4 @@
 * `get(id)`returns entity at id, or all entities of no id is passed
 * `init(scene)` set up entities, takes optional seed object with initial values
 * `remove(id)` delete active entity at id 
-* `step(ref, time)` goes over all active entities and calls any function matching a reference 
+* `step(ref, time)` goes over every active entity and calls any method matching 
