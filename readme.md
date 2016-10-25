@@ -35,9 +35,10 @@
 
 **methods**
 
-* `init(scene)` set up entities, takes optional seed object with initial values
 * `add(id, value)` add new active entity as long as id is not in use
 * `assign(values)` map an object onto active entities
-* `remove(id)` delete active entity at id 
 * `forEach(fn, args)` call a function on every active entity
+* `get(id)`returns entity at id, or all entities of no id is passed
+* `init(scene)` set up entities, takes optional seed object with initial values
+* `remove(id)` delete active entity at id 
 * `step(ref, time)` goes over all active entities and calls any function matching a reference 
