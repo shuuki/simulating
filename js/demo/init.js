@@ -1,7 +1,7 @@
-var sim = Object.create(Sim).init().start();
 
-var starting = {
-	scene: {
-		landscape: Object.create(Walk).start('plains')
-	}
-}
+
+var landscape = Object.create(Walk);
+landscape.init('plains');
+
+var sim = Object.create(Sim).init().start();
+sim.scene.add('landscape', landscape)
