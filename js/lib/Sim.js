@@ -117,6 +117,8 @@ var Scene = {
 			this.active = {};
 		}
 
+		this.inactive = {};
+
 		return this;
 	},
 	add: function (id, value)
@@ -190,8 +192,48 @@ var Scene = {
 			}
 		}
 		return this;
+	},
+	deactivate: function (id)
+	{
+		// move active entity to inactive
+	  if (this.inactive[id])
+	  {
+	    this.inactive[id] = this.active[id];
+	    delete this.active[id];
+	  }
+	  else
+	  {
+	    throw 'active entity not found';
+	  }
+	  return this;
+	},
+	activate: function (id)
+	{
+		// move inactive entity to active
+	  if (this.inactive[id])
+	  {
+	    this.active[id] = this.inactive[id];
+	    delete this.inactive[id];
+	  }
+	  else
+	  {
+	    throw 'inactive entity not found';
+	  }
+	  return this;
+	},
+	drop: function (id)
+	{
+		// delete inactive entity
+	  if (this.inactive[id])
+	  {
+	    delete this.active[id];
+	  }
+	  else
+	  {
+	    throw 'inactive entity not found';
+	  }
+	  return this;
 	}
-	// later: inactive entities
 }
 
 ///////////////
