@@ -73,12 +73,49 @@ var sim = Object.create(Sim).init().start();
 
 ## Entities
 
-Sim makes no assumptions about entities, just exposes some basic information to entities and allows them to make their own decision.
+Sim makes no assumptions about entities, just exposes some basic information to entities and allows them to make their own decisions. Entities are generally expected to have at least three methods:
 
-Entities are generally expected to have at least three methods:
-
-1. `init` values necessary for a new entity
-2. `update` logic for updating entity
+1. `init` define values necessary for a new entity
+2. `update` add logic for updating entity
 3. `draw` extra logic for rendering entity
 
-Note: `update` and `draw` are both called frequently by `Sim.update`, once per Sim step, so entities containing methods `update` or `draw` will be called with the current instance of Time and Scene as arguments to use in their logic.
+Note: `update` and `draw` are both called frequently by `Sim.update`, once per `step`, so entities containing methods `update` or `draw` will be called with the current instance of Time and Scene as arguments to use in their logic.
+
+```
+// Ticker entity 
+// a little thing that increments once every n seconds
+
+var Ticker = {
+	init: function (name, increment)
+	{
+		// give ticker a name and time increment
+		this.name = name;
+		this.increment = increment;
+		this.time = 0;
+		this.tick = 0;
+		this.tock = false;
+		return this;
+	},
+	update: function(time, scene)
+	{
+		// reset tock and delta since last update
+		this.time += time.delta / 1000;
+		this.tock = false;
+
+		// set tock to true and decrement by ticker's increment 
+		while (this.time >= this.increment) {
+			this.time -= this.increment;
+			this.tick += 1;
+			this.tock = true;
+		}
+	},
+	draw: function(time, scene)
+	{
+		// log a tick to the console
+		if (this.tock) {
+			console.log(this.name, this.tick)
+		}
+	}
+}
+
+```
