@@ -3,13 +3,13 @@
 
 var Walk = {
 	time: 0,
+	refresh: 240,
 	init: function (type)
 	{
 		this.type = type;
 		this.active = true;
 		this.time = 0;
 		this.step = 0;
-		this.refresh = 240;
 		this.background = Object.create(Field).size(16);
 		this.foreground = Object.create(Field).size(16);
 	},
@@ -48,8 +48,8 @@ var Walk = {
 	draw: function(time, scene)
 	{
 		if (this.updated) {
-			console.log(this.foreground.draw())
-			console.log(this.background.draw())
+			this.foreground.draw(this.step)
+			this.background.draw(this.step)
 			//this.bg.innerHTML = this.background.draw();
 			//this.fg.innerHTML = this.foreground.draw();
 		}
@@ -84,13 +84,13 @@ var Field = {
 	},
 	add: function (v)
 	{
-		this.area.shift()
+		//this.area.shift()
 		this.area.push(v)
 		return this;
 	},
-	draw: function ()
+	draw: function (pos)
 	{
-		var view = this.area.join('');
+		var view = this.area.slice(pos, pos + this.width).join('');
 		console.log(view)
 		//return view;
 		return this;
