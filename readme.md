@@ -40,7 +40,7 @@ var sim = Object.create(Sim).init().start();
 
 **values**
 
-* `delta` (number) time since last update, in ms, limited to 100ms
+* `delta` (number) time since last update in ms, limited to 100ms
 * `lastUpdated` (number) time of latest update, in ms since the epoch
 * `steps`(number) number of updates performed
 * `up` (number) accumulated delta time since simulation began, in ms
@@ -81,9 +81,10 @@ Sim makes no assumptions about entities, just exposes some basic information to 
 2. `update` add logic for updating entity
 3. `draw` extra logic for rendering entity
 
-Note: `update` and `draw` are both called frequently by `Sim.update`, once per `step`, so entities containing methods `update` or `draw` will be called with the current instance of Time and Scene as arguments to use in their logic.
+Note: `update` and `draw` are both called frequently by `Sim.update` once per `step` so entities containing methods `update` or `draw` will be called with the current instance of Time and Scene as arguments to use in their logic.
 
-### Ticker Example Entity
+Ticker Example Entity From ``/js/demo/intro.js`:
+
 ```
 // Ticker entity 
 // a little thing that increments once every n seconds
