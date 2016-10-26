@@ -1,6 +1,11 @@
 # THE SIMULATION
 
-A set of tools designed to make it easy to spin up simple interactive demos in JavaScript and a web browser.
+A set of tools designed to make it easy to spin up simple interactive demos in JavaScript/HTML/CSS and web browser.
+
+``` JS:
+// start a new empty simulation 
+var sim = Object.create(Sim).init().start();
+```
 
 ``` HTML:
 <!-- include Sim.js -->
@@ -9,12 +14,6 @@ A set of tools designed to make it easy to spin up simple interactive demos in J
 <!-- optional intro demo -->
 <script src="js/demo/intro.js"></script>
 ```
-
-``` JS:
-// start a new empty simulation 
-var sim = Object.create(Sim).init().start();
-```
-
 
 ## Sim.js
 
@@ -55,24 +54,31 @@ var sim = Object.create(Sim).init().start();
 **values**
 
 * `active` (object) holds scene entities
+* `inactive` (object) holds entities not actively simulated
 
 **methods**
 
+* `activate(id)` move inactive entity to active
 * `add(id, value)` add new active entity as long as id is not in use
 * `assign(values)` map an object onto active entities
+* `deactivate(id)` move active entity to inactive
+* `drop(id)` delete inactive entity
 * `forEach(fn, args)` calls a passed function on every active entity
 * `get(id)` returns entity at id, or all entities of no id is passed
 * `init(scene)` set up entities, takes optional seed object with initial values
 * `remove(id)` delete active entity at id.
 * `step(ref, time)` goes over every active entity and calls any method matching reference
 
+---
 
-### Entity
+## Entities
 
-Each entity is assumed to have three methods:
+Sim makes no assumptions about entities, just exposes some basic information to entities and allows them to make their own decision.
 
-1. `init` (optional) values necessary for a new entity
+Entities are generally expected to have at least three methods:
+
+1. `init` values necessary for a new entity
 2. `update` logic for updating entity
-3. `draw` (optional) extra logic for rendering entity
+3. `draw` extra logic for rendering entity
 
-- `update` and `draw` are both called by `Sim.update`, receiving current instance of Time and Scene as arguments to use in their logic
+Note: `update` and `draw` are both called frequently by `Sim.update`, once per Sim step, so entities containing methods `update` or `draw` will be called with the current instance of Time and Scene as arguments to use in their logic.
