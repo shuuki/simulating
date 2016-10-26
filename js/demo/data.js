@@ -57,6 +57,7 @@ Data.biome = {
 
 // unicode?
 //http://jrgraphix.net/r/Unicode/0370-03FF
+/* DANGER EXOTIC WHITESPACE AHEAD //ideographic space: '　' // DANGER */
 //ღ
 //ხ
 //ფ
@@ -65,7 +66,8 @@ Data.biome = {
 //৶
 //_⁔‿ҨѦᛮ
 //Ϫ
-//'ᾂ' :    5,
+// ץ﹏︿෴
+//ϡψ'ᾂ' :    5,
 //Ҕ
 //Ѯ
 //'Ӝ' : 1,
