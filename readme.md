@@ -83,7 +83,7 @@ Sim makes no assumptions about entities, just exposes some basic information to 
 
 Note: `update` and `draw` are both called frequently by `Sim.update` once per `step` so entities containing methods `update` or `draw` will be called with the current instance of Time and Scene as arguments to use in their logic.
 
-Ticker Example Entity From ``/js/demo/intro.js`:
+Example Ticker entity from `/js/demo/intro.js`:
 
 ```
 // Ticker entity 
