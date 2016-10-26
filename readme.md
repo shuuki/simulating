@@ -15,6 +15,8 @@ var sim = Object.create(Sim).init().start();
 <script src="js/demo/intro.js"></script>
 ```
 
+---------------
+
 ## Sim.js
 
 ### Sim
@@ -69,7 +71,7 @@ var sim = Object.create(Sim).init().start();
 * `remove(id)` delete active entity at id.
 * `step(ref, time)` goes over every active entity and calls any method matching reference
 
----
+---------------
 
 ## Entities
 
@@ -81,6 +83,7 @@ Sim makes no assumptions about entities, just exposes some basic information to 
 
 Note: `update` and `draw` are both called frequently by `Sim.update`, once per `step`, so entities containing methods `update` or `draw` will be called with the current instance of Time and Scene as arguments to use in their logic.
 
+### Ticker Example Entity
 ```
 // Ticker entity 
 // a little thing that increments once every n seconds
