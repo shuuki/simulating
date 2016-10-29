@@ -16,11 +16,11 @@ var Sim = {
 		// start new time
 		this.time = Object.create(Time);
 
-		console.log('Sim ready', this.time.lastUpdated);
+		console.log('Sim ready', this.time.updated);
 
 		return this;
 	},
-	update: function()
+	update: function ()
 	{
 		// update clock
 		this.time.update();
@@ -36,7 +36,7 @@ var Sim = {
 
 		return this;
 	},
-	draw: function()
+	draw: function ()
 	{
 		// send scene a request for rendering updates
 		this.scene.step('draw', this.time);
@@ -46,7 +46,7 @@ var Sim = {
 
 		return this;
 	},
-	start: function()
+	start: function ()
 	{
 		// start updates
 		if (!this.frame)
@@ -56,7 +56,7 @@ var Sim = {
 
 		return this;
 	},
-	stop: function()
+	stop: function ()
 	{
 		// stop updates
 		window.cancelAnimationFrame(this.frame);
@@ -72,14 +72,14 @@ var Sim = {
 var Time = {
 	steps: 0,
 	up: 0,
-	lastUpdated: new Date().getTime(),
+	updated: new Date().getTime(),
 	init: function ()
 	{
 		// reset time values
-		this.steps = 0;
 		this.delta = 0;
+		this.steps = 0;
 		this.up = 0;
-		this.lastUpdated = new Date().getTime();
+		this.updated = new Date().getTime();
 
 		return this;
 	},
@@ -87,21 +87,20 @@ var Time = {
 	{
 		// get current time and find delta since last update
 	  var now = new Date().getTime();
-		var delta = now - this.lastUpdated;
+		var delta = now - this.updated;
 
 		// limit delta to 100ms
 		delta < 100 ? this.delta = delta : this.delta = 100;
 
 		// update 
-		this.up += this.delta;
 		this.steps += 1;
-		this.lastUpdated = now;
-		// reset up and steps if exceed Number.MAX_VALUE ?
+		this.up += this.delta;
+		this.updated = now;
 
-		//console.log('update', this)
 	  return this;
 	}
 	// later: advance, rewind
+	// export, import
 }
 
 ///////////////
@@ -142,7 +141,8 @@ var Scene = {
 
 		return this;
 	},
-	get: function (id) {
+	get: function (id)
+	{
 		// returns entity at id, or all entities of no id is passed
 		if (!id)
 		{
@@ -177,6 +177,7 @@ var Scene = {
 			fn.apply(this, this.active[i], args)
 			//test function (a) { console.log(this, a) }
 		}
+
 		return this;		
 	},
 	step: function (ref, time)
@@ -191,6 +192,7 @@ var Scene = {
 				this.active[i][ref](time, this);
 			}
 		}
+
 		return this;
 	},
 	deactivate: function (id)
@@ -205,6 +207,7 @@ var Scene = {
 	  {
 	    throw 'active entity not found';
 	  }
+
 	  return this;
 	},
 	activate: function (id)
@@ -219,6 +222,7 @@ var Scene = {
 	  {
 	    throw 'inactive entity not found';
 	  }
+
 	  return this;
 	},
 	drop: function (id)
@@ -232,6 +236,7 @@ var Scene = {
 	  {
 	    throw 'inactive entity not found';
 	  }
+
 	  return this;
 	}
 }
