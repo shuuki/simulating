@@ -180,7 +180,7 @@ Data.entity = {
 		type: 'animal',
 		stats: {
 			life: 6,
-			speed: 4
+			agility: 4
 		},
 		items: ['dawgBite', 'dawgHide']
 	},
@@ -189,7 +189,7 @@ Data.entity = {
 		type: 'animal',
 		stats: {
 			life: 3,
-			speed: 3
+			agility: 3
 		},
 		items: ['smallBite', 'smallHide']
 	},
@@ -198,7 +198,7 @@ Data.entity = {
 		type: 'animal',
 		stats: {
 			life: 3,
-			speed: 5
+			agility: 5
 		},
 		items: ['smallBite', 'smallHide']
 	},
