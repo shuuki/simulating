@@ -12,6 +12,8 @@ var Walk = {
 		this.step = 0;
 		this.background = Object.create(Field).init(16);
 		this.foreground = Object.create(Field).init(16);
+		this.player = makeBeing(Data.entity['@']);
+
 		return this;
 	},
 	update: function (time, scene)
@@ -33,9 +35,6 @@ var Walk = {
 			this.background.add(spawn.background);
 			this.foreground.add(spawn.foreground);
 
-			//console.log(this.foreground.last())
-			//this.foreground.area[0] = '@';
-
 			// update time
 			this.time -= this.refresh;
 			this.step += 1;
@@ -44,6 +43,7 @@ var Walk = {
 			// check head of foreground for entity encounter
 			if (this.foreground.isOccupied(this.step))
 			{
+				// pause walk
 				this.active = false;
 				this.encounter(this.foreground.check(this.step), this.step)
 			}
@@ -62,13 +62,15 @@ var Walk = {
 	{
 		if (Data.entity.hasOwnProperty(e))
 		{
-			console.log('encounter', i, makeBeing(Data.entity[e]))
-			//console.log( e, Data.entity[e])
+			var players = [makeBeing(Data.entity[e]), this.player];
+			console.log('encounter', i, players, action.do('initiative', players))
+			
+			//console.log(e, Data.entity[e])
 			//var type = Data.entity[e].type;
 			//console.log(type + ' stuff')
 		}
-		// continue running
-		//this.active = true;
+		// continue walk
+		this.active = true;
 	}
 }
 
