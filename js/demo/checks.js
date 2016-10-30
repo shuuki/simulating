@@ -97,7 +97,8 @@ var action = {
 	{
 		// takes two actors: attacker, other
 		var weapon = actors[0].equipped('weapon').damage || 0;
-		var defense = actors[1].get('defense') || 0;
+		var defense = actors[1].equipped('armor').defense || 0;
+		//var defense = actors[1].get('defense') || 0;
 
 		// makes a roll inside damage range of attacker's weapon
 		var damage = Math.round(roll(weapon.max - weapon.min) + weapon.min);
@@ -245,6 +246,7 @@ var Weapon = {
 };
 
 // COLLECTIONS
+/*
 
 var weapon = {
 	dawgBite: Object.create(Weapon).build('TEETH', 'BITE', [1, 3, 'life']),
@@ -275,6 +277,9 @@ var rs = [ being.rabbit, being.squirrel ]
 //action.do('dodge', sd)
 //action.do('dodge', ds)
 
+*/
+
+///////////////
 
 makeBeing = function (data)
 {
@@ -295,5 +300,7 @@ makeBeing = function (data)
 
 	return being;
 }
+
+//makeBeing(Data.entity['S'])
 
 ///////////////

@@ -12,6 +12,7 @@ var Walk = {
 		this.step = 0;
 		this.background = Object.create(Field).init(16);
 		this.foreground = Object.create(Field).init(16);
+		return this;
 	},
 	update: function (time, scene)
 	{
@@ -44,7 +45,7 @@ var Walk = {
 			if (this.foreground.isOccupied(this.step))
 			{
 				this.active = false;
-				this.encounter(this.foreground.check(this.step))
+				this.encounter(this.foreground.check(this.step), this.step)
 			}
 
 		}
@@ -57,11 +58,11 @@ var Walk = {
 			this.background.draw(this.step)
 		}
 	},
-	encounter: function (e)
+	encounter: function (e, i)
 	{
 		if (Data.entity.hasOwnProperty(e))
 		{
-			console.log('encounter', makeBeing(Data.entity[e]))
+			console.log('encounter', i, makeBeing(Data.entity[e]))
 			//console.log( e, Data.entity[e])
 			//var type = Data.entity[e].type;
 			// generate a short uniqueish string 
@@ -206,7 +207,7 @@ makeEnviron = function (set, subset)
 	return selected;
 }
 
-//console.log(makeEnviron(Data.biome, 'plains'))
+//makeEnviron(Data.biome, 'plains')
 //console.log(makeEnviron(Data.weather, 'summer'))
 
 ///////////////
