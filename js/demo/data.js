@@ -53,83 +53,7 @@ Data.biome = {
       '%' : 0.02
 		},
 	},
-}
-
-// unicode?
-//http://jrgraphix.net/r/Unicode/0370-03FF
-/* DANGER EXOTIC WHITESPACE AHEAD //ideographic space: '　' // DANGER */
-//ღ
-//ხ
-//ფ
-//ฬ
-//ป
-//৶
-//_⁔‿ҨѦᛮ
-//Ϫ
-// ץ﹏︿෴
-//ϡψ'ᾂ' :    5,
-//Ҕ
-//Ѯ
-//'Ӝ' : 1,
-//'ᴕ' :    5,
-//'ᠠ' :    5, // bird? 
-//'ᘚ' :    5,
-//'ጰ' : 1,//human
-//'ᘏ' :    5,
-
-
-// ENTITIES
-
-Data.entity = {
-	'@': {
-		name: 'DAWG',
-		type: 'animal',
-		stats : {
-			life: 6,
-			speed: 4
-		}
-	},
-	'S': {
-		name: 'SQUIRREL',
-		type: 'animal',
-		stats : {
-			life: 3,
-			speed: 3
-		}
-	},
-	'R': {
-		name: 'RABBIT',
-		type: 'animal',
-		stats : {
-			life: 3,
-			speed: 5
-		}
-	},
-	'Q': {
-		name: 'BIG DOG',
-		type: 'animal'
-	},
-	'p': {
-		name: 'LITTLE DOG',
-		type: 'animal'
-	},
-	'&': {
-		name: 'ANIMAL BONES',
-		type: 'loot'
-	},
-	'%': {
-		name: 'HUMAN BONES',
-		type: 'loot'
-	},
-	'$': {
-		name: 'STUFF',
-		type: 'loot'
-	},
-	'!': {
-		name: 'HUMAN',
-		type: 'human'
-	},
-}
+};
 
 // WEATHER
 
@@ -248,4 +172,99 @@ Data.weather = {
 	}
 };
 
+// ENTITIES
+
+Data.entity = {
+	'@': {
+		name: 'DAWG',
+		type: 'animal',
+		stats: {
+			life: 6,
+			speed: 4
+		},
+		items: ['dawgBite', 'dawgHide']
+	},
+	'S': {
+		name: 'SQUIRREL',
+		type: 'animal',
+		stats: {
+			life: 3,
+			speed: 3
+		},
+		items: ['smallBite', 'smallHide']
+	},
+	'R': {
+		name: 'RABBIT',
+		type: 'animal',
+		stats: {
+			life: 3,
+			speed: 5
+		},
+		items: ['smallBite', 'smallHide']
+	},
+	'D': {
+		name: 'BIG DOG',
+		type: 'animal'
+	},
+	'd': {
+		name: 'LITTLE DOG',
+		type: 'animal'
+	},
+	'&': {
+		name: 'ANIMAL BONES',
+		type: 'loot'
+	},
+	'%': {
+		name: 'HUMAN BONES',
+		type: 'loot'
+	},
+	'$': {
+		name: 'STUFF',
+		type: 'loot'
+	},
+	'!': {
+		name: 'HUMAN',
+		type: 'human'
+	},
+};
+
+// unicode? http://jrgraphix.net/r/Unicode/0370-03FF
+// /* DANGER EXOTIC WHITESPACE AHEAD //ideographic space: '　' // DANGER */
+// ღხფฬป৶
+// _⁔‿ҨѦᛮϪץ﹏︿෴
+// ϡψᾂҔѮӜᴕᠠᘚጰᘏ
+
 ///////////////
+
+// EQUIPMENT
+
+Data.equipment = {
+	dawgBite: {
+		type: 'weapon',
+		name: 'TEETH',
+		action: 'BITE',
+		damage: { min: 1, max: 3, to: 'life' }
+	},
+	bigBite: {
+		type: 'weapon',
+		name: 'TEETH',
+		action: 'MAUL',
+		damage: { min: 2, max: 6, to: 'life' }
+	},
+	smallBite: {
+		type: 'weapon',
+		name: 'TEETH',
+		action: 'NIP',
+		damage: { min: 0, max: 2, to: 'life' }
+	},
+	dawgHide: {
+		type: 'armor',
+		name: 'DAWG HIDE',
+		defense: 2
+	},
+	smallHide: {
+		type: 'armor',
+		name: 'SMALL HIDE',
+		defense: 1
+	}
+};
