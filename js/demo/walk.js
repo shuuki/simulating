@@ -65,8 +65,6 @@ var Walk = {
 			console.log('encounter', i, makeBeing(Data.entity[e]))
 			//console.log( e, Data.entity[e])
 			//var type = Data.entity[e].type;
-			// generate a short uniqueish string 
-			// (Date.now() + Math.random()).toString(36).substr(9,9)
 			//console.log(type + ' stuff')
 		}
 		// continue running
