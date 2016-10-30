@@ -47,8 +47,9 @@ Data.biome = {
 		},
     foreground: {
       '_' :    5,
-			'S' : 0.05,
-			'R' : 0.05,
+			'R' : 0.06,
+			'S' : 0.04,
+			'B' : 0.01,
 			'&' : 0.03,
       '%' : 0.02
 		},
@@ -202,6 +203,15 @@ Data.entity = {
 		},
 		items: ['smallBite', 'smallHide']
 	},
+	'B': {
+		name: 'BEAR',
+		type: 'animal',
+		stats: {
+			life: 7,
+			agility: 4
+		},
+		items: ['bearBite', 'bearHide']
+	},
 	'D': {
 		name: 'BIG DOG',
 		type: 'animal'
@@ -234,8 +244,6 @@ Data.entity = {
 // _⁔‿ҨѦᛮϪץ﹏︿෴
 // ϡψᾂҔѮӜᴕᠠᘚጰᘏ
 
-///////////////
-
 // EQUIPMENT
 
 Data.equipment = {
@@ -245,17 +253,17 @@ Data.equipment = {
 		action: 'BITE',
 		damage: { min: 1, max: 3, to: 'life' }
 	},
-	bigBite: {
-		type: 'weapon',
-		name: 'TEETH',
-		action: 'MAUL',
-		damage: { min: 2, max: 6, to: 'life' }
-	},
 	smallBite: {
 		type: 'weapon',
 		name: 'TEETH',
 		action: 'NIP',
 		damage: { min: 0, max: 2, to: 'life' }
+	},
+	bearBite: {
+		type: 'weapon',
+		name: 'TEETH',
+		action: 'MAUL',
+		damage: { min: 2, max: 6, to: 'life' }
 	},
 	dawgHide: {
 		type: 'armor',
@@ -266,5 +274,10 @@ Data.equipment = {
 		type: 'armor',
 		name: 'SMALL HIDE',
 		defense: 1
+	},
+	bearHide: {
+		type: 'armor',
+		name: 'BEAR HIDE',
+		defense: 3
 	}
 };
