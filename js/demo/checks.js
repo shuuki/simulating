@@ -7,16 +7,30 @@ var activity = {
 	log: function (message)
 	{
 		var time = new Date().getTime();
-		this.history.push({time, message});
+		this.history.push({ time, message });
+
+		return this;
+	},
+	clear: function ()
+	{
+		this.history = [];
+
+		return this;
 	},
 	recall: function ()
 	{
 		return this.history;
 	},
-	clear: function ()
+	getMessages: function ()
 	{
-		this.history = [];
-		return this;
+		function message (e)
+		{
+			return e.message;
+		}
+
+		var messages = this.recall().map(message);
+
+		return messages;
 	}
 };
 
