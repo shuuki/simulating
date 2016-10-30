@@ -51,17 +51,16 @@ var action = {
 		// does rolls for each
 		// builds sorted array of rolls and indices of actors, from highest to lowest
 		// returns object with rolls array and name of the actor with the highest roll
-
-		var speedPlusRollSpeed = function (actor, index) {	
-			var speed = actor.stats.speed;
-			return [speed + roll(speed), index, actor.name];
+		var agilityPlusRollSpeed = function (actor, index) {
+			var agility = actor.stats.agility;
+			return [agility + roll(agility), index, actor.name];
 		};
 
-		var initiative = actors.map(speedPlusRollSpeed).sort().reverse();
+		var initiative = actors.map(agilityPlusRollSpeed).sort().reverse();
 		var resolve = initiative[0][1];
 		var winner = actors[resolve].name;
 
-		return {initiative, winner};
+		return {actors, initiative, winner};
 	},
 	dodge: function (actors)
 	{
@@ -70,38 +69,41 @@ var action = {
 		// returns success or failure
 
 		var rollSpeed = function (actor, index) {	
-			var speed = actor.stats.speed;
-			return roll(speed);
+			var agility = actor.stats.agility;
+			return roll(agility);
 		};
 
 		var check = actors.map(rollSpeed);
 		var dodged = check[0] - check[1] > 0 ? true : false;
 		var winner = dodged === true ? actors[0].name : actors[1].name;
 
-		return {dodged, winner};
+		return {actors, dodged, winner};
 	},
 	attack: function (actors)
 	{
 		// takes two actors: attacker, other
-		// evaluate success or failure of dodge check
-		// if attack succeeds, calculate damage
-		// return attack info
-
 		var dodge = this.do('dodge', [actors[1], actors[0]]);
-		var attacked = dodge.dodged === false ? true : false;
-		var damage = attacked === true ? this.do('damage', actors) : 0;
 
-		return {attacked, damage};
+		// evaluate success or failure of dodge check
+		var attacked = dodge.dodged === false ? true : false;
+
+		// if attack succeeds, calculate damage
+		var damage = attacked === true ? this.do('damage', actors) :  false;
+
+		// return attack info
+		return {actors, attacked, damage};
 	},
 	damage: function (actors) 
 	{
 		// takes two actors: attacker, other
+		var weapon = actors[0].equipped('weapon').damage || 0;
+		var defense = actors[1].get('defense') || 0;
+
 		// makes a roll inside damage range of attacker's weapon
+		var damage = Math.round(roll(weapon.max - weapon.min) + weapon.min);
+		damage <= 0 ? damage = 0 : damage = damage;
+
 		// returns weapon damage
-
-		var wep = actors[0].equipped('weapon').damage;
-		var damage = Math.round(roll(wep.max - wep.min) + wep.min);
-
 		return damage;
 	}
 };
@@ -114,7 +116,7 @@ var action = {
 
 var Being = {
 	// NAME
-	name: function (name)
+	named: function (name)
 	{
 		this.name = name;
 		return this;
@@ -128,10 +130,10 @@ var Being = {
 	make: function (stats)
 	{
 		this.stats = {};
-		this.stats = Object.assign(this.stats, stats);
-		this.stats.alive = true;
 		this.equipment = {};
 		this.inventory = [];
+		this.stats = Object.assign(this.stats, stats);
+		this.stats.alive = true;
 		return this;
 	},
 	assign: function (attributes)
@@ -157,9 +159,14 @@ var Being = {
 		this.stats[stat] = value;
 		return this;
 	},
-	kill: function ()
+	death: function ()
 	{
 		this.stats.alive = false;
+		return this;
+	},
+	birth: function ()
+	{
+		this.stats.alive = true;
 		return this;
 	},
 	// INVENTORY
@@ -185,14 +192,26 @@ var Being = {
 		return this;
 	},
 	// EQUIPMENT
+	// adds effects to stats
 	equipment: {},
 	equipped: function (type)
 	{
 		return this.equipment[type] || this.equipment;
 	},
-	equip: function(item)
+	equip: function (item)
 	{
-		this.equipment[item.type] = item;
+		if (item)
+		{
+			this.equipment[item.type] = item;
+		}
+		return this;
+	},
+	unequip: function (item)
+	{
+		if (this.equipment[item.type])
+		{
+			delete this.equipment[item.type];
+		} 
 		return this;
 	},
 	//
@@ -208,14 +227,10 @@ var Being = {
 	}
 };
 
-// var foo = Object.create(Being).name('FOO').give('fire').give('eyes');
-
+// var foo = Object.create(Being).name('FOO').give('fire');
 
 var Weapon = {
 	type: 'weapon',
-	name: null,
-	action: null,
-	damage: {},
 	build: function(name, action, dam)
 	{
 		this.name = name;
@@ -224,48 +239,42 @@ var Weapon = {
 			min: dam[0],
 			max: dam[1],
 			to: dam[2]
-		}
+		};
 		return this;
 	}
 };
 
-//var bit = smallBite: Object.create(Weapon).build('TEETH', 'NIP', [0, 2, 'life'])
-
 // COLLECTIONS
 
 var weapon = {
-	dawgBite: Object.create(Weapon)
-		.build('TEETH', 'BITE', [1, 3, 'life']),
-
-	smallBite: Object.create(Weapon)
-		.build('TEETH', 'NIP', [0, 2, 'life'])
+	dawgBite: Object.create(Weapon).build('TEETH', 'BITE', [1, 3, 'life']),
+	smallBite: Object.create(Weapon).build('TEETH', 'NIP', [0, 2, 'life'])
 };
 
 var being = {
 	dawg: Object.create(Being)
-		.name('DAWG')
-		.make({ life: 6, speed: 4 })
+		.named('DAWG')
+		.make({ life: 6, agility: 4, defense: 2 })
 		.equip(weapon.dawgBite),
 	squirrel: Object.create(Being)
-		.name('SQUIRREL')
-		.make({ life: 3, speed: 3 })
+		.named('SQUIRREL')
+		.make({ life: 3, agility: 3, defense: 1 })
 		.equip(weapon.smallBite),
 	rabbit: Object.create(Being)
-		.name('RABBIT')
-		.make({ life: 3, speed: 5 })
+		.named('RABBIT')
+		.make({ life: 3, agility: 5, defense: 1 })
 		.equip(weapon.smallBite)
 };
 
-// 
-
-var dsr = [being.dawg.check(), being.squirrel.check(), being.rabbit.check()]
+// action tests
+//var dsr = [being.dawg.check(), being.squirrel.check(), being.rabbit.check()]
 //console.log( action.do('initiative', dsr) )//.join(' ') )
-
 var sd = [ being.squirrel, being.dawg ]
-//action.do('dodge', sd)
-
 var ds = [ being.dawg, being.squirrel ]
-
 var rs = [ being.rabbit, being.squirrel ]
+//action.do('dodge', sd)
+//action.do('dodge', ds)
+
+
 
 ///////////////
