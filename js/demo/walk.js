@@ -10,13 +10,14 @@ var Walk = {
 		this.active = true;
 		this.time = 0;
 		this.step = 0;
-		this.background = Object.create(Field).size(16);
-		this.foreground = Object.create(Field).size(16);
+		this.background = Object.create(Field).init(16);
+		this.foreground = Object.create(Field).init(16);
 	},
-	update: function(time, scene)
+	update: function (time, scene)
 	{
 		this.updated = false;
 		this.time += time.delta;
+		this.now = time.lastUpdated;
 		
 		if (!this.active)
 		{
@@ -25,10 +26,13 @@ var Walk = {
 		if (this.active && this.time >= this.refresh)
 		{
 			// generate landscape spaces
-			var spawn = makeA(Data.biome, this.type);
-			console.log(spawn)
+			var spawn = makeEnviron(Data.biome, this.type);
+			//console.log(spawn)
+
 			this.background.add(spawn.background);
 			this.foreground.add(spawn.foreground);
+
+			//console.log(this.foreground.last())
 			//this.foreground.area[0] = '@';
 
 			// update time
@@ -37,30 +41,35 @@ var Walk = {
 			this.updated = true;
 
 			// check head of foreground for entity encounter
-			if (this.foreground.isOccupied(0))
+			if (this.foreground.isOccupied(this.step))
 			{
 				this.active = false;
-				this.encounter(this.foreground.check(0))
+				this.encounter(this.foreground.check(this.step))
 			}
 
 		}
 	},
-	draw: function(time, scene)
+	draw: function (time, scene)
 	{
-		if (this.updated) {
+		if (this.updated)
+		{
 			this.foreground.draw(this.step)
 			this.background.draw(this.step)
-			//this.bg.innerHTML = this.background.draw();
-			//this.fg.innerHTML = this.foreground.draw();
 		}
 	},
-	encounter: function(e)
+	encounter: function (e)
 	{
-		console.log('encounter', e, Data.entity[e])
-		var type = Data.entity[e].type;
-		console.log(type + ' stuff')
-
-		this.active = true;
+		if (Data.entity.hasOwnProperty(e))
+		{
+			console.log('encounter', makeBeing(Data.entity[e]))
+			//console.log( e, Data.entity[e])
+			//var type = Data.entity[e].type;
+			// generate a short uniqueish string 
+			// (Date.now() + Math.random()).toString(36).substr(9,9)
+			//console.log(type + ' stuff')
+		}
+		// continue running
+		//this.active = true;
 	}
 }
 
@@ -70,28 +79,31 @@ var Walk = {
 ///////////////
 
 var Field = {
-	
-	size: function (width)
+	init: function (width)
 	{
-		this.area = [];
 		this.width = width;
+		this.area = [];
 		var i = width;
 		while (i > 0) {
 			i--;
 			this.area.push('_');
 		}
+
 		return this;
 	},
 	add: function (v)
 	{
-		//this.area.shift()
 		this.area.push(v)
+
 		return this;
 	},
 	draw: function (pos)
-	{
+	{		
 		var view = this.area.slice(pos, pos + this.width).join('');
+		this.view = view;
+
 		console.log(view)
+
 		//return view;
 		return this;
 	},
@@ -114,62 +126,45 @@ var Field = {
 		else {
 			return false;
 		}
+	},
+	last: function ()
+	{
+		var last = this.area.length - 1;
+		return last;
 	}
 }
 
-//var bar = Object.create(Field).size(12)
-//bar.draw().add('V').draw().add('-').draw()
+//var bar = Object.create(Field).init(12)
+//bar.draw(0).add('V').draw(1).add('-').draw(2)
 
 ///////////////
 
-function makeDom(id, parentid)
-{
-	if (!id)
-	{
-		throw 'no id specified'
-	}
-	if (document && document.body)
-	{
-		// check for existing element with the same id and delete if found
-		var existing = document.getElementById(id);
-		if (existing && existing.parentNode)
-		{
-			existing.parentNode.removeChild(existing);
-		}
-
-		var display = document.createElement('div');
-
-		display.id = id;
-		document.body.appendChild(display);
-		display = document.getElementById(id);
-		return display;
-	}
-	else
-	{
-		throw 'no document present'
-	}
-}
-
-function roll(max)
+function roll (max)
 {
 	var outcome = Math.random() * max;
 	return outcome;
 }
 
-function makeA(set, subset)
+// console.log(roll(6))
+
+///////////////
+
+makeEnviron = function (set, subset)
 {
 	// get elements within the passed set and its collection
 	var elements = Object.keys(set[subset]);
 	var selected = {};
 
 	// grab subset attributes
-	for (var i = 0; i < elements.length; i++) {
+	for (var i = 0; i < elements.length; i++)
+	{
 		var currentElement = elements[i];
 		var conditions = Object.keys(set[subset][elements[i]]);
 		var conditionChance = 0;
 
 		// add up chance of each element's condition
-		for (var j = 0; j < conditions.length; j++) {
+		for (var j = 0; j < conditions.length; j++)
+		{
 			conditionChance += set[subset][elements[i]][conditions[j]]
 		}
 
@@ -192,14 +187,16 @@ function makeA(set, subset)
 		//console.log(currentElement, conditionChance, conditionRoll)
 
 		// run through conditions again to find current state
-		for (var k = 0; k < conditions.length; k++) {
+		for (var k = 0; k < conditions.length; k++)
+		{
 			// subtract condition values from roll
 			var increment = set[subset][elements[i]][conditions[k]];
 			conditionRoll -= increment;
 			//console.log(conditions[k], increment, conditionRoll)
 
 			// once roll value drops below zero, save selection and break
-			if (conditionRoll <= 0) {
+			if (conditionRoll <= 0)
+			{
 				//console.log(conditions[k] + ' selected')
 				selected[elements[i]] = conditions[k];
 				break;
@@ -209,9 +206,7 @@ function makeA(set, subset)
 	return selected;
 }
 
-//console.log(makeA(Data.biome, 'desert'))
-//console.log(makeA(Data.biome, 'plains'))
-//console.log(makeA(Data.weather, 'summer'))
-
+//console.log(makeEnviron(Data.biome, 'plains'))
+//console.log(makeEnviron(Data.weather, 'summer'))
 
 ///////////////
