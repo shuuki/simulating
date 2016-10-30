@@ -276,5 +276,24 @@ var rs = [ being.rabbit, being.squirrel ]
 //action.do('dodge', ds)
 
 
+makeBeing = function (data)
+{
+	var being = Object.create(Being);
+	being.assign(data);
+
+	if (data.items)
+	{
+		// iterate through items and add equipment
+		for (var e = 0; e < data.items.length; e++)
+		{
+			var item = Data.equipment[data.items[e]] || false;			
+			being.equip(item);
+		}
+		// clean up
+		delete being.items;
+	}
+
+	return being;
+}
 
 ///////////////
