@@ -64,6 +64,14 @@ var Walk = {
 		{
 			var players = [makeBeing(Data.entity[e]), this.player];
 			console.log('encounter', i, players, action.do('initiative', players))
+			console.log(action.do('scare', players))
+			console.log(action.do('dodge', players))
+			
+			// initiative
+			// reaction
+				// scare
+					// dodge
+					
 			
 			//console.log(e, Data.entity[e])
 			//var type = Data.entity[e].type;

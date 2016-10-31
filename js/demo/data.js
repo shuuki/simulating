@@ -41,9 +41,9 @@ Data.biome = {
   plains: {
 		background: {
 			//'_' : 1,
-			'⁔' : 10,
-			'‿' : 10,
-			'﹏' : 10,
+			'⁔' : 12,
+			'‿' : 12,
+			'﹏' : 11,
 			'෴' : 2,
 			'ᛮ' : 2,
 			'Ҩ' : 1,
@@ -53,7 +53,7 @@ Data.biome = {
       '_' : 5,
 			'R' : 0.06,
 			'S' : 0.04,
-			'B' : 0.01
+			'B' : 0.02
 			//'Ѧ' : 1,
 			//'Ϫ' : 0.001,
 		},
@@ -185,7 +185,9 @@ Data.entity = {
 		type: 'animal',
 		stats: {
 			life: 6,
-			agility: 4
+			agility: 4,
+			fear: 3,
+			intimidation: 3
 		},
 		items: ['dawgBite', 'dawgHide']
 	},
@@ -194,7 +196,9 @@ Data.entity = {
 		type: 'animal',
 		stats: {
 			life: 3,
-			agility: 3
+			agility: 3,
+			fear: 1,
+			intimidation: 1
 		},
 		items: ['smallBite', 'smallHide']
 	},
@@ -203,7 +207,9 @@ Data.entity = {
 		type: 'animal',
 		stats: {
 			life: 3,
-			agility: 5
+			agility: 5,
+			fear: 1,
+			intimidation: 1
 		},
 		items: ['smallBite', 'smallHide']
 	},
@@ -212,7 +218,9 @@ Data.entity = {
 		type: 'animal',
 		stats: {
 			life: 7,
-			agility: 4
+			agility: 4,
+			fear: 3,
+			intimidation: 4
 		},
 		items: ['bearBite', 'bearHide']
 	},

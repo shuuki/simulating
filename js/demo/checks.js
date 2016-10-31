@@ -106,6 +106,16 @@ var action = {
 
 		// returns weapon damage
 		return damage;
+	},
+	scare: function (actors) 
+	{
+		var fear = actors[0].get('fear');
+		var intimidation = actors[1].get('intimidation');
+		var fright =  fear - intimidation;
+		var scare = rollRange(fright, fear);
+
+		return {fear, intimidation, fright, scare};
+
 	}
 };
 
@@ -304,3 +314,8 @@ makeBeing = function (data)
 //makeBeing(Data.entity['S'])
 
 ///////////////
+
+function rollRange(min, max) {
+	var outcome =	Math.floor(Math.random() * (max - min + 1)) + min;
+	return outcome;
+}
