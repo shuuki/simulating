@@ -197,7 +197,7 @@ Data.entity = {
 		stats: {
 			life: 3,
 			agility: 3,
-			nerve: 1,
+			nerve: 2,
 			threat: 1
 		},
 		items: ['smallBite', 'smallHide']
