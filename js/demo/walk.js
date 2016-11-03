@@ -60,22 +60,31 @@ var Walk = {
 	},
 	encounter: function (e, i)
 	{
+		var encountering = false;
 		if (Data.entity.hasOwnProperty(e))
 		{
-			var players = [makeBeing(Data.entity[e]), this.player];
-			console.log('encounter', i, players, action.do('initiative', players))
-			console.log(action.do('scare', players))
-			console.log(action.do('dodge', players))
-			
-			// initiative
-			// reaction
-				// scare
-					// dodge
-					
-			
-			//console.log(e, Data.entity[e])
-			//var type = Data.entity[e].type;
-			//console.log(type + ' stuff')
+			var opponent = makeBeing(Data.entity[e]);
+			var players = [this.player, opponent];
+			console.log('encounter', i, players)
+
+			var tick = 0;
+			encountering = true;
+
+			while (encountering === true)
+			{
+				var update = decision(players, tick);
+				players = update.players;
+				encountering = update.active;
+
+				tick += 1;
+
+				// automatically break after 9 ticks
+				if (tick > 9)
+				{
+					encountering = false;
+				}
+			}
+
 		}
 		// continue walk
 		this.active = true;
@@ -84,6 +93,38 @@ var Walk = {
 
 //var foo = Object.create(Walk)
 //foo.init('plains')
+
+///////////////
+
+function decision (players, tick)
+{	
+	var players = players;
+	var active = true;
+
+  if (tick < 1)
+  {
+    var initiative = action.do('initiative', players);
+    players = initiative.players;
+		console.log(initiative)
+  }
+	
+	console.log('TURN OF ' + players[0].name)
+	
+  var reaction = action.do('reaction', players);
+  var fear = action.do('fear', players);
+  var attack = action.do('attack', players);
+  var dodge = action.do('dodge', players);
+
+  //console.log(reaction)
+  console.log(fear)
+  console.log(attack)
+  console.log(dodge)
+
+	// reverse players for next round
+  players = [players[1], players[0]];
+
+	return { players, active };
+}
 
 ///////////////
 

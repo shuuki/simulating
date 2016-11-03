@@ -186,8 +186,8 @@ Data.entity = {
 		stats: {
 			life: 6,
 			agility: 4,
-			fear: 3,
-			intimidation: 3
+			nerve: 3,
+			threat: 3
 		},
 		items: ['dawgBite', 'dawgHide']
 	},
@@ -197,8 +197,8 @@ Data.entity = {
 		stats: {
 			life: 3,
 			agility: 3,
-			fear: 1,
-			intimidation: 1
+			nerve: 1,
+			threat: 1
 		},
 		items: ['smallBite', 'smallHide']
 	},
@@ -208,8 +208,8 @@ Data.entity = {
 		stats: {
 			life: 3,
 			agility: 5,
-			fear: 1,
-			intimidation: 1
+			nerve: 1,
+			threat: 1
 		},
 		items: ['smallBite', 'smallHide']
 	},
@@ -219,8 +219,8 @@ Data.entity = {
 		stats: {
 			life: 7,
 			agility: 4,
-			fear: 3,
-			intimidation: 4
+			nerve: 3,
+			threat: 5
 		},
 		items: ['bearBite', 'bearHide']
 	},

@@ -56,11 +56,11 @@ var action = {
 			return [agility + roll(agility), index, actor.name];
 		};
 
-		var initiative = actors.map(agilityPlusRollSpeed).sort().reverse();
-		var resolve = initiative[0][1];
-		var winner = actors[resolve].name;
+		var check = actors.map(agilityPlusRollSpeed).sort().reverse();
+		var initiative = actors[check[0][1]].name;
+		var players = [actors[check[0][1]], actors[check[1][1]]];
 
-		return {actors, initiative, winner};
+		return { players, initiative };
 	},
 	dodge: function (actors)
 	{
@@ -77,7 +77,7 @@ var action = {
 		var dodged = check[0] - check[1] > 0 ? true : false;
 		var winner = dodged === true ? actors[0].name : actors[1].name;
 
-		return {actors, dodged, winner};
+		return { dodged, winner };
 	},
 	attack: function (actors)
 	{
@@ -91,7 +91,7 @@ var action = {
 		var damage = attacked === true ? this.do('damage', actors) :  false;
 
 		// return attack info
-		return {actors, attacked, damage};
+		return { attacked, damage };
 	},
 	damage: function (actors) 
 	{
@@ -107,15 +107,23 @@ var action = {
 		// returns weapon damage
 		return damage;
 	},
-	scare: function (actors) 
+	fear: function (actors) 
 	{
-		var fear = actors[0].get('fear');
-		var intimidation = actors[1].get('intimidation');
-		var fright =  fear - intimidation;
-		var scare = rollRange(fright, fear);
+		var nerve = actors[0].get('nerve');
+		var threat = actors[1].get('threat');
+		var fright = nerve - threat;
+		var check = rollRange(fright, nerve);
+		var fear = check > 0 ? false : true; 
 
-		return {fear, intimidation, fright, scare};
-
+		return { fear };
+	},
+	escape: function (actors)
+	{
+		// fear and dodge
+	},
+	reaction: function (actors)
+	{
+		// decide if attack or not
 	}
 };
 
