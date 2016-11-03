@@ -61,70 +61,45 @@ var Walk = {
 	encounter: function (e, i)
 	{
 		var encountering = false;
+		var tick = 0;
 		if (Data.entity.hasOwnProperty(e))
 		{
 			var opponent = makeBeing(Data.entity[e]);
 			var players = [this.player, opponent];
-			console.log('encounter', i, players)
+			//console.log('encounter', i, players)
 
-			var tick = 0;
 			encountering = true;
 
 			while (encountering === true)
 			{
+				// automatically break after 9 ticks
+				if (tick > 9)
+				{
+					console.log('encounter timed out')
+					encountering = false;
+				}
+
 				var update = decision(players, tick);
 				players = update.players;
 				encountering = update.active;
 
 				tick += 1;
-
-				// automatically break after 9 ticks
-				if (tick > 9)
-				{
-					encountering = false;
-				}
 			}
-
 		}
-		// continue walk
-		this.active = true;
+		if (this.player.get('alive') === false)
+		{
+			console.log('game over')
+			this.active = false;
+		}
+		else {
+			// continue walk
+			this.active = true;			
+		}
 	}
 }
 
 //var foo = Object.create(Walk)
 //foo.init('plains')
-
-///////////////
-
-function decision (players, tick)
-{	
-	var players = players;
-	var active = true;
-
-  if (tick < 1)
-  {
-    var initiative = action.do('initiative', players);
-    players = initiative.players;
-		console.log(initiative)
-  }
-	
-	console.log('TURN OF ' + players[0].name)
-	
-  var reaction = action.do('reaction', players);
-  var fear = action.do('fear', players);
-  var attack = action.do('attack', players);
-  var dodge = action.do('dodge', players);
-
-  //console.log(reaction)
-  console.log(fear)
-  console.log(attack)
-  console.log(dodge)
-
-	// reverse players for next round
-  players = [players[1], players[0]];
-
-	return { players, active };
-}
 
 ///////////////
 
@@ -258,5 +233,62 @@ makeEnviron = function (set, subset)
 
 //makeEnviron(Data.biome, 'plains')
 //console.log(makeEnviron(Data.weather, 'summer'))
+
+///////////////
+
+function decision (players, tick)
+{	
+	var players = players;
+	var tick = tick;
+	var active = true;
+
+  if (tick < 1)
+  {
+    var initiative = action.do('initiative', players);
+    players = initiative.players;
+		//console.log(players, initiative)
+  }
+	
+	var protagonist = players[0].name;
+	var antagonist = players[1].name;
+
+	console.log('TURN OF ' + protagonist)
+	console.log(protagonist, players[0].get('life'), antagonist, players[1].get('life'))
+	
+  //var reaction = action.do('reaction', players);
+  var fear = action.do('fear', players);
+	var attack = action.do('attack', players);
+	var dodge = action.do('dodge', players);
+	//console.log(reaction)
+  //console.log(fear)
+  //console.log(attack)
+  //console.log(dodge)
+
+	if (fear.afraid === true && dodge.dodged === true)
+	{
+		active = false;
+		console.log(protagonist + ' fled!!!')
+	}
+	else if (attack.attacked === true && attack.damage !== false && attack.damage > 0)
+	{
+		players[1].change('life', -attack.damage)
+		console.log(antagonist + ' takes ' + attack.damage + ' damage')
+		if (players[1].get('life') <= 0)
+		{
+			active = false;
+			players[1].death();
+			console.log(antagonist + ' died!!!')
+		}
+	}
+	else
+	{
+		console.log('nothing!!!')
+	}
+
+	// reverse players for next round
+  players = [players[1], players[0]];
+
+	return { players, active };
+}
 
 ///////////////

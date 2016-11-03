@@ -113,9 +113,9 @@ var action = {
 		var threat = actors[1].get('threat');
 		var fright = nerve - threat;
 		var check = rollRange(fright, nerve);
-		var fear = check > 0 ? false : true; 
+		var afraid = check > 0 ? false : true; 
 
-		return { fear };
+		return { afraid };
 	},
 	escape: function (actors)
 	{
