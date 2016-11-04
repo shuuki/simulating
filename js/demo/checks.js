@@ -1,41 +1,5 @@
 ///////////////
 
-// ACTIVITY LOG
-
-var activity = {
-	history: [],
-	log: function (message)
-	{
-		var time = new Date().getTime();
-		this.history.push({ time, message });
-
-		return this;
-	},
-	clear: function ()
-	{
-		this.history = [];
-
-		return this;
-	},
-	recall: function ()
-	{
-		return this.history;
-	},
-	getMessages: function ()
-	{
-		function message (e)
-		{
-			return e.message;
-		}
-
-		var messages = this.recall().map(message);
-
-		return messages;
-	}
-};
-
-///////////////
-
 // ACTIONS
 
 var action = {
@@ -124,6 +88,10 @@ var action = {
 	reaction: function (actors)
 	{
 		// decide if attack or not
+	},
+	loot: function (actors)
+	{
+		
 	}
 };
 
@@ -131,199 +99,65 @@ var action = {
 
 ///////////////
 
-// TYPES
+// DECISIONS
 
-var Being = {
-	// NAME
-	named: function (name)
+function decision (players, tick)
+{	
+	var players = players;
+	var tick = tick || 0;
+	var active = true;
+
+  if (tick < 1)
+  {
+    var initiative = action.do('initiative', players);
+    players = initiative.players;
+		//console.log(players, initiative)
+  }
+
+	var protagonist = players[0].name;
+	var antagonist = players[1].name;
+
+	console.log('GO ' + protagonist)
+	console.log(protagonist, players[0].get('life'), antagonist, players[1].get('life'))
+
+  //var reaction = action.do('reaction', players);
+  var fear = action.do('fear', players);
+	var attack = action.do('attack', players);
+	var dodge = action.do('dodge', players);
+	//console.log(reaction)
+  //console.log(fear)
+  //console.log(attack)
+  //console.log(dodge)
+
+	if (fear.afraid === true && dodge.dodged === true)
 	{
-		this.name = name;
-		return this;
-	},
-	called: function ()
+		active = false;
+		console.log(protagonist + ' fled!!!')
+	}
+	else if (attack.attacked === true && attack.damage !== false && attack.damage > 0)
 	{
-		return this.name;
-	},
-	// STATS
-	stats: {},
-	make: function (stats)
-	{
-		this.stats = {};
-		this.equipment = {};
-		this.inventory = [];
-		this.stats = Object.assign(this.stats, stats);
-		this.stats.alive = true;
-		return this;
-	},
-	assign: function (attributes)
-	{
-		Object.assign(this, attributes);
-		return this;
-	},
-	is: function ()
-	{		
-		return this.stats;
-	},
-	get: function (stat)
-	{
-		return this.stats[stat];
-	},
-	change: function (stat, change)
-	{
-		this.stats[stat] += change;
-		return this;
-	},
-	set: function (stat, value)
-	{
-		this.stats[stat] = value;
-		return this;
-	},
-	death: function ()
-	{
-		this.stats.alive = false;
-		return this;
-	},
-	birth: function ()
-	{
-		this.stats.alive = true;
-		return this;
-	},
-	// INVENTORY
-	inventory: [],
-	has: function ()
-	{
-		return this.inventory;
-	},
-	give: function (items)
-	{
-		this.inventory = items;
-		return this;
-	},
-	add: function (item)
-	{
-		this.inventory.push(item);
-		return this;
-	},
-	take: function (item)
-	{
-		var what = this.inventory.indexOf(item);
-		this.inventory.splice(1, what);
-		return this;
-	},
-	// EQUIPMENT
-	// adds effects to stats
-	equipment: {},
-	equipped: function (type)
-	{
-		return this.equipment[type] || this.equipment;
-	},
-	equip: function (item)
-	{
-		if (item)
+		players[1].change('life', -attack.damage)
+
+		console.log(players[0].name + ' attacks!!!')
+		console.log(antagonist + ' takes ' + attack.damage + ' damage')
+
+		if (players[1].get('life') <= 0)
 		{
-			this.equipment[item.type] = item;
+			active = false;
+			players[1].kill();
+
+			console.log(antagonist + ' died!!!')
 		}
-		return this;
-	},
-	unequip: function (item)
-	{
-		if (this.equipment[item.type])
-		{
-			delete this.equipment[item.type];
-		} 
-		return this;
-	},
-	//
-	check: function()
-	{
-		var check = {
-			stats: this.is(),
-			name: this.called(),
-			inventory: this.has(),
-			equipment: this.equipped()
-		};
-		return check;
 	}
-};
-
-// var foo = Object.create(Being).name('FOO').give('fire');
-
-var Weapon = {
-	type: 'weapon',
-	build: function(name, action, dam)
+	else
 	{
-		this.name = name;
-		this.action = action;
-		this.damage = {
-			min: dam[0],
-			max: dam[1],
-			to: dam[2]
-		};
-		return this;
-	}
-};
-
-// COLLECTIONS
-/*
-
-var weapon = {
-	dawgBite: Object.create(Weapon).build('TEETH', 'BITE', [1, 3, 'life']),
-	smallBite: Object.create(Weapon).build('TEETH', 'NIP', [0, 2, 'life'])
-};
-
-var being = {
-	dawg: Object.create(Being)
-		.named('DAWG')
-		.make({ life: 6, agility: 4, defense: 2 })
-		.equip(weapon.dawgBite),
-	squirrel: Object.create(Being)
-		.named('SQUIRREL')
-		.make({ life: 3, agility: 3, defense: 1 })
-		.equip(weapon.smallBite),
-	rabbit: Object.create(Being)
-		.named('RABBIT')
-		.make({ life: 3, agility: 5, defense: 1 })
-		.equip(weapon.smallBite)
-};
-
-// action tests
-//var dsr = [being.dawg.check(), being.squirrel.check(), being.rabbit.check()]
-//console.log( action.do('initiative', dsr) )//.join(' ') )
-var sd = [ being.squirrel, being.dawg ]
-var ds = [ being.dawg, being.squirrel ]
-var rs = [ being.rabbit, being.squirrel ]
-//action.do('dodge', sd)
-//action.do('dodge', ds)
-
-*/
-
-///////////////
-
-makeBeing = function (data)
-{
-	var being = Object.create(Being);
-	being.assign(data);
-
-	if (data.items)
-	{
-		// iterate through items and add equipment
-		for (var e = 0; e < data.items.length; e++)
-		{
-			var item = Data.equipment[data.items[e]] || false;			
-			being.equip(item);
-		}
-		// clean up
-		delete being.items;
+		console.log(protagonist + 'does nothing!!!')
 	}
 
-	return being;
+	// reverse player order for next round
+  players = [players[1], players[0]];
+
+	return { players, active };
 }
 
-//makeBeing(Data.entity['S'])
-
 ///////////////
-
-function rollRange(min, max) {
-	var outcome =	Math.floor(Math.random() * (max - min + 1)) + min;
-	return outcome;
-}

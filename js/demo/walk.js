@@ -61,9 +61,10 @@ var Walk = {
 	encounter: function (e, i)
 	{
 		var encountering = false;
-		var tick = 0;
+
 		if (Data.entity.hasOwnProperty(e))
 		{
+			var tick = 0;
 			var opponent = makeBeing(Data.entity[e]);
 			var players = [this.player, opponent];
 			//console.log('encounter', i, players)
@@ -72,11 +73,12 @@ var Walk = {
 
 			while (encountering === true)
 			{
-				// automatically break after 9 ticks
-				if (tick > 9)
+				// automatically break after 11 ticks
+				if (tick > 11)
 				{
 					console.log('encounter timed out')
 					encountering = false;
+					continue;
 				}
 
 				var update = decision(players, tick);
@@ -86,10 +88,12 @@ var Walk = {
 				tick += 1;
 			}
 		}
+
 		if (this.player.get('alive') === false)
 		{
-			console.log('game over')
 			this.active = false;
+		
+			console.log('END', i)
 		}
 		else {
 			// continue walk
@@ -102,6 +106,11 @@ var Walk = {
 //foo.init('plains')
 
 ///////////////
+
+
+///////////////
+
+// TYPES
 
 var Field = {
 	init: function (width)
@@ -162,133 +171,136 @@ var Field = {
 //var bar = Object.create(Field).init(12)
 //bar.draw(0).add('V').draw(1).add('-').draw(2)
 
-///////////////
-
-function roll (max)
-{
-	var outcome = Math.random() * max;
-	return outcome;
-}
-
-// console.log(roll(6))
-
-///////////////
-
-makeEnviron = function (set, subset)
-{
-	// get elements within the passed set and its collection
-	var elements = Object.keys(set[subset]);
-	var selected = {};
-
-	// grab subset attributes
-	for (var i = 0; i < elements.length; i++)
+var Being = {
+	// NAME
+	named: function (name)
 	{
-		var currentElement = elements[i];
-		var conditions = Object.keys(set[subset][elements[i]]);
-		var conditionChance = 0;
-
-		// add up chance of each element's condition
-		for (var j = 0; j < conditions.length; j++)
+		this.name = name;
+		return this;
+	},
+	called: function ()
+	{
+		return this.name;
+	},
+	// STATS
+	stats: {},
+	make: function (stats)
+	{
+		this.stats = {};
+		this.equipment = {};
+		this.inventory = [];
+		this.stats = Object.assign(this.stats, stats);
+		this.stats.alive = true;
+		return this;
+	},
+	assign: function (attributes)
+	{
+		Object.assign(this, attributes);
+		return this;
+	},
+	is: function ()
+	{		
+		return this.stats;
+	},
+	get: function (stat)
+	{
+		return this.stats[stat];
+	},
+	change: function (stat, change)
+	{
+		this.stats[stat] += change;
+		return this;
+	},
+	set: function (stat, value)
+	{
+		this.stats[stat] = value;
+		return this;
+	},
+	kill: function ()
+	{
+		this.stats.alive = false;
+		return this;
+	},
+	birth: function ()
+	{
+		this.stats.alive = true;
+		return this;
+	},
+	// INVENTORY
+	inventory: [],
+	has: function ()
+	{
+		return this.inventory;
+	},
+	give: function (items)
+	{
+		this.inventory = items;
+		return this;
+	},
+	add: function (item)
+	{
+		this.inventory.push(item);
+		return this;
+	},
+	take: function (item)
+	{
+		var what = this.inventory.indexOf(item);
+		this.inventory.splice(1, what);
+		return this;
+	},
+	// EQUIPMENT
+	// adds effects to stats
+	equipment: {},
+	equipped: function (type)
+	{
+		return this.equipment[type] || this.equipment;
+	},
+	equip: function (item)
+	{
+		if (item)
 		{
-			conditionChance += set[subset][elements[i]][conditions[j]]
+			this.equipment[item.type] = item;
 		}
-
-		// use reduce instead
-		// see https://danmartensen.svbtle.com/javascripts-map-reduce-and-filter
-		//set.subset.reduce()
-		//var sum = rockets.reduce(function(val, elem) {
-		//		return val + elem.launches;
-		//	}, 0);
-		//console.log(conditions)
-
-
-
-		// save the total chance for all conditions
-		var conditionTotal = conditionChance;
-
-		// make a roll bound by the condition total chance
-		var conditionRoll = roll(conditionTotal);
-
-		//console.log(currentElement, conditionChance, conditionRoll)
-
-		// run through conditions again to find current state
-		for (var k = 0; k < conditions.length; k++)
+		return this;
+	},
+	unequip: function (item)
+	{
+		if (this.equipment[item.type])
 		{
-			// subtract condition values from roll
-			var increment = set[subset][elements[i]][conditions[k]];
-			conditionRoll -= increment;
-			//console.log(conditions[k], increment, conditionRoll)
-
-			// once roll value drops below zero, save selection and break
-			if (conditionRoll <= 0)
-			{
-				//console.log(conditions[k] + ' selected')
-				selected[elements[i]] = conditions[k];
-				break;
-			}
-		}
-	}
-	return selected;
-}
-
-//makeEnviron(Data.biome, 'plains')
-//console.log(makeEnviron(Data.weather, 'summer'))
-
-///////////////
-
-function decision (players, tick)
-{	
-	var players = players;
-	var tick = tick;
-	var active = true;
-
-  if (tick < 1)
-  {
-    var initiative = action.do('initiative', players);
-    players = initiative.players;
-		//console.log(players, initiative)
-  }
-	
-	var protagonist = players[0].name;
-	var antagonist = players[1].name;
-
-	console.log('TURN OF ' + protagonist)
-	console.log(protagonist, players[0].get('life'), antagonist, players[1].get('life'))
-	
-  //var reaction = action.do('reaction', players);
-  var fear = action.do('fear', players);
-	var attack = action.do('attack', players);
-	var dodge = action.do('dodge', players);
-	//console.log(reaction)
-  //console.log(fear)
-  //console.log(attack)
-  //console.log(dodge)
-
-	if (fear.afraid === true && dodge.dodged === true)
+			delete this.equipment[item.type];
+		} 
+		return this;
+	},
+	//
+	check: function()
 	{
-		active = false;
-		console.log(protagonist + ' fled!!!')
+		var check = {
+			stats: this.is(),
+			name: this.called(),
+			inventory: this.has(),
+			equipment: this.equipped()
+		};
+		return check;
 	}
-	else if (attack.attacked === true && attack.damage !== false && attack.damage > 0)
-	{
-		players[1].change('life', -attack.damage)
-		console.log(antagonist + ' takes ' + attack.damage + ' damage')
-		if (players[1].get('life') <= 0)
-		{
-			active = false;
-			players[1].death();
-			console.log(antagonist + ' died!!!')
-		}
-	}
-	else
-	{
-		console.log('nothing!!!')
-	}
+};
 
-	// reverse players for next round
-  players = [players[1], players[0]];
+// var foo = Object.create(Being).name('FOO').give('fire');
 
-	return { players, active };
-}
+var Weapon = {
+	type: 'weapon',
+	build: function(name, action, dam)
+	{
+		this.name = name;
+		this.action = action;
+		this.damage = {
+			min: dam[0],
+			max: dam[1],
+			to: dam[2]
+		};
+		return this;
+	}
+};
+
+// var bar = Object.create(Weapon).build('TEETH', 'BITE', [1, 3, 'life']);
 
 ///////////////
