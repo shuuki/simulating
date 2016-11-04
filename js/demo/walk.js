@@ -26,7 +26,7 @@ var Walk = {
 		{
 			this.time = 0;
 		}
-		if (this.active && this.time >= this.refresh)
+		else if (this.active && this.time >= this.refresh)
 		{
 			// generate landscape spaces
 			var spawn = makeEnviron(Data.biome, this.type);
@@ -56,6 +56,7 @@ var Walk = {
 		{
 			this.foreground.draw(this.step)
 			this.background.draw(this.step)
+			// concatenate foreground and background into one line
 		}
 	},
 	encounter: function (e, i)
@@ -103,8 +104,8 @@ var Walk = {
 	}
 }
 
-//var foo = Object.create(Walk)
-//foo.init('plains')
+//var qux = Object.create(Walk)
+//qux.init('plains')
 
 ///////////////
 
@@ -166,8 +167,8 @@ var Field = {
 	}
 }
 
-//var bar = Object.create(Field).init(12)
-//bar.draw(0).add('V').draw(1).add('-').draw(2)
+//var baz = Object.create(Field).init(12)
+//baz.draw(0).add('V').draw(1).add('-').draw(2)
 
 var Being = {
 	// NAME

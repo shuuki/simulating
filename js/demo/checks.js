@@ -92,7 +92,10 @@ var action = {
 	},
 	loot: function (actors)
 	{
-		
+		// takes two
+		// transfer item from inventory of one to the other
+		// if one has, take and give to zero
+		// return two
 	}
 };
 
@@ -108,6 +111,12 @@ function decision (players, tick)
 	var tick = tick || 0;
 	var active = true;
 
+	// check encounter type
+	// loot is different from animal, human, etc
+	
+	//var reaction = action.do('reaction', players);
+	//console.log(reaction)
+
   if (tick < 1)
   {
     var initiative = action.do('initiative', players);
@@ -121,11 +130,10 @@ function decision (players, tick)
 	console.log('GO ' + protagonist)
 	console.log(protagonist, players[0].get('life'), antagonist, players[1].get('life'))
 
-  //var reaction = action.do('reaction', players);
   var fear = action.do('fear', players);
 	var attack = action.do('attack', players);
 	var dodge = action.do('dodge', players);
-	//console.log(reaction)
+
   //console.log(fear)
   //console.log(attack)
   //console.log(dodge)
@@ -139,16 +147,17 @@ function decision (players, tick)
 	{
 		players[1].change('life', -attack.damage)
 
-		console.log(players[0].name + ' attacks!!!')
+		console.log(protagonist + ' attacks!!!')
 		console.log(antagonist + ' takes ' + attack.damage + ' damage')
 
 		if (players[1].get('life') <= 0)
 		{
-			active = false;
 			players[1].kill();
-
+			active = false;
+		
 			console.log(antagonist + ' died!!!')
 		}
+
 	}
 	else
 	{
