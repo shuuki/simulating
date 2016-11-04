@@ -53,9 +53,11 @@ Data.biome = {
 		},
     foreground: {
       '_' : 5,
-			'R' : 0.6,
-			'S' : 0.4,
-			'B' : 0.2
+			'R' : 0.3,
+			'S' : 0.2,
+			'B' : 0.1,
+			'$' : 0.05, 
+			'&' : 0.05,
 			//'Ѧ' : 1,
 			//'Ϫ' : 0.001,
 		},
@@ -225,14 +227,15 @@ Data.entity = {
 			threat: 5
 		},
 		items: ['bearBite', 'bearHide']
+		//items: {
+		//	equipment: ['bearBite', 'bearHide'],
+		//	inventory: ['bearMeat']
+		//}
+
 	},
-	'D': {
-		name: 'BIG DOG',
-		type: 'animal'
-	},
-	'd': {
-		name: 'LITTLE DOG',
-		type: 'animal'
+	'$': {
+		name: 'STUFF',
+		type: 'loot'
 	},
 	'&': {
 		name: 'ANIMAL BONES',
@@ -242,13 +245,17 @@ Data.entity = {
 		name: 'HUMAN BONES',
 		type: 'loot'
 	},
-	'$': {
-		name: 'STUFF',
-		type: 'loot'
-	},
 	'!': {
 		name: 'HUMAN',
 		type: 'human'
+	},
+	'D': {
+		name: 'BIG DOG',
+		type: 'animal'
+	},
+	'd': {
+		name: 'LITTLE DOG',
+		type: 'animal'
 	},
 };
 
@@ -261,6 +268,7 @@ Data.entity = {
 // EQUIPMENT
 
 Data.equipment = {
+	// WEAPONS
 	dawgBite: {
 		type: 'weapon',
 		name: 'TEETH',
@@ -277,8 +285,9 @@ Data.equipment = {
 		type: 'weapon',
 		name: 'TEETH',
 		action: 'MAUL',
-		damage: { min: 2, max: 6, to: 'life' }
+		damage: { min: 2, max: 5, to: 'life' }
 	},
+	// ARMORS
 	dawgHide: {
 		type: 'armor',
 		name: 'DAWG HIDE',
@@ -293,5 +302,16 @@ Data.equipment = {
 		type: 'armor',
 		name: 'BEAR HIDE',
 		defense: 3
+	},
+	// HEALING
+	smallMeat: {
+		type: 'healing',
+		name: 'SMALL MEAT',
+		life: { min: 0, max: 2 }
+	},
+	bearMeat: {
+		type: 'healing',
+		name: 'BEAR MEAT',
+		life: { min: 2, max: 5 }
 	}
 };

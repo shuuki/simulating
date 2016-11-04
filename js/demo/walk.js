@@ -60,30 +60,31 @@ var Walk = {
 	},
 	encounter: function (e, i)
 	{
-		var encountering = false;
+		var active = false;
 
 		if (Data.entity.hasOwnProperty(e))
 		{
-			var tick = 0;
 			var opponent = makeBeing(Data.entity[e]);
 			var players = [this.player, opponent];
-			//console.log('encounter', i, players)
 
-			encountering = true;
+			console.log('encounter', i, players)
 
-			while (encountering === true)
+			var tick = 0;
+			active = true;
+
+			while (active === true)
 			{
 				// automatically break after 11 ticks
 				if (tick > 11)
 				{
 					console.log('encounter timed out')
-					encountering = false;
+					active = false;
 					continue;
 				}
 
 				var update = decision(players, tick);
 				players = update.players;
-				encountering = update.active;
+				active = update.active;
 
 				tick += 1;
 			}
@@ -92,7 +93,7 @@ var Walk = {
 		if (this.player.get('alive') === false)
 		{
 			this.active = false;
-		
+
 			console.log('END', i)
 		}
 		else {
@@ -104,9 +105,6 @@ var Walk = {
 
 //var foo = Object.create(Walk)
 //foo.init('plains')
-
-///////////////
-
 
 ///////////////
 

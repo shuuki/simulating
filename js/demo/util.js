@@ -1,3 +1,4 @@
+
 ///////////////
 
 // ACTIVITY LOG
@@ -36,6 +37,8 @@ var activity = {
 
 ///////////////
 
+// RANDOMNESS
+
 function roll (max)
 {
 	var outcome = Math.random() * max;
@@ -52,6 +55,8 @@ function rollRange(min, max)
 //console.log(rollRange(1, 20))
 
 ///////////////
+
+// DATA ACCESS
 
 makeEnviron = function (set, subset)
 {
@@ -112,8 +117,6 @@ makeEnviron = function (set, subset)
 
 //makeEnviron(Data.biome, 'plains')
 //console.log(makeEnviron(Data.weather, 'summer'))
-
-///////////////
 
 makeBeing = function (data)
 {

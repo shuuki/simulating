@@ -1,3 +1,4 @@
+
 ///////////////
 
 // ACTIONS
@@ -151,7 +152,7 @@ function decision (players, tick)
 	}
 	else
 	{
-		console.log(protagonist + 'does nothing!!!')
+		console.log(protagonist + ' does nothing!!!')
 	}
 
 	// reverse player order for next round
