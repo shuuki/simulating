@@ -54,9 +54,19 @@ var Walk = {
 	{
 		if (this.updated)
 		{
-			this.foreground.draw(this.step)
-			this.background.draw(this.step)
 			// concatenate foreground and background into one line
+			var view = [];
+			var up = this.foreground.draw(this.step);
+			var down = this.background.draw(this.step);
+			up.forEach(function (e, i) {
+				if (e !== '_') { view[i] = e }
+			});
+			down.forEach(function (e, i) {
+				if (!view[i]) { view[i] = e }
+			});
+			view = view.join('');
+
+			console.log (view)
 		}
 	},
 	encounter: function (e, i)
@@ -132,13 +142,13 @@ var Field = {
 	},
 	draw: function (pos)
 	{		
-		var view = this.area.slice(pos, pos + this.width).join('');
+		var view = this.area.slice(pos, pos + this.width)//.join('');
 		this.view = view;
 
-		console.log(view)
+		//console.log(view)
 
-		//return view;
-		return this;
+		return view;
+		//return this;
 	},
 	isOccupied: function (i)
 	{
