@@ -6,6 +6,11 @@ body {
 	overflow: hidden;
 }
 
+#output {
+	font-size: 1.2em;
+	line-height: 2;
+}
+
 canvas {
 	background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAAAAACo4kLRAAAAF0lEQVR4AWN4DQcP4WBoCyKYCOkhLQgA355ncNg2H2MAAAAASUVORK5CYII=');
 	height: 100%;

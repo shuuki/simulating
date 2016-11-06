@@ -66,7 +66,8 @@ var Walk = {
 			});
 			view = view.join('');
 
-			console.log (view)
+			document.getElementById('output').innerHTML = view;
+			console.log(view)
 		}
 	},
 	encounter: function (e, i)
