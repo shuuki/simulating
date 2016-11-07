@@ -54,7 +54,7 @@ var Walk = {
 	{
 		if (this.updated)
 		{
-			// concatenate foreground and background into one line
+			// combine foreground and background into one line
 			var view = [];
 			var up = this.foreground.draw(this.step);
 			var down = this.background.draw(this.step);
@@ -76,7 +76,8 @@ var Walk = {
 
 		if (Data.entity.hasOwnProperty(e))
 		{
-			var opponent = makeBeing(Data.entity[e]);
+			var template = makeClone(Data.entity[e]);
+			var opponent = makeBeing(template);
 			var players = [this.player, opponent];
 
 			console.log('encounter', i, players)
