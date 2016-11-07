@@ -53,11 +53,11 @@ Data.biome = {
 		},
     foreground: {
       '_' : 5,
-			'R' : 0.3,
-			'S' : 0.2,
-			'B' : 0.1,
-			'$' : 0.05, 
-			'&' : 0.05,
+			'S' : 0.6,
+			'R' : 0.4,
+			'B' : 0.2,
+			//'$' : 0.05, 
+			//'&' : 0.05,
 			//'Ѧ' : 1,
 			//'Ϫ' : 0.001,
 		},
@@ -188,7 +188,7 @@ Data.entity = {
 		name: 'DAWG',
 		type: 'animal',
 		stats: {
-			life: 6,
+			life: 12,
 			agility: 4,
 			nerve: 3,
 			threat: 3
