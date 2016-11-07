@@ -142,19 +142,19 @@ makeBeing = function (data)
 
 ///////////////
 
-function makeClone(o)
+function makeClone(obj)
 {
 	// break on any non-object
-  if (o === null || typeof o !== 'object')
+  if (obj === null || typeof obj !== 'object')
   {
-	  return o;
+	  return obj;
   }
 	// copy values from passed constructor
-  var temp = o.constructor();
+  var temp = obj.constructor();
 	// assign passed values to new object
-  for (var k in o)
+  for (var k in obj)
   {
-    temp[k] = makeClone(o[k]);
+    temp[k] = makeClone(obj[k]);
   }
   return temp;
 }
