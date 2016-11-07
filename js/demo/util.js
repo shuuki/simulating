@@ -120,7 +120,6 @@ makeEnviron = function (set, subset)
 
 makeBeing = function (data)
 {
-	console.log(data)
 	var being = Object.create(Being);
 	being.assign(data);
 
@@ -143,17 +142,21 @@ makeBeing = function (data)
 
 ///////////////
 
-function makeClone(obj)
+function makeClone(o)
 {
-  if (obj === null || typeof obj !== 'object')
+	// break on any non-object
+  if (o === null || typeof o !== 'object')
   {
-  return obj;
+	  return o;
   }
-
-  var temp = obj.constructor();
-  for (var key in obj)
+	// copy values from passed constructor
+  var temp = o.constructor();
+	// assign passed values to new object
+  for (var k in o)
   {
-    temp[key] = makeClone(obj[key]);
+    temp[k] = makeClone(o[k]);
   }
   return temp;
 }
+
+//makeClone(Data.entity['@'])
