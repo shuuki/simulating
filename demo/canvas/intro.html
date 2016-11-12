@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Sim</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../../css/style.css">
+  </head>
+  <body>
+
+
+    <script src="js/lib/Sim.core.js"></script>
+    <script src="js/lib/Sim.input.js"></script>
+    <script src="js/lib/Sim.util.js"></script>
+    <script src="js/lib/Sim.rand.js"></script>
+    <script src="js/lib/Sim.geom.js"></script>
+    <script src="js/demo/demo.intro.js"></script>
+    <!--
+    available demos:
+    
+    demo.intro.js
+    demo.flatland.js
+    demo.voyager.js
+    -->
+
+    <div id="controls">
+      <button onClick="Sim.start()">start</button>
+      <button onClick="Sim.stop()">stop</button>
+      <!--
+      <button onClick="Sim.reset()">reset</button>
+
+      currently broken:
+
+      <button onClick="Sim.save()">save</button>
+      <button onClick="Sim.load()">load</button>
+      
+      planned functions:
+      
+      <button onClick="Sim.export()">export</button>
+      <button onClick="Sim.import()">import</button>
+      -->
+    </div>
+
+  </body>
+</html>
