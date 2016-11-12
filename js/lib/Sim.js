@@ -100,6 +100,7 @@ var Time = {
 	  return this;
 	}
 	// later: advance, rewind
+	// export, import
 }
 
 ///////////////
