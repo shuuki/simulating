@@ -1,6 +1,6 @@
 #SIM DEMO: THREE
 
-Flying around in space.
+Flying around in space. Going for zero gravity/friction mechanics in a very agile light ship.
 
 Keyboard controls to get oldschool space sim vibe:
 
